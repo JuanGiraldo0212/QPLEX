@@ -1,4 +1,5 @@
-from qmodel import QModel
+from qplex.library.qmodel import QModel
+import requests
 
 
 def main():
@@ -12,8 +13,8 @@ def main():
     obj_fn = sum(v[i]*x[i] for i in range(n))
     knapsack_model.set_objective('max', obj_fn)
     knapsack_model.solve()
-    print(knapsack_model.objective_value)
-    print(knapsack_model.print_solution())
+    # print(knapsack_model.objective_value)
+    # print(knapsack_model.print_solution())
 
 
 if __name__ == '__main__':
