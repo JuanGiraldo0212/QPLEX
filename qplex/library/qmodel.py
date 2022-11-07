@@ -24,7 +24,7 @@ class QModel(Model):
                 'name': self.name,
                 'variables': list(map(lambda var: {
                     'name': var.name,
-                    'type': var.type if hasattr(var, 'type') else '',
+                    'type': var.vartype.cplex_typecode,
                 }, list(self.iter_variables()))),
                 'constraints': list(map(lambda constraint: constraint.to_string(), list(self.iter_constraints()))),
                 'objective_func': self.get_objective_expr().to_string(),
