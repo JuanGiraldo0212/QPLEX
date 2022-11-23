@@ -8,12 +8,11 @@ def main():
     n = len(w)
     knapsack_model = QModel('knapsack')
     x = knapsack_model.binary_var_list(n, name="x")
-    knapsack_model.add_constraint(sum(w[i]*x[i] for i in range(n)) <= c)
+    knapsack_model.add_constraint(sum(w[i]*x[i]*x[i] for i in range(n)) <= c)
     obj_fn = sum(v[i]*x[i] for i in range(n))
     knapsack_model.set_objective('max', obj_fn)
 
     knapsack_model.solve('quantum', backend='dwave', as_job=True)
-    print(knapsack_model.get_status())
     # print(knapsack_model.objective_value)
     # print(knapsack_model.print_solution())
 

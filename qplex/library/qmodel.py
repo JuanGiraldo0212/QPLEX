@@ -1,6 +1,7 @@
 from docplex.mp.model import Model
 from .request_handler import solver_request, get_status_request
 from docplex.mp.solution import SolveSolution
+from .dwave_adapter import parse_model
 
 
 class QModel(Model):
@@ -25,11 +26,7 @@ class QModel(Model):
         if solver == 'classical':
             Model.solve(self)
         elif solver == 'quantum':
-            response = solver_request(model=self.build_model_dict(), as_job=as_job, backend=backend)
-            if not as_job:
-                self.set_solution(response)
-            else:
-                self.job_id = response['jobId']
+            parse_model(self)
         else:
             raise ValueError("Invalid value for argument 'hardware'")
 
