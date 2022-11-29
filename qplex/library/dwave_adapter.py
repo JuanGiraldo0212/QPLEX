@@ -5,7 +5,29 @@ from docplex.mp.quad import QuadExpr
 
 from .constants import VAR_TYPE
 from dwave.system import LeapHybridCQMSampler
-from dimod import ConstrainedQuadraticModel, DiscreteQuadraticModel, QuadraticModel
+from dimod import ConstrainedQuadraticModel, QuadraticModel
+import os
+
+
+
+def run(model):
+    token = os.environ.get('DWAVE_API_TOKEN')
+    sampler = LeapHybridCQMSampler(token=token)
+    cqm = parse_model(model)
+    sampleset = sampler.sample_cqm(cqm, label=model['name'])
+    feasible_sampleset = sampleset.filter(lambda row: row.is_feasible)
+    best = feasible_sampleset.first
+
+    return parse_response(best)
+
+
+def parse_response(response):
+    objective = response.energy
+    solution = response.items()
+
+    ans = {'objective': objective, 'solution': solution}
+
+    return ans
 
 
 def parse_model(model) -> ConstrainedQuadraticModel:
