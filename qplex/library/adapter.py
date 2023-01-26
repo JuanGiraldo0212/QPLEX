@@ -7,11 +7,9 @@ class Adapter:
         self.model = model
 
     def solve(self, backend):
-        solution = None
         if backend == "d-wave":
-            solution = dwave_solver.solve(self.model)
-        else:
-            pass
-
-        return solution
+            return dwave_solver.solve(self.model)
+        if backend == "ibm":
+            return None
+        return None
 
