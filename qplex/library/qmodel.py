@@ -1,7 +1,6 @@
 from docplex.mp.model import Model
-from .request_handler import solver_request, get_status_request
 from docplex.mp.solution import SolveSolution
-from .dwave_adapter import parse_model
+from qplex.library.adapter import Adapter
 
 
 class QModel(Model):
@@ -17,16 +16,18 @@ class QModel(Model):
                 'name': var.name,
                 'type': var.vartype.cplex_typecode,
             }, list(self.iter_variables()))),
-            'constraints': list(map(lambda constraint: constraint.to_string(), list(self.iter_constraints()))),
-            'objective_func': self.get_objective_expr().to_string(),
+            'constraints': list(map(lambda constraint: constraint, list(self.iter_constraints()))),
+            'objective_func': self.get_objective_expr(),
             'sense': self.objective_sense.name,
         }
 
-    def solve(self, solver: str = 'classical', as_job: bool = False, backend: str = None):
+    def solve(self, solver: str = 'classical', backend: str = None):
         if solver == 'classical':
             Model.solve(self)
         elif solver == 'quantum':
-            parse_model(self)
+            model = self.build_model_dict()
+            adapter = Adapter(model)
+            self.set_solution(adapter.solve(backend))
         else:
             raise ValueError("Invalid value for argument 'hardware'")
 
