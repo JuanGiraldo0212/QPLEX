@@ -1,4 +1,5 @@
 from qplex.library import dwave_solver
+from qplex.library import gate_based_solver
 
 
 class Adapter:
@@ -10,6 +11,6 @@ class Adapter:
         if backend == "d-wave":
             return dwave_solver.solve(self.model)
         if backend == "ibm":
-            return None
+            return gate_based_solver.solve(self.model)
         return None
 
