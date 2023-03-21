@@ -1,6 +1,7 @@
 from docplex.mp.model import Model
 from docplex.mp.solution import SolveSolution
 from qplex.library.adapter import Adapter
+from qplex.library.model_solver import ModelSolver
 
 
 class QModel(Model):
@@ -26,23 +27,26 @@ class QModel(Model):
             Model.solve(self)
         elif solver == 'quantum':
             model = self.build_model_dict()
-            adapter = Adapter(model)
-            self.set_solution(adapter.solve(backend))
+            model_solver = ModelSolver()
+            self.set_solution(model_solver.solve(model, backend))
         else:
-            raise ValueError("Invalid value for argument 'hardware'")
+            raise ValueError("Invalid value for argument 'solver'")
+        
+    def solve_quantum(backend):
+        pass
 
     def set_solution(self, result):
         solve_solution = SolveSolution(self, var_value_map=result['solution'], obj=result['objective'],
                                        name=self.name)
         Model._set_solution(self, new_solution=solve_solution)
 
-    def get_status(self):
-        if self.job_id is None:
-            raise ValueError("Attribute job_id is None")
-        response = get_status_request(job_id=self.job_id)
-        if response['status'] == 'finished':
-            pass
-            # Call API to get solution
-            # self.set_solution()
-        return
+    # def get_status(self):
+    #     if self.job_id is None:
+    #         raise ValueError("Attribute job_id is None")
+    #     response = get_status_request(job_id=self.job_id)
+    #     if response['status'] == 'finished':
+    #         pass
+    #         # Call API to get solution
+    #         # self.set_solution()
+    #     return
 
