@@ -1,9 +1,11 @@
-from qplex.library.qmodel import QModel
+import os
+print(os.getcwd())
+from qplex.library import QModel
 
 
 def main():
-    w = [4, 2, 5, 4, 5, 1, 3, 5]
-    v = [10, 5, 18, 12, 15, 1, 2, 8]
+    w = [4, 2, 5, 4, 5, 1, 3, 5] # price
+    v = [10, 5, 18, 12, 15, 1, 2, 8] # return
     bonus = [[0],
              [3, 0],
              [9, 5, 0],
@@ -11,8 +13,9 @@ def main():
              [6, 5, 9, 8, 0],
              [5, 6, 9, 1, 2, 0],
              [9, 1, 6, 2, 1, 5, 0],
-             [6, 9, 2, 3, 5, 4, 8, 0]]
-    c = 15
+             [6, 9, 2, 3, 5, 4, 8, 0]] #covariance
+    c = 15 # budget
+    # max_risk
     n = len(w)
     knapsack_model = QModel('knapsack')
     x = knapsack_model.binary_var_list(n, name="x")
