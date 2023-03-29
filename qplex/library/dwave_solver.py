@@ -4,6 +4,7 @@ from dwave.system import LeapHybridCQMSampler
 from dimod import ConstrainedQuadraticModel, QuadraticModel
 import os
 
+
 class DWaveSolver:
 
     def solve(self, model) -> dict:
@@ -16,8 +17,7 @@ class DWaveSolver:
         response = self.parse_response(best)
         return response
 
-
-    def parse_response(self, response) ->  dict:
+    def parse_response(self, response) -> dict:
         objective = abs(response.energy)
         solution = response.sample
 
@@ -25,14 +25,14 @@ class DWaveSolver:
 
         return result
 
-
     def parse_model(self, model) -> ConstrainedQuadraticModel:
 
         cqm = ConstrainedQuadraticModel()
         obj = QuadraticModel()
 
         for var in model["variables"]:
-            obj.add_variable(VAR_TYPE[var['type']], var['name'])
+            obj.add_variable(VAR_TYPE[var['type']], var['name'], lower_bound=var['lower_bound'],
+                             upper_bound=var['upper_bound'])
 
         if type(model["objective_func"]) is LinearExpr:
             terms = model["objective_func"].iter_terms()
@@ -56,7 +56,8 @@ class DWaveSolver:
         for const in model["constraints"]:
             const_qm = QuadraticModel()
             for var in model["variables"]:
-                const_qm.add_variable(VAR_TYPE[var['type']], var['name'])
+                const_qm.add_variable(VAR_TYPE[var['type']], var['name'], lower_bound=var['lower_bound'],
+                                      upper_bound=var['upper_bound'])
             expr = const.left_expr
             value = const.right_expr.constant
             sen = const.sense.operator_symbol
@@ -76,7 +77,3 @@ class DWaveSolver:
             cqm.add_constraint(const_qm, sense=sen, rhs=value, label=const.lpt_name)
 
         return cqm
-
-
-
-

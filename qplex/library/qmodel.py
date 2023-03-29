@@ -16,6 +16,8 @@ class QModel(Model):
             'variables': list(map(lambda var: {
                 'name': var.name,
                 'type': var.vartype.cplex_typecode,
+                'lower_bound': var.lb,
+                'upper_bound': var.ub
             }, list(self.iter_variables()))),
             'constraints': list(map(lambda constraint: constraint, list(self.iter_constraints()))),
             'objective_func': self.get_objective_expr(),
@@ -31,22 +33,9 @@ class QModel(Model):
             self.set_solution(model_solver.solve(model, backend))
         else:
             raise ValueError("Invalid value for argument 'solver'")
-        
-    def solve_quantum(backend):
-        pass
 
     def set_solution(self, result):
         solve_solution = SolveSolution(self, var_value_map=result['solution'], obj=result['objective'],
                                        name=self.name)
         Model._set_solution(self, new_solution=solve_solution)
-
-    # def get_status(self):
-    #     if self.job_id is None:
-    #         raise ValueError("Attribute job_id is None")
-    #     response = get_status_request(job_id=self.job_id)
-    #     if response['status'] == 'finished':
-    #         pass
-    #         # Call API to get solution
-    #         # self.set_solution()
-    #     return
 
