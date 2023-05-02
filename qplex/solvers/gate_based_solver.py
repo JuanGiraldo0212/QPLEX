@@ -3,6 +3,7 @@ from qiskit.circuit import ParameterVector
 from qiskit_optimization.converters import QuadraticProgramToQubo
 from qiskit_optimization.translators import from_docplex_mp, to_ising
 
+
 class GateBasedSolver:
 
     def solve(self, model):
@@ -14,8 +15,8 @@ class GateBasedSolver:
         counts = result.get_counts(circ)
         print(counts)
 
-
-    def parse_model(self, model):
+    @staticmethod
+    def parse_model(model):
         q_mod = from_docplex_mp(model)
         qubo = QuadraticProgramToQubo().convert(q_mod)
         ising, offset = to_ising(qubo)
@@ -38,8 +39,6 @@ class GateBasedSolver:
         circ.rx(2 * betas[0], [i for i in range(qubits)])
         circ.measure_all()
         return circ
-
-
 
     def parse_response(self, response):
         pass
