@@ -1,7 +1,6 @@
 from docplex.mp.model import Model
 from docplex.mp.solution import SolveSolution
-from qplex.library.adapter import Adapter
-from qplex.library.model_solver import ModelSolver
+from qplex.helpers.factories.solver_factory import solver_factory
 
 
 class QModel(Model):
@@ -29,8 +28,8 @@ class QModel(Model):
             Model.solve(self)
         elif solver == 'quantum':
             model = self.build_model_dict()
-            model_solver = ModelSolver()
-            self.set_solution(model_solver.solve(model, backend))
+            model_solver = solver_factory.get_solver(backend)
+            self.set_solution(model_solver.solve(model))
         else:
             raise ValueError("Invalid value for argument 'solver'")
 

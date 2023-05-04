@@ -1,12 +1,14 @@
-from qplex.library.dwave_solver import DWaveSolver
-from qplex.library.gate_based_solver import GateBasedSolver
+from qplex.solvers import DWaveSolver, GateBasedSolver
+
 
 class SolverFactory:
-    def get_solver(self, backend):
+    @staticmethod
+    def get_solver(backend):
         if backend == 'd-wave':
             return DWaveSolver()
         if backend == 'ibm':
             return GateBasedSolver()
         raise ValueError(backend)
-    
-factory = SolverFactory()
+
+
+solver_factory = SolverFactory()

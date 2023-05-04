@@ -1,5 +1,5 @@
 from docplex.mp.linear import LinearExpr
-from qplex.library.constants import VAR_TYPE
+from qplex.model.constants import VAR_TYPE
 from dwave.system import LeapHybridCQMSampler
 from dimod import ConstrainedQuadraticModel, QuadraticModel
 import os
@@ -17,7 +17,8 @@ class DWaveSolver:
         response = self.parse_response(best)
         return response
 
-    def parse_response(self, response) -> dict:
+    @staticmethod
+    def parse_response(response) -> dict:
         objective = abs(response.energy)
         solution = response.sample
 
@@ -25,7 +26,8 @@ class DWaveSolver:
 
         return result
 
-    def parse_model(self, model) -> ConstrainedQuadraticModel:
+    @staticmethod
+    def parse_model(model) -> ConstrainedQuadraticModel:
 
         cqm = ConstrainedQuadraticModel()
         obj = QuadraticModel()
