@@ -1,4 +1,5 @@
-from qplex.solvers import DWaveSolver, GateBasedSolver
+from qplex.solvers import IBMQSolver
+from qplex.solvers import DWaveSolver
 
 
 class SolverFactory:
@@ -8,16 +9,16 @@ class SolverFactory:
             if quantum_api_tokens.get("dwave_token"):
                 return DWaveSolver()
             if quantum_api_tokens.get("ibm_token"):
-                return GateBasedSolver()
+                return IBMQSolver(shots=1024)
             raise RuntimeError("Missing credentials for quantum provider")
         if provider == 'd-wave':
             if quantum_api_tokens.get("dwave_token") is None:
                 raise RuntimeError("Missing credentials for the D-Wave provider")
             return DWaveSolver()
-        if provider == 'ibm':
-            if quantum_api_tokens.get("ibm_token") is None:
+        if provider == 'ibmq':
+            if quantum_api_tokens.get("ibmq_token") is None:
                 raise RuntimeError("Missing credentials for the IBM provider")
-            return GateBasedSolver()
+            return IBMQSolver(shots=1024)
         raise ValueError(provider)
 
 
