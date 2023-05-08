@@ -2,13 +2,12 @@ from docplex.mp.linear import LinearExpr
 from qplex.model.constants import VAR_TYPE
 from dwave.system import LeapHybridCQMSampler
 from dimod import ConstrainedQuadraticModel, QuadraticModel
-import os
 
 
 class DWaveSolver:
 
     def solve(self, model) -> dict:
-        token = os.environ.get('DWAVE_API_TOKEN')
+        token = model.quantum_api_tokens.get("dwave_token")
         sampler = LeapHybridCQMSampler(token=token)
         cqm = self.parse_model(model)
         sampleset = sampler.sample_cqm(cqm, label=model['name'])
