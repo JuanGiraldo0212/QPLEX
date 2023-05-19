@@ -28,12 +28,12 @@ class QModel(Model):
             'sense': self.objective_sense.name,
         }
 
-    def solve(self, solver: str = 'classical', backend: str = None):
+    def solve(self, solver: str = 'classical', provider: str = None):
         if solver == 'classical':
             Model.solve(self)
         elif solver == 'quantum':
             model = self.build_model_dict()
-            model_solver = solver_factory.get_solver(backend, self.quantum_api_tokens)
+            model_solver = solver_factory.get_solver(provider, self.quantum_api_tokens)
             solution = model_solver.solve(model)
             self.set_solution(solution)
         else:

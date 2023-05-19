@@ -21,7 +21,7 @@ def main():
     obj_fn = sum((v[i] * x[i] + bonus[i][j] * x[i] * x[j]) for i in range(n) for j in range(n) if i > j)
     knapsack_model.set_objective('max', obj_fn)
     # knapsack_model.solve()
-    knapsack_model.solve('quantum', backend='d-wave')
+    knapsack_model.solve('quantum', provider='d-wave')
     print(knapsack_model.objective_value)
     print(knapsack_model.print_solution())
 
