@@ -1,3 +1,5 @@
+import time
+
 from docplex.mp.model import Model
 from docplex.mp.solution import SolveSolution
 from qplex.commons import solver_factory
@@ -14,6 +16,9 @@ class QModel(Model):
             "dwave_token": os.environ.get('DWAVE_API_TOKEN'),
             "ibmq_token": os.environ.get('IBMQ_API_TOKEN'),
         }
+        self.exe_time = 0
+        self.solver = "N/A"
+        self.provider = "N/A"
 
     def solve(self, solver: str = 'classical', provider: str = None):
         if solver == 'classical':
@@ -21,6 +26,7 @@ class QModel(Model):
         elif solver == 'quantum':
             solution = None
             model_solver = solver_factory.get_solver(provider, self.quantum_api_tokens)
+            t0 = time.time()
             if provider == "d-wave":
                 solution = model_solver.solve(self)
             else:
@@ -40,6 +46,9 @@ class QModel(Model):
                     for t in quadratic_terms:
                         obj_value += (values[t[0].name] * values[t[1].name] * t[2])
                 solution = {'objective': obj_value, 'solution': values}
+            self.exe_time = time.time() - t0
+            self.solver = solver
+            self.provider = "N/A" if provider is None else provider
             self.set_solution(solution)
         else:
             raise ValueError("Invalid value for argument 'solver'")
@@ -48,4 +57,13 @@ class QModel(Model):
         solve_solution = SolveSolution(self, var_value_map=result['solution'], obj=result['objective'],
                                        name=self.name)
         Model._set_solution(self, new_solution=solve_solution)
+
+    def print_solution(self, print_zeros=False,
+                       solution_header_fmt=None,
+                       var_value_fmt=None,
+                       **kwargs):
+        print(f"solver: {self.solver}")
+        print(f"provider: {self.provider}")
+        print(f"execution time: {round(self.exe_time, 2)} seconds")
+        super(QModel, self).print_solution(print_zeros, solution_header_fmt, var_value_fmt, **kwargs)
 
