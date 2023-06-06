@@ -1,8 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Dict, Any
 
-from qiskit.providers import Backend
-
 
 class Solver(ABC):
 
@@ -45,7 +43,7 @@ class Solver(ABC):
         ...
 
     @abstractmethod
-    def select_backend(self, qubits: int) -> Backend:
+    def select_backend(self, qubits: int) -> Any:
         """Selects the most appropriate backend with at least a certain number of qubits.
 
         Args:
