@@ -11,7 +11,7 @@ from qplex.solvers.base_solver import Solver
 
 class QAOA(Algorithm):
 
-    def __init__(self, model, solver: Solver, p: int = 1, shots: int = 1024, seed: int = 0):
+    def __init__(self, model, solver: Solver, p: int = 1, shots: int = 10000, seed: int = 0):
         super(QAOA, self).__init__()
         self.p: int = p
         self.n: int = 0

@@ -9,7 +9,7 @@ class SolverFactory:
             if quantum_api_tokens.get("dwave_token"):
                 return DWaveSolver()
             if quantum_api_tokens.get("ibm_token"):
-                return IBMQSolver(shots=1024)
+                return IBMQSolver(shots=10000)
             raise RuntimeError("Missing credentials for quantum provider")
         if provider == 'd-wave':
             if quantum_api_tokens.get("dwave_token") is None:
@@ -18,7 +18,7 @@ class SolverFactory:
         if provider == 'ibmq':
             if quantum_api_tokens.get("ibmq_token") is None:
                 raise RuntimeError("Missing credentials for the IBM provider")
-            return IBMQSolver(shots=1024)
+            return IBMQSolver(shots=10000)
         raise ValueError(provider)
 
 
