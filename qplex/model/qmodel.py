@@ -17,20 +17,24 @@ class QModel(Model):
             "ibmq_token": os.environ.get('IBMQ_API_TOKEN'),
         }
         self.exe_time = 0
-        self.solver = "N/A"
-        self.provider = "N/A"
+        self.solver = None
+        self.provider = None
 
     def solve(self, solver: str = 'classical', provider: str = None):
+        t0 = time.time()
+        end_time = 0
         if solver == 'classical':
             Model.solve(self)
+            end_time = time.time() - t0
         elif solver == 'quantum':
             solution = None
             model_solver = solver_factory.get_solver(provider, self.quantum_api_tokens)
-            t0 = time.time()
             if provider == "d-wave":
                 solution = model_solver.solve(self)
+                end_time = time.time() - t0
             else:
                 optimal_counts = ggae_workflow(self, model_solver)
+                end_time = time.time() - t0
                 best_solution, best_count = max(optimal_counts.items(), key=lambda x: x[1])
                 # TODO turn migrate this code into a separate function
                 values = {}
@@ -46,12 +50,13 @@ class QModel(Model):
                     for t in quadratic_terms:
                         obj_value += (values[t[0].name] * values[t[1].name] * t[2])
                 solution = {'objective': obj_value, 'solution': values}
-            self.exe_time = time.time() - t0
             self.solver = solver
-            self.provider = "N/A" if provider is None else provider
+            self.provider = provider
             self.set_solution(solution)
         else:
             raise ValueError("Invalid value for argument 'solver'")
+
+        self.exe_time = end_time
 
     def set_solution(self, result):
         solve_solution = SolveSolution(self, var_value_map=result['solution'], obj=result['objective'],
@@ -62,8 +67,8 @@ class QModel(Model):
                        solution_header_fmt=None,
                        var_value_fmt=None,
                        **kwargs):
-        print(f"solver: {self.solver}")
-        print(f"provider: {self.provider}")
+        print(f"solver: {self.solver if self.solver is not None else 'classical'}")
+        print(f"provider: {self.provider if self.provider is not None else 'N/A'}")
         print(f"execution time: {round(self.exe_time, 2)} seconds")
         super(QModel, self).print_solution(print_zeros, solution_header_fmt, var_value_fmt, **kwargs)
 
