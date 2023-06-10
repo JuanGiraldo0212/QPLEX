@@ -25,9 +25,8 @@ class VQE(Algorithm):
         self.qubo = qubo
         self.n = self.qubo.get_num_binary_vars()
         circuit = f"""
-        OPENQASM 2.0;
-        include "qelib1.inc";
         qreg q[{self.n}];
+        creg c[{self.n}];
         """
         pc = 0
         for i in range(self.n):
@@ -46,6 +45,9 @@ class VQE(Algorithm):
                 pc += 1
                 circuit += f"ry(ry_angle_{pc}) q[{i+1}];\n"
                 pc += 1
+
+        for i in range(self.n):
+            circuit += f"measure q[{i}] -> c[{i}];\n"
 
         return circuit
 
