@@ -30,7 +30,16 @@ def max_cut_example():
     quadratic_terms = sum(qubo_matrix[i][j] * x[i] * x[j] for i in range(size) for j in range(size))
     obj_fn = linear_terms + quadratic_terms
     model.set_objective('max', obj_fn)
-    model.solve("quantum", provider="ibmq")
+    execution_params = {
+        "provider": "braket",
+        "backend": "simulator",
+        "algorithm": "qaoa",
+        # "layers": 3,
+        "p": 3,
+        "max_iter": 500,
+        "shots": 2048
+    }
+    model.solve("quantum", **execution_params)
     # print(model.objective_value)
     print(model.print_solution())
 

@@ -27,9 +27,8 @@ class QAOA(Algorithm):
         self.qubo = qubo
         self.n = self.qubo.get_num_binary_vars()
         circuit = f"""
-        OPENQASM 2.0;
-        include "qelib1.inc";
         qreg q[{self.n}];
+        creg c[{self.n}];
         """
         for i in range(self.n):
             circuit += f"h q[{i}];\n"
@@ -44,10 +43,15 @@ class QAOA(Algorithm):
                 for j in range(i + 1, self.n):
                     w = quadratic_terms[i, j]
                     if w != 0:
-                        circuit += f"rzz(rzz_angle_{i}_{j}_{idx}) q[{int(i)}], q[{int(j)}];\n"
+                        circuit += f"cx q[{int(i)}], q[{int(j)}];\n"
+                        circuit += f"rz(rzz_angle_{i}_{j}_{idx}) q[{int(j)}];\n"
+                        circuit += f"cx q[{int(i)}], q[{int(j)}];\n"
 
             for i in range(self.n):
                 circuit += f"rx(rx_angle_{i}_{idx}) q[{i}];\n"
+
+        for i in range(self.n):
+            circuit += f"measure q[{i}] -> c[{i}];\n"
 
         return circuit
 

@@ -19,18 +19,17 @@ class QModel(Model):
         self.exe_time = 0
         self.solver = None
         self.provider = None
+        self.backend = None
 
     def solve(self, solver: str = 'classical', provider: str = None, backend: str = None, algorithm: str = "qaoa",
               ansatz: str = None, p: int = 2, layers: int = 2, optimizer: str = "COBYLA", tolerance: float = 1e-10,
               max_iter: int = 1000, penalty: float = None, shots: int = 1024, seed: int = 1):
 
         t0 = time.time()
-        end_time = 0
         if solver == 'classical':
             Model.solve(self)
             end_time = time.time() - t0
         elif solver == 'quantum':
-            solution = None
             model_solver = solver_factory.get_solver(provider=provider, quantum_api_tokens=self.quantum_api_tokens,
                                                      shots=shots, backend=backend)
             if provider == "d-wave":
@@ -58,6 +57,7 @@ class QModel(Model):
                 solution = {'objective': obj_value, 'solution': values}
             self.solver = solver
             self.provider = provider
+            self.backend = backend
             self.set_solution(solution)
         else:
             raise ValueError("Invalid value for argument 'solver'")
@@ -75,6 +75,7 @@ class QModel(Model):
                        **kwargs):
         print(f"solver: {self.solver if self.solver is not None else 'classical'}")
         print(f"provider: {self.provider if self.provider is not None else 'N/A'}")
+        print(f"backend: {self.backend if self.backend is not None else 'N/A'}")
         print(f"execution time: {round(self.exe_time, 2)} seconds")
         super(QModel, self).print_solution(print_zeros, solution_header_fmt, var_value_fmt, **kwargs)
 
