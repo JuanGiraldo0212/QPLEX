@@ -20,7 +20,7 @@ class QModel(Model):
         self.solver = None
         self.provider = None
 
-    def solve(self, solver: str = 'classical', provider: str = None):
+    def solve(self, solver: str = 'classical', provider: str = None, shots=10000):
         t0 = time.time()
         end_time = 0
         if solver == 'classical':
@@ -28,12 +28,12 @@ class QModel(Model):
             end_time = time.time() - t0
         elif solver == 'quantum':
             solution = None
-            model_solver = solver_factory.get_solver(provider, self.quantum_api_tokens)
+            model_solver = solver_factory.get_solver(provider, self.quantum_api_tokens, shots=shots)
             if provider == "d-wave":
                 solution = model_solver.solve(self)
                 end_time = time.time() - t0
             else:
-                optimal_counts = ggae_workflow(self, model_solver)
+                optimal_counts = ggae_workflow(self, model_solver, shots=shots, algorithm="vqe")
                 end_time = time.time() - t0
                 best_solution, best_count = max(optimal_counts.items(), key=lambda x: x[1])
                 # TODO turn migrate this code into a separate function

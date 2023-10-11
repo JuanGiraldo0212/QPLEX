@@ -10,13 +10,16 @@ class IBMQSolver(Solver):
 
     def solve(self, model: str):
         qc = self.parse_input(model)
+        qc.measure_all()
         backend = self.select_backend(qc.num_qubits)
         result = execute(qc, backend, shots=self.shots).result()
         counts = result.get_counts(qc)
-        return self.parse_response(counts)
+        counts = self.parse_response(counts)
+        return counts
 
     def parse_input(self, circuit: str):
-        return QuantumCircuit().from_qasm_str(circuit)
+        qc = QuantumCircuit().from_qasm_str(circuit)
+        return qc
 
     def parse_response(self, response):
         parsed_response = {}

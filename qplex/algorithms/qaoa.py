@@ -1,5 +1,3 @@
-from typing import List
-
 import numpy as np
 from qiskit_optimization.converters import QuadraticProgramToQubo
 from qiskit_optimization import QuadraticProgram
@@ -31,7 +29,6 @@ class QAOA(Algorithm):
         OPENQASM 2.0;
         include "qelib1.inc";
         qreg q[{self.n}];
-        creg c[{self.n}];
         """
         for i in range(self.n):
             circuit += f"h q[{i}];\n"
@@ -50,9 +47,6 @@ class QAOA(Algorithm):
 
             for i in range(self.n):
                 circuit += f"rx(rx_angle_{i}_{idx}) q[{i}];\n"
-
-        for i in range(self.n):
-            circuit += f"measure q[{i}] -> c[{i}];\n"
 
         return circuit
 
