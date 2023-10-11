@@ -8,7 +8,7 @@ from qplex.solvers.base_solver import Solver
 
 class VQE(Algorithm):
 
-    def __init__(self, model, solver: Solver, shots, layers: int = 1, seed: int = 0):
+    def __init__(self, model, solver: Solver, shots, layers: int, seed: int, penalty: float, ansatz: str):
         super(VQE, self).__init__()
         self.layers: int = layers
         self.n: int = 0
