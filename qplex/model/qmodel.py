@@ -20,7 +20,10 @@ class QModel(Model):
         self.solver = None
         self.provider = None
 
-    def solve(self, solver: str = 'classical', provider: str = None, shots=10000):
+    def solve(self, solver: str = 'classical', provider: str = None, backend: str = None, algorithm: str = "qaoa",
+              ansatz: str = None, p: int = 2, layers: int = 2, optimizer: str = "COBYLA", tolerance: float = 1e-10,
+              max_iter: int = 1000, penalty: float = None, shots: int = 1024, seed: int = 1):
+
         t0 = time.time()
         end_time = 0
         if solver == 'classical':
@@ -28,12 +31,15 @@ class QModel(Model):
             end_time = time.time() - t0
         elif solver == 'quantum':
             solution = None
-            model_solver = solver_factory.get_solver(provider, self.quantum_api_tokens, shots=shots)
+            model_solver = solver_factory.get_solver(provider=provider, quantum_api_tokens=self.quantum_api_tokens,
+                                                     shots=shots, backend=backend)
             if provider == "d-wave":
                 solution = model_solver.solve(self)
                 end_time = time.time() - t0
             else:
-                optimal_counts = ggae_workflow(self, model_solver, shots=shots, algorithm="vqe")
+                optimal_counts = ggae_workflow(model=self, solver=model_solver, shots=shots, algorithm=algorithm,
+                                               optimizer=optimizer, tolerance=tolerance, max_iter=max_iter,
+                                               ansatz=ansatz, layers=layers, p=p, seed=seed, penalty=penalty)
                 end_time = time.time() - t0
                 best_solution, best_count = max(optimal_counts.items(), key=lambda x: x[1])
                 # TODO turn migrate this code into a separate function

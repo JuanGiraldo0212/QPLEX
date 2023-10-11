@@ -9,7 +9,7 @@ from qplex.solvers.base_solver import Solver
 
 class QAOA(Algorithm):
 
-    def __init__(self, model, solver: Solver, p: int = 1, shots: int = 10000, seed: int = 0):
+    def __init__(self, model, solver: Solver, p: int, shots: int, seed: int, penalty: float):
         super(QAOA, self).__init__()
         self.p: int = p
         self.n: int = 0
@@ -17,6 +17,7 @@ class QAOA(Algorithm):
         self.shots: int = shots
         self.solver: Solver = solver
         self.circuit: str = self.create_circuit(model)
+        self.penalty = penalty
         np.random.seed(seed)
 
     def create_circuit(self, model) -> str:
