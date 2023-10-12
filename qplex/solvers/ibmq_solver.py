@@ -5,8 +5,9 @@ from qiskit import QuantumCircuit, Aer, execute
 
 class IBMQSolver(Solver):
 
-    def __init__(self, shots: int):
+    def __init__(self, shots: int, backend: str):
         self.shots = shots
+        self.backend = backend
 
     def solve(self, model: str):
         qc = self.parse_input(model)
