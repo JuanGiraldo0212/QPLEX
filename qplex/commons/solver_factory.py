@@ -1,5 +1,6 @@
 from qplex.solvers import IBMQSolver
 from qplex.solvers import DWaveSolver
+from qplex.solvers.braket_solver import BraketSolver
 
 
 class SolverFactory:
@@ -19,6 +20,8 @@ class SolverFactory:
             if quantum_api_tokens.get("ibmq_token") is None:
                 raise RuntimeError("Missing credentials for the IBM provider")
             return IBMQSolver(shots=shots, backend=backend)
+        if provider == "braket":
+            return BraketSolver(shots=shots, backend=backend)
         raise ValueError(provider)
 
 
