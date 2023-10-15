@@ -28,6 +28,6 @@ class BraketSolver(Solver):
         return response.measurement_counts
 
     def select_backend(self, qubits: int) -> Any:
-        # TODO
-        # return AwsDevice("arn:aws:braket:::device/quantum-simulator/amazon/sv1")
+        if self.backend != "simulator":
+            return AwsDevice(f"arn:aws:braket:::{self.backend}")
         return LocalSimulator(backend="braket_sv")

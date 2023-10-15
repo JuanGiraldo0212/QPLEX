@@ -1,14 +1,17 @@
 import qiskit.qasm3
 from qiskit.providers import Backend
+from qiskit.providers.ibmq import IBMQ
 from qplex.solvers.base_solver import Solver
-from qiskit import QuantumCircuit, Aer, execute
+from qiskit import Aer, execute
 
 
 class IBMQSolver(Solver):
 
-    def __init__(self, shots: int, backend: str):
+    def __init__(self, token: str, shots: int, backend: str):
         self.shots = shots
         self.backend = backend
+        IBMQ.save_account(token, overwrite=True)
+        IBMQ.load_account()
 
     def solve(self, model: str):
         qc = self.parse_input(model)
@@ -34,5 +37,7 @@ class IBMQSolver(Solver):
         return parsed_response
 
     def select_backend(self, qubits: int) -> Backend:
-        # TODO
+        if self.backend != "simulator":
+            provider = IBMQ.get_provider(hub='ibm-q')
+            return provider.get_backend(self.backend)
         return Aer.get_backend("qasm_simulator")
