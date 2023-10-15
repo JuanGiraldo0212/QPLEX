@@ -31,13 +31,14 @@ def max_cut_example():
     obj_fn = linear_terms + quadratic_terms
     model.set_objective('max', obj_fn)
     execution_params = {
-        "provider": "braket",
+        "provider": "ibmq",
         "backend": "simulator",
+        # "backend": "ibmq_qasm_simulator"
         "algorithm": "qaoa",
         # "layers": 3,
-        "p": 3,
+        "p": 2,
         "max_iter": 500,
-        "shots": 2048
+        "shots": 10000
     }
     model.solve("quantum", **execution_params)
     # print(model.objective_value)
