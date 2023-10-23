@@ -6,7 +6,7 @@ from qplex.solvers.braket_solver import BraketSolver
 class SolverFactory:
     @staticmethod
     def get_solver(provider: str, quantum_api_tokens: dict, shots: int, backend: str):
-        dwave_token = quantum_api_tokens.get("dwave_token")
+        dwave_token = quantum_api_tokens.get("d-wave_token")
         ibmq_token = quantum_api_tokens.get("ibmq_token")
         if provider is None:
             if dwave_token:
