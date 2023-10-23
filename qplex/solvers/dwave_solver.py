@@ -14,7 +14,6 @@ class DWaveSolver(Solver):
         if model_type == VAR_TYPE['C']:
             sampler = LeapHybridCQMSampler(token=token)
             sampleset = sampler.sample_cqm(parsed_model, label=model.name).filter(lambda row: row.is_feasible)
-            print(sampleset)
         elif model_type == VAR_TYPE['I']:
             sampler = LeapHybridDQMSampler(token=token)
             sampleset = sampler.sample_dqm(parsed_model, label=model.name)

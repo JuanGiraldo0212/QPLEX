@@ -13,7 +13,7 @@ class QModel(Model):
         super(QModel, self).__init__(name)
         self.job_id = None
         self.quantum_api_tokens = {
-            "d-wave_token": os.environ.get('DWAVE_API_TOKEN'),
+            "d-wave_token": os.environ.get('D-WAVE_API_TOKEN'),
             "ibmq_token": os.environ.get('IBMQ_API_TOKEN'),
         }
         self.exe_time = 0
