@@ -16,7 +16,7 @@ For using devices from IBM Quantum the following env variable has to be created:
 
 For using devices from D-Wave the following env variable has to be created: `D-WAVE_API_TOKEN`
 
-In Amazon Braket's case the user must have the AWS CLI configured properly and should have access to the AWS Braket service in the cloud. Follow this [link](https://aws.amazon.com/braket/getting-started/) for more information.
+In Amazon Braket's case the user must have the AWS CLI configured properly and should have access to the AWS Braket service in the cloud. Follow <a href="https://aws.amazon.com/braket/getting-started/" target="_blank">this link</a> for more information.
 
 The `QModel` module provides all the necessary functionality for creating and executing a combinatorial optimization problem. The following example illustrates how to build and run the knapsack problem with QPLEX. More examples are provided within the "examples" folder.
 
