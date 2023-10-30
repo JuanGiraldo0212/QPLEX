@@ -13,7 +13,7 @@ class QAOA(Algorithm):
         super(QAOA, self).__init__()
         self.p: int = p
         self.n: int = 0
-        self.qubo: QuadraticProgram = None
+        self.qubo: QuadraticProgram | None = None
         self.shots: int = shots
         self.solver: Solver = solver
         self.circuit: str = self.create_circuit(model)

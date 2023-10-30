@@ -1,6 +1,7 @@
 import networkx as nx
 import numpy as np
 
+from qplex.commons.options import Options
 from qplex import QModel
 
 
@@ -43,7 +44,9 @@ def main():
         "shots": 5000
     }
 
-    max_cut_model.solve("quantum", **execution_params)
+    options = Options(**execution_params)
+
+    max_cut_model.solve("quantum", run_options=options)
 
     print(max_cut_model.print_solution())
 

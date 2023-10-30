@@ -1,5 +1,6 @@
 from typing import List
 from qplex import QModel
+from qplex.commons.options import Options
 
 
 def model_knapsack_problem(values: List, weights: List, const: int) -> QModel:
@@ -21,15 +22,17 @@ def main():
     knapsack_model = model_knapsack_problem(values, weights, const)
 
     execution_params = {
-        "provider": "braket",
+        "provider": "ibmq",
         "backend": "simulator",  # Change to the desired backend (i.e., ibmq_qasm_simulator)
         "algorithm": "qaoa",
-        "p": 4,
+        "p": 1,
         "max_iter": 500,
-        "shots": 10000
+        "shots": 1024
     }
 
-    knapsack_model.solve("quantum", **execution_params)
+    options = Options(**execution_params)
+
+    knapsack_model.solve("quantum", run_options=options)
     print(knapsack_model.print_solution())
 
 

@@ -4,6 +4,7 @@ from docplex.mp.model import Model
 from docplex.mp.solution import SolveSolution
 from qplex.commons import solver_factory
 from qplex.commons import ggae_workflow
+from qplex.commons.options import Options
 import os
 
 
@@ -21,24 +22,34 @@ class QModel(Model):
         self.provider = None
         self.backend = None
 
-    def solve(self, solver: str = 'classical', provider: str = None, backend: str = None, algorithm: str = "qaoa",
-              ansatz: str = None, p: int = 2, layers: int = 2, optimizer: str = "COBYLA", tolerance: float = 1e-10,
-              max_iter: int = 1000, penalty: float = None, shots: int = 1024, seed: int = 1):
+    # def solve(self, solver: str = 'classical', provider: str = None, backend: str = None, algorithm: str = "qaoa",
+    #           ansatz: str = None, p: int = 2, layers: int = 2, optimizer: str = "COBYLA", tolerance: float = 1e-10,
+    #           max_iter: int = 1000, penalty: float = None, shots: int = 1024, seed: int = 1):
+    def solve(self, solver: str = 'classical', run_options: Options = Options()):
+
+        # run_options = Options()
+        # if options is not None:
+        #     run_options.update_options(**options)
 
         t0 = time.time()
         if solver == 'classical':
             Model.solve(self)
             end_time = time.time() - t0
         elif solver == 'quantum':
-            model_solver = solver_factory.get_solver(provider=provider, quantum_api_tokens=self.quantum_api_tokens,
-                                                     shots=shots, backend=backend)
-            if provider == "d-wave":
+
+            model_solver = solver_factory.get_solver(provider=run_options.provider,
+                                                     quantum_api_tokens=self.quantum_api_tokens,
+                                                     shots=run_options.shots,
+                                                     backend=run_options.backend)
+            if run_options.provider == "d-wave":
                 solution = model_solver.solve(self)
                 end_time = time.time() - t0
             else:
-                optimal_counts = ggae_workflow(model=self, solver=model_solver, shots=shots, algorithm=algorithm,
-                                               optimizer=optimizer, tolerance=tolerance, max_iter=max_iter,
-                                               ansatz=ansatz, layers=layers, p=p, seed=seed, penalty=penalty)
+                optimal_counts = ggae_workflow(model=self, solver=model_solver, shots=run_options.shots,
+                                               algorithm=run_options.algorithm, optimizer=run_options.optimizer,
+                                               tolerance=run_options.tolerance, max_iter=run_options.max_iter,
+                                               ansatz=run_options.ansatz, layers=run_options.layers, p=run_options.p,
+                                               seed=run_options.seed, penalty=run_options.penalty)
                 end_time = time.time() - t0
                 best_solution, best_count = max(optimal_counts.items(), key=lambda x: x[1])
                 # TODO turn migrate this code into a separate function
@@ -56,8 +67,8 @@ class QModel(Model):
                         obj_value += (values[t[0].name] * values[t[1].name] * t[2])
                 solution = {'objective': obj_value, 'solution': values}
             self.solver = solver
-            self.provider = provider
-            self.backend = backend
+            self.provider = run_options.provider
+            self.backend = run_options.backend
             self.set_solution(solution)
         else:
             raise ValueError("Invalid value for argument 'solver'")
@@ -78,4 +89,3 @@ class QModel(Model):
         print(f"backend: {self.backend if self.backend is not None else 'N/A'}")
         print(f"execution time: {round(self.exe_time, 2)} seconds")
         super(QModel, self).print_solution(print_zeros, solution_header_fmt, var_value_fmt, **kwargs)
-

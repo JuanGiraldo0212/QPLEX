@@ -5,6 +5,14 @@ from qplex.solvers.base_solver import Solver
 
 def ggae_workflow(model, solver: Solver, shots: int, algorithm: str, optimizer: str, max_iter: int, tolerance: float,
                   ansatz: str, p: int, layers: int, seed: int, penalty: float):
+    shots = shots if shots else 1024
+    algorithm = algorithm if algorithm else 'qaoa'
+    optimizer = optimizer if optimizer else 'COBYLA'
+    max_iter = max_iter if max_iter else 10000
+    tolerance = tolerance if tolerance else 1e-10
+    p = p if p else 2
+    layers = layers if layers else 2
+    seed = seed if seed else 1
     current_algorithm = None
     if algorithm == "qaoa":
         current_algorithm = QAOA(model, solver, p=p, shots=shots, penalty=penalty, seed=seed)
