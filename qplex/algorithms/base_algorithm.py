@@ -6,7 +6,6 @@ import numpy as np
 
 
 class Algorithm(ABC):
-
     """Abstract class for a quantum algorithm"""
 
     def __int__(self, model):
@@ -14,7 +13,8 @@ class Algorithm(ABC):
 
     @abstractmethod
     def create_circuit(self, model) -> str:
-        """Creates a quantum circuit in the form of a OpenQASM2 string from an optimization model.
+        """Creates a quantum circuit in the form of a OpenQASM2 string from
+        an optimization model.
 
         Args:
             model: The Qmodel to be converted.
@@ -38,7 +38,8 @@ class Algorithm(ABC):
 
     @abstractmethod
     def cost_function(self, params: np.ndarray) -> float:
-        """Defines the cost function to be used for the classical optimization routine.
+        """Defines the cost function to be used for the classical
+        optimization routine.
 
         Args:
             params: The new set of parameters for the circuit.
