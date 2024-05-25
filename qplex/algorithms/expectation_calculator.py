@@ -18,8 +18,8 @@ def calculate_basis_exp_val(state: str, basis: str, solver):
     exp = 0.0
     for key, counts in counts.items():
         power = sum([int(bit) for i, bit in enumerate(key) if basis[i] != "I"])
-        exp += (-1)**power * counts
-    return exp/solver.shots
+        exp += (-1) ** power * counts
+    return exp / solver.shots
 
 
 def compute_expectation_value(state: str, operator, solver):
@@ -27,7 +27,7 @@ def compute_expectation_value(state: str, operator, solver):
     n_qubits = state
     for basis, coeff in operator.primitive.to_list():
         if basis.count('I') != n_qubits:
-            curr_energy = coeff*calculate_basis_exp_val(state, basis, solver)
+            curr_energy = coeff * calculate_basis_exp_val(state, basis, solver)
             energy += curr_energy
         else:
             energy += coeff

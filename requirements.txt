@@ -6,3 +6,6 @@ qiskit-qasm3-import~=0.3
 qiskit-aer~=0.12
 dwave-system~=1.18
 amazon-braket-sdk~=1.59
+scipy~=1.10.1
+dimod~=0.12.4
+numpy~=1.23.5
