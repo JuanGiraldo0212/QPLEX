@@ -1,12 +1,14 @@
 from typing import List
 from qplex import QModel
+from qplex.model import Options
 
 
 def model_knapsack_problem(values: List, weights: List, const: int) -> QModel:
     n_items = len(values)
     knapsack_model = QModel('knapsack')
     x = knapsack_model.binary_var_list(n_items, name="x")
-    knapsack_model.add_constraint(sum(weights[i] * x[i] for i in range(n_items)) <= const)
+    knapsack_model.add_constraint(
+        sum(weights[i] * x[i] for i in range(n_items)) <= const)
     obj_fn = sum(values[i] * x[i] for i in range(n_items))
     knapsack_model.set_objective('max', obj_fn)
 
@@ -21,15 +23,16 @@ def main():
     knapsack_model = model_knapsack_problem(values, weights, const)
 
     execution_params = {
-        "provider": "braket",
-        "backend": "simulator",  # Change to the desired backend (i.e., ibmq_qasm_simulator)
-        "algorithm": "qaoa",
+        "provider": "ibmq",
+        "backend": "simulator",
+        # Change to the desired backend (i.e., ibmq_qasm_simulator)
+        "algorithm": "vqe",
         "p": 4,
         "max_iter": 500,
         "shots": 10000
     }
 
-    knapsack_model.solve("quantum", **execution_params)
+    knapsack_model.solve("quantum", Options(**execution_params))
     print(knapsack_model.print_solution())
 
 
