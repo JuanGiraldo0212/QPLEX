@@ -1,4 +1,5 @@
 from collections.abc import MutableMapping
+from qplex.model.constants import ALLOWED_OPTIMIZERS
 
 
 class Options(MutableMapping):
@@ -31,6 +32,7 @@ class Options(MutableMapping):
             'shots': shots,
             'seed': seed,
         }
+        self._validate_optimizer()
 
     def __getitem__(self, key):
         return self._options[key]
@@ -49,6 +51,14 @@ class Options(MutableMapping):
 
     def to_dict(self):
         return self._options
+
+    def _validate_optimizer(self):
+        if not (isinstance(self._options['optimizer'], str) and
+                self._options['optimizer'] in ALLOWED_OPTIMIZERS) and not \
+                callable(self._options['optimizer']):
+            raise ValueError(
+                f"Invalid optimizer: {self._options['optimizer']}. Must be "
+                f"one of {ALLOWED_OPTIMIZERS} or a callable.")
 
     def __repr__(self):
         items = [f"{k}={v!r}" for k, v in self.to_dict().items()]

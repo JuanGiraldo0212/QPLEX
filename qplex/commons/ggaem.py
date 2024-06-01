@@ -45,6 +45,6 @@ def get_ggaem_solution(model, optimal_counts):
         for t in quadratic_terms:
             obj_value += (
                     values[t[0].name] * values[t[1].name] * t[
-                2])
+                        2])
     solution = {'objective': obj_value, 'solution': values}
     return solution
