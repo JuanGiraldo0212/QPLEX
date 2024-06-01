@@ -4,6 +4,7 @@ from docplex.mp.model import Model
 from docplex.mp.solution import SolveSolution
 from qplex.commons import solver_factory
 from qplex.commons import ggaem_workflow, get_ggaem_solution
+from qplex.model.options import Options
 import os
 
 
@@ -13,60 +14,48 @@ class QModel(Model):
         super(QModel, self).__init__(name)
         self.job_id = None
         self.quantum_api_tokens = {
-            "d-wave_token": os.environ.get('D-WAVE_API_TOKEN'),
-            "ibmq_token": os.environ.get('IBMQ_API_TOKEN'),
+            'd-wave_token': os.environ.get('D-WAVE_API_TOKEN'),
+            'ibmq_token': os.environ.get('IBMQ_API_TOKEN'),
         }
         self.exec_time = 0
         self.method = None
         self.provider = None
         self.backend = None
+        self.algorithm = 'NA'
 
-    def solve(self,
-              method: str = 'classical',
-              provider: str = None,
-              backend: str = None,
-              algorithm: str = "qaoa",
-              ansatz: str = None,
-              p: int = 2,
-              layers: int = 2,
-              optimizer: str = "COBYLA",
-              tolerance: float = 1e-10,
-              max_iter: int = 1000,
-              penalty: float = None,
-              shots: int = 1024,
-              seed: int = 1):
-
+    def solve(self, method: str = 'classical', options: Options = Options()):
+        self.method = method
         t0 = time.time()
         if method == 'classical':
             Model.solve(self)
             end_time = time.time() - t0
         elif method == 'quantum':
-            solver = solver_factory.get_solver(provider=provider,
+            solver = solver_factory.get_solver(provider=options['provider'],
                                                quantum_api_tokens=
                                                self.quantum_api_tokens,
-                                               shots=shots,
-                                               backend=backend)
-            if provider == "d-wave":
+                                               shots=options['shots'],
+                                               backend=options['backend'])
+            if options['provider'] == 'd-wave':
                 solution = solver.solve(self)
                 end_time = time.time() - t0
             else:
                 optimal_counts = ggaem_workflow(model=self,
                                                 solver=solver,
-                                                shots=shots,
-                                                algorithm=algorithm,
-                                                optimizer=optimizer,
-                                                tolerance=tolerance,
-                                                max_iter=max_iter,
-                                                ansatz=ansatz,
-                                                layers=layers,
-                                                p=p,
-                                                seed=seed,
-                                                penalty=penalty)
+                                                shots=options['shots'],
+                                                algorithm=options['algorithm'],
+                                                optimizer=options['optimizer'],
+                                                tolerance=options['tolerance'],
+                                                max_iter=options['max_iter'],
+                                                ansatz=options['ansatz'],
+                                                layers=options['layers'],
+                                                p=options['p'],
+                                                seed=options['seed'],
+                                                penalty=options['penalty'])
                 end_time = time.time() - t0
+                self.algorithm = options['algorithm']
                 solution = get_ggaem_solution(self, optimal_counts)
-            self.method = method
-            self.provider = provider
-            self.backend = backend
+            self.provider = options['provider']
+            self.backend = options['backend']
             self.set_solution(solution)
         else:
             raise ValueError("Invalid value for argument 'method'")
@@ -84,8 +73,8 @@ class QModel(Model):
                        solution_header_fmt=None,
                        var_value_fmt=None,
                        **kwargs):
-        print(f"method:"
-              f" {self.method if self.method is not None else 'classical'}")
+        print(f"method: {self.method}")
+        print(f"algorithm: {self.algorithm}")
         print(f"provider: "
               f"{self.provider if self.provider is not None else 'N/A'}")
         print(f"backend: "
