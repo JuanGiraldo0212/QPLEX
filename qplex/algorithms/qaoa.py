@@ -1,6 +1,5 @@
 import numpy as np
 from qiskit_optimization.converters import QuadraticProgramToQubo
-from qiskit_optimization import QuadraticProgram
 from qiskit_optimization.translators import from_docplex_mp
 
 from qplex.algorithms.base_algorithm import Algorithm
@@ -9,20 +8,17 @@ from qplex.solvers.base_solver import Solver
 
 class QAOA(Algorithm):
 
-    def __init__(self, model, solver: Solver, p: int, shots: int, seed: int,
+    def __init__(self, model, solver: Solver, shots: int, p: int, seed: int,
                  penalty: float):
-        super(QAOA, self).__init__()
+        super().__init__(model, solver, shots)
         self.p: int = p
         self.n: int = 0
-        self.qubo: QuadraticProgram | None = None
-        self.shots: int = shots
-        self.solver: Solver = solver
-        self.circuit: str = self.create_circuit(model)
+        self.circuit: str = self.create_circuit()
         self.penalty = penalty
         np.random.seed(seed)
 
-    def create_circuit(self, model) -> str:
-        mod = from_docplex_mp(model)
+    def create_circuit(self) -> str:
+        mod = from_docplex_mp(self.model)
         converter = QuadraticProgramToQubo()
         qubo = converter.convert(mod)
         self.qubo = qubo
@@ -68,7 +64,8 @@ class QAOA(Algorithm):
                 for j in range(len(linear_terms)):
                     h_sum += quadratic_terms[i][j]
                 updated_circuit = updated_circuit.replace(
-                    f"rz_angle_{i}_{idx}", f"{params[2 * idx] * (w + h_sum)}")
+                    f"rz_angle_{i}_{idx}",
+                    f"{params[2 * idx] * (w + h_sum)}")
 
             for i in range(self.n):
                 for j in range(i + 1, self.n):
@@ -83,15 +80,6 @@ class QAOA(Algorithm):
                     f"rx_angle_{i}_{idx}", f"{2 * params[2 * idx + 1]}")
 
         return updated_circuit
-
-    def cost_function(self, params: np.ndarray) -> float:
-        qc = self.update_params(params)
-        counts = self.solver.solve(qc)
-        energy = 0
-        for sample, count in counts.items():
-            sample = [int(n) for n in sample]
-            energy += count * self.qubo.objective.evaluate(sample)
-        return energy / self.shots
 
     def get_starting_point(self) -> np.ndarray:
         return np.random.rand(2 * self.p)
