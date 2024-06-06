@@ -58,7 +58,8 @@ class QModel(Model):
             self.backend = options['backend']
             self.set_solution(solution)
         else:
-            raise ValueError("Invalid value for argument 'method'")
+            raise ValueError("Invalid value for argument 'method'. Must be "
+                             "'classical' or 'quantum'")
 
         self.exec_time = end_time
 
