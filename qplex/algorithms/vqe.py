@@ -1,6 +1,5 @@
 import numpy as np
 from qiskit_optimization.converters import QuadraticProgramToQubo
-from qiskit_optimization import QuadraticProgram
 from qiskit_optimization.translators import from_docplex_mp
 from qplex.algorithms.base_algorithm import Algorithm
 from qplex.solvers.base_solver import Solver
@@ -8,19 +7,16 @@ from qplex.solvers.base_solver import Solver
 
 class VQE(Algorithm):
 
-    def __init__(self, model, solver: Solver, shots, layers: int, seed: int,
-                 penalty: float, ansatz: str):
-        super(VQE, self).__init__()
+    def __init__(self, model, solver: Solver, shots: int, layers: int,
+                 seed: int, penalty: float, ansatz: str):
+        super().__init__(model, solver, shots)
         self.layers: int = layers
         self.n: int = 0
-        self.qubo: QuadraticProgram | None = None
-        self.shots: int = shots
-        self.solver: Solver = solver
-        self.ansatz: str = self.create_circuit(model)
+        self.ansatz: str = self.create_circuit()
         np.random.seed(seed)
 
-    def create_circuit(self, model) -> str:
-        mod = from_docplex_mp(model)
+    def create_circuit(self) -> str:
+        mod = from_docplex_mp(self.model)
         converter = QuadraticProgramToQubo()
         qubo = converter.convert(mod)
         self.qubo = qubo
@@ -58,20 +54,6 @@ class VQE(Algorithm):
             updated_circuit = updated_circuit.replace(f"ry_angle_{pc}",
                                                       str(param))
         return updated_circuit
-
-    def cost_function(self, params: np.ndarray) -> float:
-        qc = self.update_params(params)
-        counts = self.solver.solve(qc)
-        energy = 0
-        for sample, count in counts.items():
-            sample = [int(n) for n in sample]
-            energy += count * self.qubo.objective.evaluate(sample)
-        return energy / self.shots
-        ##########################
-        # qc = self.update_params(params)
-        # expect_value = compute_expectation_value(qc, self.qubo.to_ising()[
-        # 0], self.solver)
-        # return expect_value
 
     def get_starting_point(self) -> np.ndarray:
         return np.random.rand(self.n + (4 * (self.n - 1) * self.layers))
