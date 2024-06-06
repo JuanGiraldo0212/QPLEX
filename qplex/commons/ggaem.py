@@ -9,10 +9,10 @@ def ggaem_workflow(model, solver: Solver, shots: int, algorithm: str,
                    penalty: float):
     current_algorithm = None
     if algorithm == "qaoa":
-        current_algorithm = QAOA(model, solver, p=p, shots=shots,
+        current_algorithm = QAOA(model, solver, shots=shots, p=p,
                                  penalty=penalty, seed=seed)
     elif algorithm == "vqe":
-        current_algorithm = VQE(model, solver, layers=layers, shots=shots,
+        current_algorithm = VQE(model, solver, shots=shots, layers=layers,
                                 penalty=penalty, seed=seed, ansatz=ansatz)
 
     starting_point = current_algorithm.get_starting_point()
