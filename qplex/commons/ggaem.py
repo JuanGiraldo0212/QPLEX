@@ -3,17 +3,18 @@ from scipy.optimize import minimize
 from qplex.solvers.base_solver import Solver
 
 
-def ggaem_workflow(model, solver: Solver, shots: int, algorithm: str,
-                   optimizer: str, max_iter: int, tolerance: float,
-                   ansatz: str, p: int, layers: int, seed: int,
-                   penalty: float):
+def ggaem_workflow(model, solver: Solver, verbose: bool, shots: int,
+                   algorithm: str, optimizer: str, max_iter: int,
+                   tolerance: float, ansatz: str, p: int, layers: int,
+                   seed: int, penalty: float):
     current_algorithm = None
     if algorithm == "qaoa":
-        current_algorithm = QAOA(model, solver, shots=shots, p=p,
+        current_algorithm = QAOA(model, solver, verbose, shots=shots, p=p,
                                  penalty=penalty, seed=seed)
     elif algorithm == "vqe":
-        current_algorithm = VQE(model, solver, shots=shots, layers=layers,
-                                penalty=penalty, seed=seed, ansatz=ansatz)
+        current_algorithm = VQE(model, solver, verbose, shots=shots,
+                                layers=layers, penalty=penalty, seed=seed,
+                                ansatz=ansatz)
 
     starting_point = current_algorithm.get_starting_point()
     optimization_result = minimize(fun=current_algorithm.cost_function,
@@ -45,6 +46,6 @@ def get_ggaem_solution(model, optimal_counts):
         for t in quadratic_terms:
             obj_value += (
                     values[t[0].name] * values[t[1].name] * t[
-                        2])
+                2])
     solution = {'objective': obj_value, 'solution': values}
     return solution

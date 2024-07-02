@@ -41,6 +41,7 @@ class QModel(Model):
             else:
                 optimal_counts = ggaem_workflow(model=self,
                                                 solver=solver,
+                                                verbose=options['verbose'],
                                                 shots=options['shots'],
                                                 algorithm=options['algorithm'],
                                                 optimizer=options['optimizer'],
