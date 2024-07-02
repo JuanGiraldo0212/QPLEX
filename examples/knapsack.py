@@ -24,9 +24,10 @@ def main():
 
     execution_params = {
         "provider": "ibmq",
+        "verbose": True,
         "backend": "simulator",
         # Change to the desired backend (i.e., ibmq_qasm_simulator)
-        "algorithm": "vqe",
+        "algorithm": "qaoa",
         "p": 4,
         "max_iter": 500,
         "shots": 10000

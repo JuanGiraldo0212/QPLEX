@@ -8,9 +8,9 @@ from qplex.solvers.base_solver import Solver
 
 class QAOA(Algorithm):
 
-    def __init__(self, model, solver: Solver, shots: int, p: int, seed: int,
-                 penalty: float):
-        super().__init__(model, solver, shots)
+    def __init__(self, model, solver: Solver, verbose: bool, shots: int,
+                 p: int, seed: int, penalty: float):
+        super().__init__(model, solver, verbose, shots)
         self.p: int = p
         self.n: int = 0
         self.circuit: str = self.create_circuit()
