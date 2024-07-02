@@ -7,9 +7,9 @@ from qplex.solvers.base_solver import Solver
 
 class VQE(Algorithm):
 
-    def __init__(self, model, solver: Solver, shots: int, layers: int,
-                 seed: int, penalty: float, ansatz: str):
-        super().__init__(model, solver, shots)
+    def __init__(self, model, solver: Solver, verbose: bool, shots: int,
+                 layers: int, seed: int, penalty: float, ansatz: str):
+        super().__init__(model, solver, verbose, shots)
         self.layers: int = layers
         self.n: int = 0
         self.ansatz: str = self.create_circuit()

@@ -8,11 +8,13 @@ from qplex.solvers.base_solver import Solver
 class Algorithm(ABC):
     """Abstract class for a quantum algorithm"""
 
-    def __init__(self, model, solver: Solver, shots: int):
+    def __init__(self, model, solver: Solver, verbose: bool, shots: int):
         self.model = model
         self.solver = solver
+        self.verbose = verbose
         self.shots: int = shots
         self.qubo: QuadraticProgram | None = None
+        self.iteration = 0
 
     @abstractmethod
     def create_circuit(self) -> str:
@@ -52,7 +54,11 @@ class Algorithm(ABC):
         for sample, count in counts.items():
             sample = [int(n) for n in sample]
             energy += count * self.qubo.objective.evaluate(sample)
-        return energy / self.shots
+        self.iteration += 1
+        cost = energy / self.shots
+        if self.verbose:
+            print(f'Iteration {self.iteration}:\nCost = {cost}')
+        return cost
         ##########################
         # qc = self.update_params(params)
         # expect_value = compute_expectation_value(qc, self.qubo.to_ising()[

@@ -5,6 +5,7 @@ from qplex.model.constants import ALLOWED_OPTIMIZERS
 class Options(MutableMapping):
     def __init__(self,
                  method: str = 'classical',
+                 verbose: bool = False,
                  provider: str = None,
                  backend: str = None,
                  algorithm: str = "qaoa",
@@ -19,6 +20,7 @@ class Options(MutableMapping):
                  seed: int = 1):
         self._options = {
             'method': method,
+            'verbose': verbose,
             'provider': provider,
             'backend': backend,
             'algorithm': algorithm,

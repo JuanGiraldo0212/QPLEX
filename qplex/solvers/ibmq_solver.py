@@ -10,8 +10,8 @@ class IBMQSolver(Solver):
     def __init__(self, token: str, shots: int, backend: str):
         self.shots = shots
         self.backend = backend
-        IBMQ.save_account(token, overwrite=True)
-        IBMQ.load_account()
+        # IBMQ.save_account(token, overwrite=True)
+        # IBMQ.load_account()
 
     def solve(self, model: str):
         qc = self.parse_input(model)
