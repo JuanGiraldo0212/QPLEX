@@ -2,6 +2,9 @@ import time
 
 from docplex.mp.model import Model
 from docplex.mp.solution import SolveSolution
+from qiskit_optimization import QuadraticProgram
+from qiskit_optimization.translators import from_docplex_mp
+from qiskit_optimization.converters import QuadraticProgramToQubo
 from qplex.commons import solver_factory
 from qplex.commons import ggaem_workflow, get_ggaem_solution
 from qplex.model.options import Options
@@ -9,7 +12,18 @@ import os
 
 
 class QModel(Model):
+    """
+    Creates an instance of a QModel.
 
+    Parameters
+    ----------
+    name: str
+        The name of the model.
+
+    Returns
+    ----------
+        An instance of a QModel.
+    """
     def __init__(self, name):
         super(QModel, self).__init__(name)
         self.job_id = None
@@ -22,6 +36,19 @@ class QModel(Model):
         self.provider = None
         self.backend = None
         self.algorithm = 'NA'
+
+    @property
+    def qubo(self) -> QuadraticProgram:
+        """
+        Returns the QUBO encoding of this problem.
+
+        Returns
+        -------
+            The QUBO encoding of this problem.
+        """
+        mod = from_docplex_mp(self)
+        converter = QuadraticProgramToQubo()
+        return converter.convert(mod)
 
     def solve(self, method: str = 'classical', options: Options = Options()):
         self.method = method
@@ -75,14 +102,17 @@ class QModel(Model):
                        solution_header_fmt=None,
                        var_value_fmt=None,
                        **kwargs):
-        print(f"method: {self.method}")
-        print(f"algorithm: {self.algorithm}")
-        print(f"provider: "
+        print("\nResults")
+        print("----------")
+        print(f"Method: {self.method}")
+        print(f"Algorithm: {self.algorithm}")
+        print(f"Provider: "
               f"{self.provider if self.provider is not None else 'N/A'}")
-        print(f"backend: "
+        print(f"Backend: "
               f"{self.backend if self.backend is not None else 'N/A'}")
-        print(f"execution time: {round(self.exec_time, 2)} seconds")
+        print(f"Execution time: {round(self.exec_time, 2)} seconds")
         super(QModel, self).print_solution(print_zeros,
                                            solution_header_fmt,
                                            var_value_fmt,
                                            **kwargs)
+        print("----------")
