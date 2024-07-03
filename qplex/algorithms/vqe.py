@@ -16,10 +16,7 @@ class VQE(Algorithm):
         np.random.seed(seed)
 
     def create_circuit(self) -> str:
-        mod = from_docplex_mp(self.model)
-        converter = QuadraticProgramToQubo()
-        qubo = converter.convert(mod)
-        self.qubo = qubo
+        self.qubo = self.model.qubo
         self.n = self.qubo.get_num_binary_vars()
         circuit = f"""
         qreg q[{self.n}];

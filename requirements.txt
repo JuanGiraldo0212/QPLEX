@@ -9,3 +9,4 @@ amazon-braket-sdk~=1.80
 scipy~=1.10.1
 dimod~=0.12.4
 numpy~=1.23.5
+networkx
