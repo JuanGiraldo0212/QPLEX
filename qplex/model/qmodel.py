@@ -8,6 +8,7 @@ from qiskit_optimization.converters import QuadraticProgramToQubo
 from qplex.commons import solver_factory
 from qplex.commons import ggaem_workflow, get_ggaem_solution
 from qplex.model.options import Options
+from qplex.model.qubo import QUBO
 import os
 
 
@@ -38,7 +39,7 @@ class QModel(Model):
         self.algorithm = 'NA'
 
     @property
-    def qubo(self) -> QuadraticProgram:
+    def qubo(self) -> QuadraticProgram | QUBO:
         """
         Returns the QUBO encoding of this problem.
 
@@ -46,9 +47,9 @@ class QModel(Model):
         -------
             The QUBO encoding of this problem.
         """
-        mod = from_docplex_mp(self)
+        model = from_docplex_mp(self)
         converter = QuadraticProgramToQubo()
-        return converter.convert(mod)
+        return converter.convert(model)
 
     def solve(self, method: str = 'classical', options: Options = Options()):
         self.method = method

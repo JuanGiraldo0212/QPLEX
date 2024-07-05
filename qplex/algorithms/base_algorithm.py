@@ -4,6 +4,8 @@ import numpy as np
 
 from qplex.solvers.base_solver import Solver
 
+from qplex.model.qubo import QUBO
+
 
 class Algorithm(ABC):
     """Abstract class for a quantum algorithm"""
@@ -13,7 +15,7 @@ class Algorithm(ABC):
         self.solver = solver
         self.verbose = verbose
         self.shots: int = shots
-        self.qubo: QuadraticProgram | None = None
+        self.qubo: QuadraticProgram | QUBO | None = None
         self.iteration = 0
 
     @abstractmethod
@@ -53,7 +55,8 @@ class Algorithm(ABC):
         energy = 0
         for sample, count in counts.items():
             sample = [int(n) for n in sample]
-            energy += count * self.qubo.objective.evaluate(sample)
+            energy += count * (self.qubo.objective.evaluate(sample) if type(
+                self.qubo) == QuadraticProgram else self.qubo.evaluate(sample))
         self.iteration += 1
         cost = energy / self.shots
         if self.verbose:

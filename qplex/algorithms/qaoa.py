@@ -1,6 +1,7 @@
 import numpy as np
 from qiskit_optimization.converters import QuadraticProgramToQubo
 from qiskit_optimization.translators import from_docplex_mp
+from qiskit_optimization.problems.quadratic_program import QuadraticProgram
 
 from qplex.algorithms.base_algorithm import Algorithm
 from qplex.solvers.base_solver import Solver
@@ -28,11 +29,15 @@ class QAOA(Algorithm):
             circuit += f"h q[{i}];\n"
 
         for idx in range(self.p):
-            linear_terms = self.qubo.objective.linear.to_array()
+            linear_terms = self.qubo.objective.linear.to_array() if type(
+                self.qubo) == QuadraticProgram else self.qubo.linear_to_array()
             for i, w in enumerate(linear_terms):
                 circuit += f"rz(rz_angle_{i}_{idx}) q[{i}];\n"
 
-            quadratic_terms = self.qubo.objective.quadratic.to_array()
+            quadratic_terms = self.qubo.objective.quadratic.to_array(
+                symmetric=True) if type(
+                self.qubo) == QuadraticProgram else \
+                self.qubo.quadratic_to_array()
             for i in range(self.n):
                 for j in range(i + 1, self.n):
                     w = quadratic_terms[i, j]
@@ -53,8 +58,10 @@ class QAOA(Algorithm):
     def update_params(self, params: np.ndarray) -> str:
         updated_circuit = self.circuit
         quadratic_terms = self.qubo.objective.quadratic.to_array(
-            symmetric=True)
-        linear_terms = self.qubo.objective.linear.to_array()
+            symmetric=True) if type(
+            self.qubo) == QuadraticProgram else self.qubo.quadratic_to_array()
+        linear_terms = self.qubo.objective.linear.to_array() if type(
+            self.qubo) == QuadraticProgram else self.qubo.linear_to_array()
         for idx in range(self.p):
             for i, w in enumerate(linear_terms):
                 h_sum = 0
