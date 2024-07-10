@@ -37,8 +37,7 @@ class QModel(Model):
         self.backend = None
         self.algorithm = 'NA'
 
-    @property
-    def qubo(self) -> QuadraticProgram:
+    def get_qubo(self, penalty: float | None = None) -> QuadraticProgram:
         """
         Returns the QUBO encoding of this problem.
 
@@ -47,7 +46,7 @@ class QModel(Model):
             The QUBO encoding of this problem.
         """
         mod = from_docplex_mp(self)
-        converter = QuadraticProgramToQubo()
+        converter = QuadraticProgramToQubo(penalty=penalty)
         return converter.convert(mod)
 
     def solve(self, method: str = 'classical', options: Options = Options()):

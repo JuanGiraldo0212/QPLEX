@@ -1,5 +1,5 @@
-from qplex.algorithms import QAOA, VQE
 from scipy.optimize import minimize
+from qplex.algorithms import QAOA, VQE
 from qplex.solvers.base_solver import Solver
 
 

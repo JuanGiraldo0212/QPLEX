@@ -1,22 +1,22 @@
 import numpy as np
-from qiskit_optimization.converters import QuadraticProgramToQubo
-from qiskit_optimization.translators import from_docplex_mp
+
 from qplex.algorithms.base_algorithm import Algorithm
 from qplex.solvers.base_solver import Solver
 
 
 class VQE(Algorithm):
 
-    def __init__(self, model, solver: Solver, verbose: bool, shots: int,
-                 layers: int, seed: int, penalty: float, ansatz: str):
+    def __init__(self, model, solver: Solver, verbose: bool,
+                 shots: int, layers: int, seed: int, penalty: float,
+                 ansatz: str):
         super().__init__(model, solver, verbose, shots)
         self.layers: int = layers
         self.n: int = 0
-        self.ansatz: str = self.create_circuit()
+        self.ansatz: str = self.create_circuit(penalty=penalty)
         np.random.seed(seed)
 
-    def create_circuit(self) -> str:
-        self.qubo = self.model.qubo
+    def create_circuit(self, *args, **kwargs) -> str:
+        self.qubo = self.model.get_qubo(penalty=kwargs['penalty'])
         self.n = self.qubo.get_num_binary_vars()
         circuit = f"""
         qreg q[{self.n}];

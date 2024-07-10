@@ -1,6 +1,4 @@
 import numpy as np
-from qiskit_optimization.converters import QuadraticProgramToQubo
-from qiskit_optimization.translators import from_docplex_mp
 
 from qplex.algorithms.base_algorithm import Algorithm
 from qplex.solvers.base_solver import Solver
@@ -8,17 +6,16 @@ from qplex.solvers.base_solver import Solver
 
 class QAOA(Algorithm):
 
-    def __init__(self, model, solver: Solver, verbose: bool, shots: int,
-                 p: int, seed: int, penalty: float):
+    def __init__(self, model, solver: Solver, verbose: bool,
+                 shots: int, p: int, seed: int, penalty: float):
         super().__init__(model, solver, verbose, shots)
         self.p: int = p
         self.n: int = 0
-        self.circuit: str = self.create_circuit()
-        self.penalty = penalty
+        self.circuit: str = self.create_circuit(penalty=penalty)
         np.random.seed(seed)
 
-    def create_circuit(self) -> str:
-        self.qubo = self.model.qubo
+    def create_circuit(self, *args, **kwargs) -> str:
+        self.qubo = self.model.get_qubo(penalty=kwargs['penalty'])
         self.n = self.qubo.get_num_binary_vars()
         circuit = f"""
         qreg q[{self.n}];
