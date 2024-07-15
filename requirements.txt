@@ -1,9 +1,9 @@
 docplex~=2.25
-qiskit~=0.44
-qiskit-ibmq-provider~=0.20
-qiskit-optimization~=0.5
-qiskit-qasm3-import~=0.3
-qiskit-aer~=0.12
+qiskit~=1.0
+qiskit_aer
+qiskit_ibm_runtime
+qiskit_optimization
+qiskit_qasm3_import
 dwave-system~=1.18
 amazon-braket-sdk~=1.80
 scipy~=1.10.1

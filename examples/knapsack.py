@@ -25,12 +25,13 @@ def main():
     execution_params = {
         "provider": "ibmq",
         "verbose": True,
-        "backend": "simulator",
+        "backend": "ibm_kyoto",
+        "penalty": 10,
         # Change to the desired backend (i.e., ibmq_qasm_simulator)
         "algorithm": "qaoa",
-        "p": 4,
+        "p": 2,
         "max_iter": 500,
-        "shots": 10000
+        "shots": 1024
     }
 
     knapsack_model.solve("quantum", Options(**execution_params))
