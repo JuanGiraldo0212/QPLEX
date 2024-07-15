@@ -8,7 +8,8 @@ from qplex.solvers.base_solver import Solver
 class Algorithm(ABC):
     """Abstract class for a quantum algorithm"""
 
-    def __init__(self, model, solver: Solver, verbose: bool, shots: int):
+    def __init__(self, model, solver: Solver, verbose: bool,
+                 shots: int):
         self.model = model
         self.solver = solver
         self.verbose = verbose
