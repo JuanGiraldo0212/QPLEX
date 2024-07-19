@@ -9,10 +9,32 @@ from qplex.solvers.base_solver import Solver
 
 
 class DWaveSolver(Solver):
+    """
+    A quantum solver for D-Wave systems that can handle various types of models
+    including constrained quadratic models, discrete quadratic models,
+    and binary
+    quadratic models.
+    """
 
-    def solve(self, model) -> dict:
+    def solve(self, model) -> Dict[str, Any]:
+        """
+        Solves the given problem formulation using the D-Wave system.
+
+        Parameters
+        ----------
+        model : QModel
+            The model to be solved, which includes quantum API tokens and
+            the problem specification.
+
+        Returns
+        -------
+        dict
+            A dictionary containing the solution with 'objective' and
+            'solution' keys.
+        """
         token = model.quantum_api_tokens.get("d-wave_token")
         parsed_model, model_type = self.parse_input(model)
+
         if model_type == VAR_TYPE['C']:
             sampler = LeapHybridCQMSampler(token=token)
             sampleset = sampler.sample_cqm(parsed_model,
@@ -24,20 +46,48 @@ class DWaveSolver(Solver):
         else:
             sampler = LeapHybridBQMSampler(token=token)
             sampleset = sampler.sample(parsed_model, label=model.name)
+
         best = sampleset.first
         response = self.parse_response(best)
         return response
 
-    def parse_response(self, response: Any) -> Dict:
+    def parse_response(self, response: Any) -> Dict[str, Any]:
+        """
+        Parses the response from the D-Wave solver.
+
+        Parameters
+        ----------
+        response : Any
+            The raw response from the D-Wave solver.
+
+        Returns
+        -------
+        dict
+            A dictionary with 'objective' and 'solution' keys.
+        """
         objective = abs(response.energy)
         solution = response.sample
 
         result = {'objective': float(objective), 'solution': solution}
-
         return result
 
-    def parse_input(self, model) -> any:
+    def parse_input(self, model) -> (Any, str):
+        """
+        Converts the input model into a D-Wave compatible model and
+        determines the model type.
 
+        Parameters
+        ----------
+        model : QModel
+            The model to be parsed, which includes problem
+            constraints and objectives.
+
+        Returns
+        -------
+        tuple
+            A tuple containing the parsed model and the model type as
+            a string.
+        """
         if len(list(model.iter_constraints())) > 0:
             model_type = VAR_TYPE['C']
             obj = self.parse_objective(model, QuadraticModel())
@@ -55,13 +105,28 @@ class DWaveSolver(Solver):
                    var in model.iter_variables()):
                 model_type = VAR_TYPE['I']
             parsed_model = DiscreteQuadraticModel() if model_type == VAR_TYPE[
-                'I'] else BinaryQuadraticModel(
-                vartype='BINARY')
+                'I'] else BinaryQuadraticModel(vartype='BINARY')
             parsed_model = self.parse_objective(model, parsed_model)
 
         return parsed_model, model_type
 
-    def parse_objective(self, model, parsed_model):
+    def parse_objective(self, model, parsed_model) -> Any:
+        """
+        Converts the objective function of the model into the format
+        required by D-Wave.
+
+        Parameters
+        ----------
+        model : QModel
+            The original model containing the objective function.
+        parsed_model:
+            The D-Wave model to which the objective function  will be added.
+
+        Returns
+        -------
+        Any
+            The D-Wave model with the objective function set.
+        """
         if type(parsed_model) is BinaryQuadraticModel:
             for var in model.iter_variables():
                 parsed_model.add_variable(var.name)
@@ -84,7 +149,20 @@ class DWaveSolver(Solver):
 
         return parsed_model
 
-    def parse_constraint(self, constraint):
+    def parse_constraint(self, constraint) -> QuadraticModel:
+        """
+        Converts a constraint into a D-Wave compatible QuadraticModel.
+
+        Parameters
+        ----------
+        constraint : Any
+            The constraint to be converted.
+
+        Returns
+        -------
+        QuadraticModel
+            The D-Wave model representing the constraint.
+        """
         const_qm = QuadraticModel()
         for var in constraint.iter_variables():
             const_qm.add_variable(VAR_TYPE[var.vartype.cplex_typecode],
@@ -102,4 +180,7 @@ class DWaveSolver(Solver):
         return const_qm
 
     def select_backend(self, model) -> str:
+        """
+        This method is not implemented in this class.
+        """
         pass

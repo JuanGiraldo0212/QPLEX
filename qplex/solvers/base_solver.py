@@ -3,56 +3,74 @@ from typing import Dict, Any
 
 
 class Solver(ABC):
-    """Abstract class for a quantum solver"""
+    """
+    Abstract base class for a quantum solver.
+
+    This class defines the necessary methods for interacting with a quantum
+    solver, including solving problems, parsing inputs and responses,
+    and selecting the appropriate backend.
+    """
 
     @abstractmethod
     def solve(self, formulation) -> Dict:
-        """Determines how the solver will execute the problem formulation.
+        """
+        Solves the given problem formulation and returns the solution.
 
         Args:
-            formulation: The formulation to be solved. Can be a QModel or a
-            2 string.
+            formulation: The problem formulation to be solved. This could be a
+                         model instance or a string representation of the
+                         problem.
 
         Returns:
-            A dictionary with the solution for the execution.
+            A dictionary containing the solution to the problem. The
+            structure of this dictionary depends on the specific
+            implementation and problem.
         """
         ...
 
     @abstractmethod
     def parse_input(self, input_form) -> Any:
-        """Determines how the solver needs to parse the input model.
+        """
+        Parses the input model or problem formulation into a format suitable
+        for solving.
 
         Args:
-            input_form: The input formulation to be parsed. Can be a QModel
-            or a 2 string.
+            input_form: The input model or problem formulation, which could
+            be a QModel instance or a string representation.
 
         Returns:
-            The object needed to solve the optimization problem.
+            An object or data structure that the solver can use to perform
+            the optimization.
         """
         ...
 
     @abstractmethod
     def parse_response(self, response: Any) -> Dict:
-        """Determines how the solver needs to parse the response of the
-        backend.
+        """
+        Parses the response received from the backend solver.
 
         Args:
-            response: The response from the backend to be parsed.
+            response: The raw response from the backend. The format of this
+            response depends on the specific backend and solver implementation.
 
         Returns:
-            A dictionary with the parsed response.
+            A dictionary containing the parsed response, which typically
+            includes the solution and any relevant metadata or metrics.
         """
         ...
 
     @abstractmethod
     def select_backend(self, qubits: int) -> Any:
-        """Selects the most appropriate backend with at least a certain
-        number of qubits.
+        """
+        Selects and configures the appropriate backend based on the number
+        of qubits required.
 
         Args:
-            qubits: The minimum number of qubits.
+            qubits: The minimum number of qubits needed for the backend.
 
         Returns:
-            The selected backend for a given provider.
+            The selected backend that meets the qubit requirement. This may
+            involve initialization or configuration specific to the quantum
+            provider.
         """
         ...

@@ -4,9 +4,43 @@ from qplex.solvers.braket_solver import BraketSolver
 
 
 class SolverFactory:
+    """
+    A factory class for creating quantum solvers based on the specified
+    provider.
+    """
+
     @staticmethod
     def get_solver(provider: str, quantum_api_tokens: dict, shots: int,
                    backend: str):
+        """
+        Returns the appropriate solver based on the specified provider and
+        available tokens.
+
+        Parameters
+        ----------
+        provider: str
+            The quantum provider (e.g., 'd-wave', 'ibmq', 'braket').
+        quantum_api_tokens: dict
+            A dictionary containing API tokens for various quantum providers.
+        shots: int
+            The number of shots for quantum execution.
+        backend: str
+            The backend to use for the quantum provider.
+
+        Returns
+        -------
+        solver
+            An instance of the appropriate solver based on the specified
+            provider.
+
+        Raises
+        ------
+        RuntimeError
+            If the necessary credentials for the specified provider are
+            missing.
+        ValueError
+            If the specified provider is not recognized.
+        """
         dwave_token = quantum_api_tokens.get("d-wave_token")
         ibmq_token = quantum_api_tokens.get("ibmq_token")
         if provider is None:
