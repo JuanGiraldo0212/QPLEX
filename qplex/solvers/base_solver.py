@@ -65,10 +65,15 @@ class Solver(ABC):
         Selects and configures the appropriate backend based on the number
         of qubits required.
 
-        Args:
-            qubits: The minimum number of qubits needed for the backend.
+        Parameters
+        ----------
 
-        Returns:
+        qubits : int
+            The minimum number of qubits needed for the backend.
+
+        Returns
+        -------
+        Any
             The selected backend that meets the qubit requirement. This may
             involve initialization or configuration specific to the quantum
             provider.

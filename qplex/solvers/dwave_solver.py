@@ -184,3 +184,7 @@ class DWaveSolver(Solver):
         This method is not implemented in this class.
         """
         pass
+
+
+def get_backends():
+    return []

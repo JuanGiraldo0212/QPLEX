@@ -1,4 +1,5 @@
 from typing import List
+from qplex import Info
 from qplex import QModel
 from qplex.model.options import Options
 
@@ -16,6 +17,17 @@ def model_knapsack_problem(values: List, weights: List, const: int) -> QModel:
 
 
 def main():
+    print(f'QPLEX info:')
+    print('Version')
+    print(Info.version())
+    print('Providers')
+    print(Info.providers())
+    print('Backends for each provider')
+    for provider in Info.providers():
+        if provider != 'd-wave':
+            print(f'{provider}: {Info.backends(provider)}')
+    print('Algorithms')
+    print(Info.algorithms())
     values = [10, 5, 18, 12, 15, 1, 2, 8]
     weights = [4, 2, 5, 4, 5, 1, 3, 5]
     const = 15

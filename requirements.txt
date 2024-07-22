@@ -10,3 +10,4 @@ scipy
 dimod~=0.12.4
 numpy~=1.23.5
 networkx
+pyyaml

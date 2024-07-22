@@ -154,3 +154,7 @@ class IBMQSolver(Solver):
                 return self.service.least_busy(min_num_qubits=qubits)
             return self.service.backend(self.backend)
         return AerSimulator()
+
+
+def get_backends():
+    return QiskitRuntimeService().backends()
