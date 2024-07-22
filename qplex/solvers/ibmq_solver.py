@@ -135,3 +135,7 @@ class IBMQSolver(Solver):
         if self.backend != "simulator":
             return self.service.backend(self.backend)
         return AerSimulator()
+
+
+def get_backends():
+    return QiskitRuntimeService().backends()

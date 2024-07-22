@@ -110,3 +110,8 @@ class BraketSolver(Solver):
         if self.backend != "simulator":
             return AwsDevice(f"arn:aws:braket:::{self.backend}")
         return LocalSimulator(backend="braket_sv")
+
+
+def get_backends():
+    # return AwsDevice.get_devices()
+    return ['aws_bogota', 'aws_quito']

@@ -1,0 +1,8 @@
+providers:
+  - ibmq
+  - dwave
+  - braket
+
+algorithms:
+  - vqe
+  - qaoa
