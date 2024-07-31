@@ -1,54 +1,54 @@
 import numpy as np
 
 from qplex.algorithms.base_algorithm import Algorithm
-from qplex.solvers.base_solver import Solver
+from qplex.commons.circuit_utils import replace_params
 
 
 class QAOA(Algorithm):
     """
     Quantum Approximate Optimization Algorithm (QAOA).
 
-    This class implements the QAOA algorithm for solving optimization
-    problems.
-    It creates a quantum circuit, updates parameters, and provides a
-    starting point for the optimization.
+    This class implements the QAOA algorithm for solving combinatorial
+    optimization problems using quantum resources. It creates a quantum
+    circuit, updates parameters, and provides a starting point for the
+    optimization process.
 
     Attributes
     ----------
     p : int
         The number of repetitions of the two parameterized unitary operations.
     n : int
-        The number of qubits in the quantum circuit.
+        The number of qubits in the quantum circuit, which corresponds to
+        the number of binary variables in the optimization problem.
     circuit : str
-        The OpenQASM2 representation of the quantum circuit.
+        The OpenQASM3 representation of the quantum circuit.
+    num_params : int
+        The number of parameters for the QAOA variational circuit, which is
+        equal to 2 times the number of repetitions (p).
     """
 
-    def __init__(self, model, solver: Solver, verbose: bool,
-                 shots: int, p: int, seed: int, penalty: float):
+    def __init__(self, model, p: int, seed: int, penalty: float):
         """
         Initializes the QAOA algorithm with the given parameters.
 
         Parameters
         ----------
         model : QModel
-            The optimization model to be solved.
-        solver : Solver
-            The solver to be used for solving the model.
-        verbose : bool
-            If True, enables verbose output.
-        shots : int
-            The number of shots for quantum execution.
+            The optimization model to be solved, represented as a
+            Quadratic Unconstrained Binary Optimization (QUBO) problem.
         p : int
             The number of repetitions of the two parameterized unitary
-            operations.
+            operations (often referred to as the "depth" of the QAOA circuit).
         seed : int
-            The seed for the random number generator.
+            The seed for the random number generator, ensuring reproducibility.
         penalty : float
-            The penalty factor for the QUBO conversion.
+            The penalty factor for the QUBO conversion, used to penalize
+            constraint violations in the QUBO formulation.
         """
-        super().__init__(model, solver, verbose, shots)
+        super().__init__(model)
         self.p: int = p
         self.n: int = 0
+        self.num_params = 2 * self.p
         self.circuit: str = self.create_circuit(penalty=penalty)
         np.random.seed(seed)
 
@@ -58,105 +58,92 @@ class QAOA(Algorithm):
         for QAOA.
 
         The circuit is constructed based on the QUBO encoding of the
-        model,
-        including all the necessary gates for the QAOA ansatz.
+        model, including all the necessary gates for the QAOA ansatz.
+        The ansatz includes mixing and problem unitary operations with
+        parameterized rotation angles.
 
         Parameters
         ----------
-        kwargs
-            Optional parameters, including 'penalty' for QUBO
+        kwargs : dict
+            Optional parameters, including 'penalty' for the QUBO
             conversion.
 
         Returns
         -------
         str
-            An OpenQASM2 string representing the quantum circuit for
+            An OpenQASM3 string representing the quantum circuit for
             QAOA.
         """
         self.qubo = self.model.get_qubo(penalty=kwargs['penalty'])
         self.n = self.qubo.get_num_binary_vars()
-        circuit = f"""
-        qreg q[{self.n}];
-        creg c[{self.n}];
-        """
-        for i in range(self.n):
-            circuit += f"h q[{i}];\n"
+
+        circuit_lines = [f"input float[64] theta{i};" for i in range(self.num_params)]
+
+        circuit_lines.extend([f"qreg q[{self.n}];", f"creg c[{self.n}];"])
+
+        circuit_lines.extend([f"h q[{i}];" for i in range(self.n)])
+
+        linear_terms = self.qubo.objective.linear.to_array()
+        quadratic_terms = self.qubo.objective.quadratic.to_array()
 
         for idx in range(self.p):
-            linear_terms = self.qubo.objective.linear.to_array()
-            for i, w in enumerate(linear_terms):
-                circuit += f"rz(rz_angle_{i}_{idx}) q[{i}];\n"
+            theta_2idx = f"theta{2 * idx}"
+            theta_2idx_plus_1 = f"theta{2 * idx + 1}"
 
-            quadratic_terms = self.qubo.objective.quadratic.to_array()
+            for i, w in enumerate(linear_terms):
+                h_sum = sum(quadratic_terms[i])
+                circuit_lines.append(
+                    f"rz({theta_2idx} * {(w + h_sum)}) q[{i}];")
+
             for i in range(self.n):
                 for j in range(i + 1, self.n):
                     w = quadratic_terms[i, j]
                     if w != 0:
-                        circuit += f"cx q[{int(i)}], q[{int(j)}];\n"
-                        circuit += f"rz(rzz_angle_{i}_{j}_{idx}) q[" \
-                                   f"{int(j)}];\n"
-                        circuit += f"cx q[{int(i)}], q[{int(j)}];\n"
+                        circuit_lines.append(f"cx q[{i}], q[{j}];")
+                        circuit_lines.append(f"rz({theta_2idx} * {w / 2}) q[{j}];")
+                        circuit_lines.append(f"cx q[{i}], q[{j}];")
 
             for i in range(self.n):
-                circuit += f"rx(rx_angle_{i}_{idx}) q[{i}];\n"
+                circuit_lines.append(f"rx(2 * {theta_2idx_plus_1}) q[{i}];")
 
-        for i in range(self.n):
-            circuit += f"measure q[{i}] -> c[{i}];\n"
+        circuit_lines.extend([f"measure q[{i}] -> c[{i}];" for i in range(self.n)])
 
-        return circuit
+        return "\n".join(circuit_lines)
 
     def update_params(self, params: np.ndarray) -> str:
         """
         Updates the parameters of the QAOA circuit.
 
-        The circuit is updated by replacing the placeholder angles with
-        the values provided in the parameter array.
+        The circuit is updated by replacing the placeholder angles ('thetaX')
+        with the values provided in the parameter array. This allows the
+        quantum circuit to be re-parameterized as part of a variational
+        optimization process.
 
         Parameters
         ----------
         params : np.ndarray
-            The new set of parameters for the QAOA circuit.
+            The new set of parameters for the QAOA circuit, typically representing
+            rotation angles in the circuit's gates.
 
         Returns
         -------
         str
-            The updated OpenQASM3 string for the QAOA circuit.
+            The updated OpenQASM3 string for the QAOA circuit with the new
+            parameter values.
         """
-        updated_circuit = self.circuit
-        quadratic_terms = self.qubo.objective.quadratic.to_array(
-            symmetric=True)
-        linear_terms = self.qubo.objective.linear.to_array()
-        for idx in range(self.p):
-            for i, w in enumerate(linear_terms):
-                h_sum = 0
-                for j in range(len(linear_terms)):
-                    h_sum += quadratic_terms[i][j]
-                updated_circuit = updated_circuit.replace(
-                    f"rz_angle_{i}_{idx}",
-                    f"{params[2 * idx] * (w + h_sum)}")
-
-            for i in range(self.n):
-                for j in range(i + 1, self.n):
-                    w = quadratic_terms[i, j]
-                    if w != 0:
-                        updated_circuit = updated_circuit.replace(
-                            f"rzz_angle_{i}_{j}_{idx}",
-                            f"{params[2 * idx] * w / 2}")
-
-            for i in range(self.n):
-                updated_circuit = updated_circuit.replace(
-                    f"rx_angle_{i}_{idx}", f"{2 * params[2 * idx + 1]}")
-
-        return updated_circuit
+        return replace_params(self.circuit, params)
 
     def get_starting_point(self) -> np.ndarray:
         """
         Defines the starting point for the QAOA optimization.
 
+        The starting point consists of a set of randomly initialized
+        parameters (rotation angles) for the variational QAOA circuit.
+
         Returns
         -------
         np.ndarray
-            An array representing the starting point for QAOA,
-            initialized with random values.
+            An array representing the starting point for QAOA, initialized
+            with random values between 0 and 1.
         """
         return np.random.rand(2 * self.p)
