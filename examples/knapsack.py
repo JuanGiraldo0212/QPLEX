@@ -24,8 +24,9 @@ def main():
 
     execution_params = {
         "provider": "ibmq",
+        "workflow": 'qiskit_runtime',
         "verbose": True,
-        "backend": "simulator",
+        # "backend": "simulator",
         "penalty": 10,
         # Change to the desired backend (i.e., ibmq_qasm_simulator)
         "algorithm": "qaoa",

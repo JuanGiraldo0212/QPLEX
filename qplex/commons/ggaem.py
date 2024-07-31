@@ -2,13 +2,16 @@ from scipy.optimize import minimize
 from qplex.algorithms import QAOA, VQE
 from qplex.solvers.base_solver import Solver
 
+import numpy as np
+
 
 def ggaem_workflow(model, solver: Solver, verbose: bool, shots: int,
-                   algorithm: str, optimizer: str, max_iter: int,
+                   algorithm: str, optimizer: str, callback, max_iter: int,
                    tolerance: float, ansatz: str, p: int, layers: int,
                    seed: int, penalty: float):
     """
-    Runs the GGAEM (Generalized Grover Adaptive Execution Method) workflow.
+    Runs the GGAEM (Generalized Gate-Based Algorithm Execution Manager)
+    workflow.
 
     Parameters
     ----------
@@ -24,6 +27,8 @@ def ggaem_workflow(model, solver: Solver, verbose: bool, shots: int,
         The quantum algorithm to use ('qaoa' or 'vqe').
     optimizer: str
         The classical optimizer to use.
+    callback: Optional[Callable[[np.ndarray]
+        The callback function for the SciPy optimizer.
     max_iter: int
         The maximum number of iterations for the optimizer.
     tolerance: float
@@ -44,22 +49,46 @@ def ggaem_workflow(model, solver: Solver, verbose: bool, shots: int,
     dict
         A dictionary of optimal parameter counts.
     """
-    current_algorithm = None
+    algorithm_instance = None
     if algorithm == "qaoa":
-        current_algorithm = QAOA(model, solver, verbose, shots=shots, p=p,
-                                 penalty=penalty, seed=seed)
+        algorithm_instance = QAOA(model, p=p, penalty=penalty, seed=seed)
     elif algorithm == "vqe":
-        current_algorithm = VQE(model, solver, verbose, shots=shots,
-                                layers=layers, penalty=penalty, seed=seed,
-                                ansatz=ansatz)
+        algorithm_instance = VQE(model, layers=layers, penalty=penalty,
+                                 seed=seed, ansatz=ansatz)
 
-    starting_point = current_algorithm.get_starting_point()
-    optimization_result = minimize(fun=current_algorithm.cost_function,
+    def cost_function(params: np.ndarray) -> float:
+        """
+        Defines the cost function to be used for the classical optimization
+        routine.
+
+        This method calculates the cost based on the given parameters by
+        updating the quantum circuit, solving it, and evaluating the energy.
+
+        Parameters
+        ----------
+        params : np.ndarray
+            The new set of parameters for the circuit.
+
+        Returns
+        -------
+        float
+            The cost for the current parameters.
+        """
+        qc = algorithm_instance.update_params(params)
+        counts = solver.solve(qc)
+        cost = calculate_energy(counts, shots, algorithm_instance)
+        if verbose:
+            print(f'\nCost = {cost}')
+        return cost
+
+    starting_point = algorithm_instance.get_starting_point()
+    optimization_result = minimize(fun=cost_function,
                                    x0=starting_point, method=optimizer,
+                                   callback=callback,
                                    tol=tolerance,
                                    options={'maxiter': max_iter})
     optimal_params = optimization_result.x
-    qc = current_algorithm.update_params(optimal_params)
+    qc = algorithm_instance.update_params(optimal_params)
     opt_counts = solver.solve(qc)
 
     return opt_counts
@@ -97,7 +126,16 @@ def get_ggaem_solution(model, optimal_counts):
     if len(quadratic_terms) > 0:
         for t in quadratic_terms:
             obj_value += (
-                    values[t[0].name] * values[t[1].name] * t[
-                2])
+                    values[t[0].name] * values[t[1].name] * t[2])
     solution = {'objective': obj_value, 'solution': values}
     return solution
+
+
+def calculate_energy(counts, shots, algorithm_instance):
+    energy = 0
+    for sample, count in counts.items():
+        sample = [int(n) for n in sample]
+        energy += count * algorithm_instance.qubo.objective.evaluate(
+            sample)
+    algorithm_instance.iteration += 1
+    return energy / shots

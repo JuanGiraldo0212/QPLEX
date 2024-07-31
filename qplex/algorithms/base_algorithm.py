@@ -29,8 +29,7 @@ class Algorithm(ABC):
         The current iteration number of the optimization process.
     """
 
-    def __init__(self, model, solver: Solver, verbose: bool,
-                 shots: int):
+    def __init__(self, model):
         """
         Initializes the Algorithm with the given model, solver,
         verbosity, and shots.
@@ -39,19 +38,15 @@ class Algorithm(ABC):
         ----------
         model : Model
             The optimization model to be solved.
-        solver : Solver
-            The solver to be used for solving the model.
-        verbose : bool
-            If True, enables verbose output.
-        shots : int
-            The number of shots for quantum execution.
         """
         self.model = model
-        self.solver = solver
-        self.verbose = verbose
-        self.shots: int = shots
         self.qubo: QuadraticProgram | None = None
         self.iteration = 0
+
+    @property
+    @abstractmethod
+    def num_params(self):
+        ...
 
     @abstractmethod
     def create_circuit(self) -> str:
@@ -83,35 +78,6 @@ class Algorithm(ABC):
         """
         ...
 
-    def cost_function(self, params: np.ndarray) -> float:
-        """
-        Defines the cost function to be used for the classical optimization routine.
-
-        This method calculates the cost based on the given parameters by
-        updating the quantum circuit, solving it, and evaluating the energy.
-
-        Parameters
-        ----------
-        params : np.ndarray
-            The new set of parameters for the circuit.
-
-        Returns
-        -------
-        float
-            The cost for the current parameters.
-        """
-        qc = self.update_params(params)
-        counts = self.solver.solve(qc)
-        energy = 0
-        for sample, count in counts.items():
-            sample = [int(n) for n in sample]
-            energy += count * self.qubo.objective.evaluate(sample)
-        self.iteration += 1
-        cost = energy / self.shots
-        if self.verbose:
-            print(f'Iteration {self.iteration}:\nCost = {cost}')
-        return cost
-
     @abstractmethod
     def get_starting_point(self) -> np.ndarray:
         """
@@ -121,5 +87,18 @@ class Algorithm(ABC):
         -------
         np.ndarray
             An array representing the starting point.
+        """
+        ...
+
+    @abstractmethod
+    def parse_to_vqc(self):
+        """
+        Returns the variational circuit version of the algorithm using
+        OpenQASM3 input types.
+
+        Returns
+        -------
+        str
+            The string representing the OpenQASM3 variational quantum circuit.
         """
         ...

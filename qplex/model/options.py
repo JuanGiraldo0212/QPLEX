@@ -1,5 +1,9 @@
 from collections.abc import MutableMapping
 from qplex.model.constants import ALLOWED_OPTIMIZERS
+from qplex.commons.optimization_callback import OptimizationCallback
+
+import numpy as np
+from typing import Callable, Optional
 
 
 class Options(MutableMapping):
@@ -40,16 +44,20 @@ class Options(MutableMapping):
         seed: int, optional
             The seed for the random number generator. Default is 1.
         """
+
     def __init__(self,
                  method: str = 'classical',
                  verbose: bool = False,
                  provider: str = None,
+                 workflow: str = 'default',
                  backend: str = None,
                  algorithm: str = "qaoa",
                  ansatz: str = None,
                  p: int = 2,
                  layers: int = 2,
                  optimizer: str = "COBYLA",
+                 callback: Optional[Callable[[np.ndarray], None]] =
+                 OptimizationCallback(),
                  tolerance: float = 1e-10,
                  max_iter: int = 1000,
                  penalty: float = None,
@@ -59,18 +67,21 @@ class Options(MutableMapping):
             'method': method,
             'verbose': verbose,
             'provider': provider,
+            'workflow': workflow,
             'backend': backend,
             'algorithm': algorithm,
             'ansatz': ansatz,
             'p': p,
             'layers': layers,
             'optimizer': optimizer,
+            'callback': callback,
             'tolerance': tolerance,
             'max_iter': max_iter,
             'penalty': penalty,
             'shots': shots,
             'seed': seed,
         }
+
         self._validate_optimizer()
 
     def __getitem__(self, key):

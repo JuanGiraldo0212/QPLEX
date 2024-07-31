@@ -1,7 +1,6 @@
 import numpy as np
 
 from qplex.algorithms.base_algorithm import Algorithm
-from qplex.solvers.base_solver import Solver
 
 
 class VQE(Algorithm):
@@ -22,8 +21,7 @@ class VQE(Algorithm):
         The OpenQASM3 representation of the VQE ansatz circuit.
     """
 
-    def __init__(self, model, solver: Solver, verbose: bool,
-                 shots: int, layers: int, seed: int, penalty: float,
+    def __init__(self, model, layers: int, seed: int, penalty: float,
                  ansatz: str):
         """
         Initializes the VQE algorithm with the given parameters.
@@ -32,12 +30,6 @@ class VQE(Algorithm):
         ----------
         model : QModel
             The optimization model to be solved.
-        solver : Solver
-            The solver to be used for solving the model.
-        verbose : bool
-            If True, enables verbose output.
-        shots : int
-            The number of shots for quantum execution.
         layers : int
             The number of layers in the VQE ansatz.
         seed : int
@@ -47,11 +39,15 @@ class VQE(Algorithm):
         ansatz : str
             The ansatz type used in the VQE algorithm.
         """
-        super().__init__(model, solver, verbose, shots)
+        super().__init__(model)
         self.layers: int = layers
         self.n: int = 0
         self.ansatz: str = self.create_circuit(penalty=penalty)
         np.random.seed(seed)
+
+    @property
+    def num_params(self) -> int:
+        return self.n + (4 * (self.n - 1) * self.layers)
 
     def create_circuit(self, *args, **kwargs) -> str:
         """
@@ -136,3 +132,31 @@ class VQE(Algorithm):
             with random values.
         """
         return np.random.rand(self.n + (4 * (self.n - 1) * self.layers))
+
+    def parse_to_vqc(self):
+        """
+        Returns the variational circuit version of the VQE algorithm using
+        OpenQASM3 input types.
+
+        Returns
+        -------
+        str
+            The string representing the OpenQASM3 variational quantum circuit.
+        """
+
+        variational_circuit = self.ansatz
+        for i in range(self.num_params):
+            variational_circuit = f"""
+                input float[64] theta{i};
+            """ + variational_circuit
+
+        variational_circuit = """
+                    OPENQASM 3.0;
+                    include "stdgates.inc";
+                    """ + variational_circuit
+
+        for i in range(self.num_params):
+            variational_circuit = variational_circuit.replace(f"ry_angle_{i}",
+                                                              f"theta{i}")
+
+        return variational_circuit

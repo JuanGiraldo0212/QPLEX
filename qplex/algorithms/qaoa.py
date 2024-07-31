@@ -1,7 +1,7 @@
 import numpy as np
+import qiskit.qasm3
 
 from qplex.algorithms.base_algorithm import Algorithm
-from qplex.solvers.base_solver import Solver
 
 
 class QAOA(Algorithm):
@@ -23,8 +23,7 @@ class QAOA(Algorithm):
         The OpenQASM2 representation of the quantum circuit.
     """
 
-    def __init__(self, model, solver: Solver, verbose: bool,
-                 shots: int, p: int, seed: int, penalty: float):
+    def __init__(self, model, p: int, seed: int, penalty: float):
         """
         Initializes the QAOA algorithm with the given parameters.
 
@@ -32,12 +31,6 @@ class QAOA(Algorithm):
         ----------
         model : QModel
             The optimization model to be solved.
-        solver : Solver
-            The solver to be used for solving the model.
-        verbose : bool
-            If True, enables verbose output.
-        shots : int
-            The number of shots for quantum execution.
         p : int
             The number of repetitions of the two parameterized unitary
             operations.
@@ -46,11 +39,15 @@ class QAOA(Algorithm):
         penalty : float
             The penalty factor for the QUBO conversion.
         """
-        super().__init__(model, solver, verbose, shots)
+        super().__init__(model)
         self.p: int = p
         self.n: int = 0
         self.circuit: str = self.create_circuit(penalty=penalty)
         np.random.seed(seed)
+
+    @property
+    def num_params(self) -> int:
+        return 2 * self.p
 
     def create_circuit(self, *args, **kwargs) -> str:
         """
@@ -160,3 +157,52 @@ class QAOA(Algorithm):
             initialized with random values.
         """
         return np.random.rand(2 * self.p)
+
+    def parse_to_vqc(self):
+        """
+        Returns the variational circuit version of the QAOA algorithm using
+        OpenQASM3 input types.
+
+        Returns
+        -------
+        str
+            The string representing the OpenQASM3 variational quantum circuit.
+        """
+
+        variational_circuit = self.circuit
+        for i in range(self.num_params):
+            variational_circuit = f"""
+                input float[64] theta{i};
+            """ + variational_circuit
+
+        variational_circuit = """
+                    OPENQASM 3.0;
+                    include "stdgates.inc";
+                    """ + variational_circuit
+
+        quadratic_terms = self.qubo.objective.quadratic.to_array(
+            symmetric=True)
+        linear_terms = self.qubo.objective.linear.to_array()
+        for idx in range(self.p):
+            for i, w in enumerate(linear_terms):
+                h_sum = 0
+                for j in range(len(linear_terms)):
+                    h_sum += quadratic_terms[i][j]
+                variational_circuit = variational_circuit.replace(
+                    f"rz_angle_{i}_{idx}",
+                    f"theta{2 * idx} * {(w + h_sum)}")
+
+            for i in range(self.n):
+                for j in range(i + 1, self.n):
+                    w = quadratic_terms[i, j]
+                    if w != 0:
+                        variational_circuit = variational_circuit.replace(
+                            f"rzz_angle_{i}_{j}_{idx}",
+                            f"theta{2 * idx} * {w / 2}")
+
+            for i in range(self.n):
+                variational_circuit = variational_circuit.replace(
+                    f"rx_angle_{i}_{idx}", f"2 * theta{2 * idx + 1}")
+
+        return variational_circuit
+
