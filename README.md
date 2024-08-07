@@ -4,7 +4,7 @@
 
 ⚠️ **This library is currently under development.**
 
-`QPLEX` is an open-source Python library that enables developers to implement combinatorial optimization models and execute them seamlessly on multiple classical and quantum devices (using different quantum algorithms). Our solution automatically handles the adaptation of the optimization model to the specific instructions of the target quantum device's SDK. The library supports unconstrained and constrained problems, as well as binary, discrete, and continuous variables. QPLEX uses `DOcplex` as a modeling API allowing the creation of optimization models using the exact same syntax as this base library. 
+`QPLEX` is an open-source Python library that enables developers to implement combinatorial optimization models and execute them seamlessly on multiple classical and quantum devices using different quantum algorithms. Our solution automatically handles the adaptation of the optimization model to the specific instructions of the target quantum device's SDK. The library supports unconstrained and constrained problems, as well as binary, discrete, and continuous variables. QPLEX uses `DOcplex` as a modeling API allowing the creation of optimization models using the exact same syntax as this base library. 
 
 The motivation and technical details about this project are presented in the following paper: https://arxiv.org/abs/2307.14308
 
