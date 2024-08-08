@@ -1,5 +1,5 @@
 """
-This module provides the different solvers and the solver factory.
+This module provides the different solvers.
 """
 
 from qplex.solvers.ibmq_solver import IBMQSolver
