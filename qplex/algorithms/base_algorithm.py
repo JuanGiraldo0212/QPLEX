@@ -111,11 +111,6 @@ class Algorithm(ABC):
         if self.verbose:
             print(f'Iteration {self.iteration}:\nCost = {cost}')
         return cost
-        ##########################
-        # qc = self.update_params(params)
-        # expect_value = compute_expectation_value(qc, self.qubo.to_ising()[
-        # 0], self.solver)
-        # return expect_value
 
     @abstractmethod
     def get_starting_point(self) -> np.ndarray:
