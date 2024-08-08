@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["qplex"]
+
+[project]
+name = "QPLEX"
+version = "0.1.0"
+description = "an open-source Python library that enables developers to implement combinatorial optimization models and execute them seamlessly on multiple classical and quantum devices using different quantum algorithms."
+readme = "README.md"
+authors = [
+    { name = "Juan Giraldo", email = "juanfer021299@gmail.com" },
+    { name = "Jose Ossorio", email = "joseossorio99@hotmail.com" }
+]
+license = {text = "GPL-3.0"}
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: GNU General Public License v3 (GPL-3.0)",
+    "Operating System :: OS Independent",
+]
+requires-python = ">=3.9.19"
+dependencies = [
+    "docplex~=2.25",
+    "qiskit~=1.0",
+    "qiskit_aer",
+    "qiskit_ibm_runtime",
+    "qiskit_optimization",
+    "qiskit_qasm3_import",
+    "dwave-system~=1.18",
+    "amazon-braket-sdk~=1.80",
+    "scipy~=1.10.1",
+    "dimod~=0.12.4",
+    "numpy~=1.23.5",
+    "networkx",
+]
+
+
+[project.urls]
+Homepage = "https://github.com/JuanGiraldo0212/QPLEX"
+Documentation = "https://readthedocs.org"
+Repository = "https://github.com/JuanGiraldo0212/QPLEX"
+Issues = "https://github.com/JuanGiraldo0212/QPLEX/issues"

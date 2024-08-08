@@ -1,6 +1,6 @@
 """
-This module provides the different solvers and the solver factory
+This module provides the different solvers.
 """
 
+from qplex.solvers.ibmq_solver import IBMQSolver
 from qplex.solvers.dwave_solver import DWaveSolver
-from qplex.solvers.gate_based_solver import GateBasedSolver
