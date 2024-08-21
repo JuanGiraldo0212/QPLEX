@@ -8,7 +8,7 @@
 
 import os
 import sys
-sys.path.insert(0, os.path.abspath('..'))
+sys.path.insert(0, os.path.abspath('../qplex'))
 
 project = 'QPLEX'
 copyright = '2024, J. Giraldo, J. Ossorio'
@@ -31,5 +31,21 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
+html_logo = '_static/QPLEX_logo.png'
 html_theme = 'alabaster'
 html_static_path = ['_static']
+html_theme_options = {
+    'logo_only': True,
+    'logo': {
+        'link': 'https://qplex-landing.vercel.app/',
+    }
+}
+html_sidebars = {
+    '**': [
+        'about.html',
+        'searchfield.html',
+        'navigation.html',
+        'relations.html',
+        'donate.html',
+    ]
+}

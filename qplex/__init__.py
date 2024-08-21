@@ -2,6 +2,8 @@
 QPLEX
 """
 
-from qplex.model import QModel
+from . import model
+
+from .model.qmodel import QModel
 
 __version__ = "0.1.0"
