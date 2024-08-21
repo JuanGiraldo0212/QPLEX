@@ -1,15 +1,15 @@
 Welcome to the QPLEX documentation
-===================
+==================================
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-   usage
-   api
+   modules
 
 Introduction
 ------------
+
 QPLEX is an open-source Python library that enables developers to implement combinatorial optimization models and execute them seamlessly on multiple classical and quantum devices (using different quantum algorithms).
 
 Our solution automatically handles the adaptation of the optimization model to the specific instructions of the target quantum device's SDK.
