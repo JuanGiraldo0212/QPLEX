@@ -38,17 +38,359 @@
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
 </section>
-<section id="qplex-algorithms-base-algorithm-module">
-<h2>qplex.algorithms.base_algorithm module<a class="headerlink" href="#qplex-algorithms-base-algorithm-module" title="Link to this heading">¶</a></h2>
+<section id="module-qplex.algorithms.base_algorithm">
+<span id="qplex-algorithms-base-algorithm-module"></span><h2>qplex.algorithms.base_algorithm module<a class="headerlink" href="#module-qplex.algorithms.base_algorithm" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="qplex.algorithms.base_algorithm.Algorithm">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qplex.algorithms.base_algorithm.</span></span><span class="sig-name descname"><span class="pre">Algorithm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solver</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="qplex.solvers.html#qplex.solvers.base_solver.Solver" title="qplex.solvers.base_solver.Solver"><span class="pre">Solver</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qplex/algorithms/base_algorithm.html#Algorithm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.algorithms.base_algorithm.Algorithm" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>Abstract base class for a quantum algorithm.</p>
+<p>This class provides a template for quantum algorithms, encapsulating
+the common elements and enforcing the implementation of specific methods
+in subclasses.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qplex.algorithms.base_algorithm.Algorithm.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#qplex.algorithms.base_algorithm.Algorithm.model" title="Link to this definition">¶</a></dt>
+<dd><p>The optimization model to be solved.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Model</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qplex.algorithms.base_algorithm.Algorithm.solver">
+<span class="sig-name descname"><span class="pre">solver</span></span><a class="headerlink" href="#qplex.algorithms.base_algorithm.Algorithm.solver" title="Link to this definition">¶</a></dt>
+<dd><p>The solver to be used for solving the model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="qplex.solvers.html#qplex.solvers.base_solver.Solver" title="qplex.solvers.base_solver.Solver">Solver</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qplex.algorithms.base_algorithm.Algorithm.verbose">
+<span class="sig-name descname"><span class="pre">verbose</span></span><a class="headerlink" href="#qplex.algorithms.base_algorithm.Algorithm.verbose" title="Link to this definition">¶</a></dt>
+<dd><p>If True, enables verbose output.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qplex.algorithms.base_algorithm.Algorithm.shots">
+<span class="sig-name descname"><span class="pre">shots</span></span><a class="headerlink" href="#qplex.algorithms.base_algorithm.Algorithm.shots" title="Link to this definition">¶</a></dt>
+<dd><p>The number of shots for quantum execution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qplex.algorithms.base_algorithm.Algorithm.qubo">
+<span class="sig-name descname"><span class="pre">qubo</span></span><a class="headerlink" href="#qplex.algorithms.base_algorithm.Algorithm.qubo" title="Link to this definition">¶</a></dt>
+<dd><p>The QUBO (Quadratic Unconstrained Binary Optimization) encoding of the problem.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>QuadraticProgram or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qplex.algorithms.base_algorithm.Algorithm.iteration">
+<span class="sig-name descname"><span class="pre">iteration</span></span><a class="headerlink" href="#qplex.algorithms.base_algorithm.Algorithm.iteration" title="Link to this definition">¶</a></dt>
+<dd><p>The current iteration number of the optimization process.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qplex.algorithms.base_algorithm.Algorithm.cost_function">
+<span class="sig-name descname"><span class="pre">cost_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/qplex/algorithms/base_algorithm.html#Algorithm.cost_function"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.algorithms.base_algorithm.Algorithm.cost_function" title="Link to this definition">¶</a></dt>
+<dd><p>Defines the cost function to be used for the classical optimization routine.</p>
+<p>This method calculates the cost based on the given parameters by
+updating the quantum circuit, solving it, and evaluating the energy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>params</strong> (<em>np.ndarray</em>) – The new set of parameters for the circuit.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The cost for the current parameters.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qplex.algorithms.base_algorithm.Algorithm.create_circuit">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_circuit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/qplex/algorithms/base_algorithm.html#Algorithm.create_circuit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.algorithms.base_algorithm.Algorithm.create_circuit" title="Link to this definition">¶</a></dt>
+<dd><p>Creates a quantum circuit in the form of an OpenQASM2 string from
+an optimization model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>An OpenQASM2 string representing the quantum circuit.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qplex.algorithms.base_algorithm.Algorithm.get_starting_point">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_starting_point</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/qplex/algorithms/base_algorithm.html#Algorithm.get_starting_point"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.algorithms.base_algorithm.Algorithm.get_starting_point" title="Link to this definition">¶</a></dt>
+<dd><p>Defines the starting point for the optimization.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>An array representing the starting point.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qplex.algorithms.base_algorithm.Algorithm.update_params">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">update_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/qplex/algorithms/base_algorithm.html#Algorithm.update_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.algorithms.base_algorithm.Algorithm.update_params" title="Link to this definition">¶</a></dt>
+<dd><p>Updates the parameters of the quantum circuit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>params</strong> (<em>np.ndarray</em>) – The new set of parameters for the circuit.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The updated OpenQASM2 string.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
-<section id="qplex-algorithms-qaoa-module">
-<h2>qplex.algorithms.qaoa module<a class="headerlink" href="#qplex-algorithms-qaoa-module" title="Link to this heading">¶</a></h2>
+<section id="module-qplex.algorithms.qaoa">
+<span id="qplex-algorithms-qaoa-module"></span><h2>qplex.algorithms.qaoa module<a class="headerlink" href="#module-qplex.algorithms.qaoa" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="qplex.algorithms.qaoa.QAOA">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qplex.algorithms.qaoa.</span></span><span class="sig-name descname"><span class="pre">QAOA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solver</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="qplex.solvers.html#qplex.solvers.base_solver.Solver" title="qplex.solvers.base_solver.Solver"><span class="pre">Solver</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">penalty</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qplex/algorithms/qaoa.html#QAOA"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.algorithms.qaoa.QAOA" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#qplex.algorithms.base_algorithm.Algorithm" title="qplex.algorithms.base_algorithm.Algorithm"><code class="xref py py-class docutils literal notranslate"><span class="pre">Algorithm</span></code></a></p>
+<p>Quantum Approximate Optimization Algorithm (QAOA).</p>
+<p>This class implements the QAOA algorithm for solving optimization
+problems.
+It creates a quantum circuit, updates parameters, and provides a
+starting point for the optimization.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qplex.algorithms.qaoa.QAOA.p">
+<span class="sig-name descname"><span class="pre">p</span></span><a class="headerlink" href="#qplex.algorithms.qaoa.QAOA.p" title="Link to this definition">¶</a></dt>
+<dd><p>The number of repetitions of the two parameterized unitary operations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qplex.algorithms.qaoa.QAOA.n">
+<span class="sig-name descname"><span class="pre">n</span></span><a class="headerlink" href="#qplex.algorithms.qaoa.QAOA.n" title="Link to this definition">¶</a></dt>
+<dd><p>The number of qubits in the quantum circuit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qplex.algorithms.qaoa.QAOA.circuit">
+<span class="sig-name descname"><span class="pre">circuit</span></span><a class="headerlink" href="#qplex.algorithms.qaoa.QAOA.circuit" title="Link to this definition">¶</a></dt>
+<dd><p>The OpenQASM2 representation of the quantum circuit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qplex.algorithms.qaoa.QAOA.create_circuit">
+<span class="sig-name descname"><span class="pre">create_circuit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/qplex/algorithms/qaoa.html#QAOA.create_circuit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.algorithms.qaoa.QAOA.create_circuit" title="Link to this definition">¶</a></dt>
+<dd><p>Creates a quantum circuit in the form of an OpenQASM3 string
+for QAOA.</p>
+<p>The circuit is constructed based on the QUBO encoding of the
+model,
+including all the necessary gates for the QAOA ansatz.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>kwargs</strong> – Optional parameters, including ‘penalty’ for QUBO
+conversion.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An OpenQASM2 string representing the quantum circuit for
+QAOA.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qplex.algorithms.qaoa.QAOA.get_starting_point">
+<span class="sig-name descname"><span class="pre">get_starting_point</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/qplex/algorithms/qaoa.html#QAOA.get_starting_point"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.algorithms.qaoa.QAOA.get_starting_point" title="Link to this definition">¶</a></dt>
+<dd><p>Defines the starting point for the QAOA optimization.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>An array representing the starting point for QAOA,
+initialized with random values.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qplex.algorithms.qaoa.QAOA.update_params">
+<span class="sig-name descname"><span class="pre">update_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/qplex/algorithms/qaoa.html#QAOA.update_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.algorithms.qaoa.QAOA.update_params" title="Link to this definition">¶</a></dt>
+<dd><p>Updates the parameters of the QAOA circuit.</p>
+<p>The circuit is updated by replacing the placeholder angles with
+the values provided in the parameter array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>params</strong> (<em>np.ndarray</em>) – The new set of parameters for the QAOA circuit.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The updated OpenQASM3 string for the QAOA circuit.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
-<section id="qplex-algorithms-vqe-module">
-<h2>qplex.algorithms.vqe module<a class="headerlink" href="#qplex-algorithms-vqe-module" title="Link to this heading">¶</a></h2>
+<section id="module-qplex.algorithms.vqe">
+<span id="qplex-algorithms-vqe-module"></span><h2>qplex.algorithms.vqe module<a class="headerlink" href="#module-qplex.algorithms.vqe" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="qplex.algorithms.vqe.VQE">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qplex.algorithms.vqe.</span></span><span class="sig-name descname"><span class="pre">VQE</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solver</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="qplex.solvers.html#qplex.solvers.base_solver.Solver" title="qplex.solvers.base_solver.Solver"><span class="pre">Solver</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">penalty</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ansatz</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qplex/algorithms/vqe.html#VQE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.algorithms.vqe.VQE" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#qplex.algorithms.base_algorithm.Algorithm" title="qplex.algorithms.base_algorithm.Algorithm"><code class="xref py py-class docutils literal notranslate"><span class="pre">Algorithm</span></code></a></p>
+<p>Variational Quantum Eigensolver (VQE).</p>
+<p>This class implements the VQE algorithm for solving optimization problems
+using a variational approach. It creates a quantum circuit, updates
+parameters, and provides a starting point for the optimization.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qplex.algorithms.vqe.VQE.layers">
+<span class="sig-name descname"><span class="pre">layers</span></span><a class="headerlink" href="#qplex.algorithms.vqe.VQE.layers" title="Link to this definition">¶</a></dt>
+<dd><p>The number of layers in the VQE ansatz.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qplex.algorithms.vqe.VQE.n">
+<span class="sig-name descname"><span class="pre">n</span></span><a class="headerlink" href="#qplex.algorithms.vqe.VQE.n" title="Link to this definition">¶</a></dt>
+<dd><p>The number of qubits in the quantum circuit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qplex.algorithms.vqe.VQE.ansatz">
+<span class="sig-name descname"><span class="pre">ansatz</span></span><a class="headerlink" href="#qplex.algorithms.vqe.VQE.ansatz" title="Link to this definition">¶</a></dt>
+<dd><p>The OpenQASM3 representation of the VQE ansatz circuit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qplex.algorithms.vqe.VQE.create_circuit">
+<span class="sig-name descname"><span class="pre">create_circuit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/qplex/algorithms/vqe.html#VQE.create_circuit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.algorithms.vqe.VQE.create_circuit" title="Link to this definition">¶</a></dt>
+<dd><p>Creates a quantum circuit in the form of an OpenQASM3 string
+for VQE.</p>
+<p>The circuit is constructed based on the QUBO encoding of the
+model, including all necessary gates for the VQE ansatz.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>kwargs</strong> – Optional parameters, including ‘penalty’ for QUBO
+conversion.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An OpenQASM3 string representing the quantum circuit for
+VQE.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qplex.algorithms.vqe.VQE.get_starting_point">
+<span class="sig-name descname"><span class="pre">get_starting_point</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/qplex/algorithms/vqe.html#VQE.get_starting_point"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.algorithms.vqe.VQE.get_starting_point" title="Link to this definition">¶</a></dt>
+<dd><p>Defines the starting point for the VQE optimization.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>An array representing the starting point for VQE, initialized
+with random values.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qplex.algorithms.vqe.VQE.update_params">
+<span class="sig-name descname"><span class="pre">update_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/qplex/algorithms/vqe.html#VQE.update_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.algorithms.vqe.VQE.update_params" title="Link to this definition">¶</a></dt>
+<dd><p>Updates the parameters of the VQE circuit.</p>
+<p>The circuit is updated by replacing the placeholder angles with
+the values provided in the parameter array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>params</strong> (<em>np.ndarray</em>) – The new set of parameters for the VQE circuit.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The updated OpenQASM3 string for the VQE circuit.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
-<section id="module-contents">
-<h2>Module contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
+<section id="module-qplex.algorithms">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-qplex.algorithms" title="Link to this heading">¶</a></h2>
+<p>This module provides the different gate-based algorithms.</p>
 </section>
 </section>
 

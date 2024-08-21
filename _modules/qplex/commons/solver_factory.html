@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>qplex.commons.solver_factory &#8212; QPLEX 0.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/basic.css?v=c058f7c8" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=27fed22d" />
+    <script src="../../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for qplex.commons.solver_factory</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">qplex.solvers</span> <span class="kn">import</span> <span class="n">IBMQSolver</span>
+<span class="kn">from</span> <span class="nn">qplex.solvers</span> <span class="kn">import</span> <span class="n">DWaveSolver</span>
+<span class="kn">from</span> <span class="nn">qplex.solvers.braket_solver</span> <span class="kn">import</span> <span class="n">BraketSolver</span>
+
+
+<div class="viewcode-block" id="SolverFactory">
+<a class="viewcode-back" href="../../../qplex.commons.html#qplex.commons.solver_factory.SolverFactory">[docs]</a>
+<span class="k">class</span> <span class="nc">SolverFactory</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A factory class for creating quantum solvers based on the specified</span>
+<span class="sd">    provider.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="SolverFactory.get_solver">
+<a class="viewcode-back" href="../../../qplex.commons.html#qplex.commons.solver_factory.SolverFactory.get_solver">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_solver</span><span class="p">(</span><span class="n">provider</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">quantum_api_tokens</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">shots</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                   <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the appropriate solver based on the specified provider and</span>
+<span class="sd">        available tokens.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        provider: str</span>
+<span class="sd">            The quantum provider (e.g., &#39;d-wave&#39;, &#39;ibmq&#39;, &#39;braket&#39;).</span>
+<span class="sd">        quantum_api_tokens: dict</span>
+<span class="sd">            A dictionary containing API tokens for various quantum providers.</span>
+<span class="sd">        shots: int</span>
+<span class="sd">            The number of shots for quantum execution.</span>
+<span class="sd">        backend: str</span>
+<span class="sd">            The backend to use for the quantum provider.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        solver</span>
+<span class="sd">            An instance of the appropriate solver based on the specified</span>
+<span class="sd">            provider.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        RuntimeError</span>
+<span class="sd">            If the necessary credentials for the specified provider are</span>
+<span class="sd">            missing.</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If the specified provider is not recognized.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dwave_token</span> <span class="o">=</span> <span class="n">quantum_api_tokens</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;d-wave_token&quot;</span><span class="p">)</span>
+        <span class="n">ibmq_token</span> <span class="o">=</span> <span class="n">quantum_api_tokens</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ibmq_token&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">provider</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">dwave_token</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">DWaveSolver</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">ibmq_token</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">IBMQSolver</span><span class="p">(</span><span class="n">token</span><span class="o">=</span><span class="n">ibmq_token</span><span class="p">,</span> <span class="n">shots</span><span class="o">=</span><span class="n">shots</span><span class="p">,</span>
+                                  <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Missing credentials for quantum provider&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">provider</span> <span class="o">==</span> <span class="s1">&#39;d-wave&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">dwave_token</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                    <span class="s2">&quot;Missing credentials for the D-Wave provider&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">DWaveSolver</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">provider</span> <span class="o">==</span> <span class="s1">&#39;ibmq&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">ibmq_token</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Missing credentials for the IBM provider&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">IBMQSolver</span><span class="p">(</span><span class="n">token</span><span class="o">=</span><span class="n">ibmq_token</span><span class="p">,</span> <span class="n">shots</span><span class="o">=</span><span class="n">shots</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">provider</span> <span class="o">==</span> <span class="s2">&quot;braket&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">BraketSolver</span><span class="p">(</span><span class="n">shots</span><span class="o">=</span><span class="n">shots</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">provider</span><span class="p">)</span></div>
+</div>
+
+
+
+<span class="n">solver_factory</span> <span class="o">=</span> <span class="n">SolverFactory</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/QPLEX_logo.png" alt="Logo of QPLEX"/>
+            </a></p>
+<p class="logo">
+  <a href="../../../index.html">
+    <img class="logo" src="_static/{'link': 'https://qplex-landing.vercel.app/'}" alt="Logo" />
+    
+  </a>
+</p>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">qplex</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, J. Giraldo, J. Ossorio.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.0.2</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

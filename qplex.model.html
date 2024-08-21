@@ -38,17 +38,144 @@
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
 </section>
-<section id="qplex-model-constants-module">
-<h2>qplex.model.constants module<a class="headerlink" href="#qplex-model-constants-module" title="Link to this heading">¶</a></h2>
+<section id="module-qplex.model.constants">
+<span id="qplex-model-constants-module"></span><h2>qplex.model.constants module<a class="headerlink" href="#module-qplex.model.constants" title="Link to this heading">¶</a></h2>
+<p>constants.py</p>
+<p>This module defines various constants used throughout QPLEX.</p>
 </section>
-<section id="qplex-model-options-module">
-<h2>qplex.model.options module<a class="headerlink" href="#qplex-model-options-module" title="Link to this heading">¶</a></h2>
+<section id="module-qplex.model.options">
+<span id="qplex-model-options-module"></span><h2>qplex.model.options module<a class="headerlink" href="#module-qplex.model.options" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="qplex.model.options.Options">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qplex.model.options.</span></span><span class="sig-name descname"><span class="pre">Options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'classical'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">algorithm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'qaoa'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ansatz</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'COBYLA'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">penalty</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1024</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qplex/model/options.html#Options"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.model.options.Options" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MutableMapping</span></code></p>
+<p>A class to represent and manage optimization options for the
+QModel’s solve method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>method</strong> (<em>str</em><em>, </em><em>optional</em>) – The method for solving the model, either ‘classical’ or
+‘quantum’. Default is ‘classical’.</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, enables verbose output. Default is False.</p></li>
+<li><p><strong>provider</strong> (<em>str</em><em>, </em><em>optional</em>) – The quantum provider to use. Default is None.</p></li>
+<li><p><strong>backend</strong> (<em>str</em><em>, </em><em>optional</em>) – The backend to use for the quantum provider. Default is None.</p></li>
+<li><p><strong>algorithm</strong> (<em>str</em><em>, </em><em>optional</em>) – The algorithm to use for solving the model. Default is “qaoa”.</p></li>
+<li><p><strong>ansatz</strong> (<em>str</em><em>, </em><em>optional</em>) – The ansatz to use in the quantum algorithm. Default is None.</p></li>
+<li><p><strong>p</strong> (<em>int</em><em>, </em><em>optional</em>) – The depth of the ansatz for QAOA. Default is 2.</p></li>
+<li><p><strong>layers</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of layers in the ansatz. Default is 2.</p></li>
+<li><p><strong>optimizer</strong> (<em>str</em><em>, </em><em>optional</em>) – The optimizer to use. Default is “COBYLA”.</p></li>
+<li><p><strong>tolerance</strong> (<em>float</em><em>, </em><em>optional</em>) – The tolerance for the optimizer. Default is 1e-10.</p></li>
+<li><p><strong>max_iter</strong> (<em>int</em><em>, </em><em>optional</em>) – The maximum number of iterations for the optimizer. Default is
+1000.</p></li>
+<li><p><strong>penalty</strong> (<em>float</em><em>, </em><em>optional</em>) – The penalty factor for the QUBO conversion. Default is None.</p></li>
+<li><p><strong>shots</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of shots for quantum execution. Default is 1024.</p></li>
+<li><p><strong>seed</strong> (<em>int</em><em>, </em><em>optional</em>) – The seed for the random number generator. Default is 1.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="qplex.model.options.Options.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/qplex/model/options.html#Options.to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.model.options.Options.to_dict" title="Link to this definition">¶</a></dt>
+<dd><p>Converts the options to a dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A dictionary representation of the options.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
-<section id="qplex-model-qmodel-module">
-<h2>qplex.model.qmodel module<a class="headerlink" href="#qplex-model-qmodel-module" title="Link to this heading">¶</a></h2>
+<section id="module-qplex.model.qmodel">
+<span id="qplex-model-qmodel-module"></span><h2>qplex.model.qmodel module<a class="headerlink" href="#module-qplex.model.qmodel" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="qplex.model.qmodel.QModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qplex.model.qmodel.</span></span><span class="sig-name descname"><span class="pre">QModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qplex/model/qmodel.html#QModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.model.qmodel.QModel" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></p>
+<p>Creates an instance of a QModel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – The name of the model.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>An instance of a QModel.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="qplex.model.qmodel.QModel.get_qubo">
+<span class="sig-name descname"><span class="pre">get_qubo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">penalty</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">QuadraticProgram</span></span></span><a class="reference internal" href="_modules/qplex/model/qmodel.html#QModel.get_qubo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.model.qmodel.QModel.get_qubo" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the QUBO encoding of this problem.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>penalty</strong> (<em>float</em><em>, </em><em>optional</em>) – The penalty factor for the QUBO conversion.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The QUBO encoding of this problem.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>QuadraticProgram</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qplex.model.qmodel.QModel.print_solution">
+<span class="sig-name descname"><span class="pre">print_solution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">print_zeros</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution_header_fmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_value_fmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qplex/model/qmodel.html#QModel.print_solution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.model.qmodel.QModel.print_solution" title="Link to this definition">¶</a></dt>
+<dd><p>Prints the solution of the model. Must be called after solve().</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>print_zeros</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to print variables with zero values.</p></li>
+<li><p><strong>solution_header_fmt</strong> (<em>str</em><em>, </em><em>optional</em>) – Format string for the solution header.</p></li>
+<li><p><strong>var_value_fmt</strong> (<em>str</em><em>, </em><em>optional</em>) – Format string for variable values.</p></li>
+<li><p><strong>kwargs</strong> (<em>dict</em>) – Additional keyword arguments.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qplex.model.qmodel.QModel.set_solution">
+<span class="sig-name descname"><span class="pre">set_solution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qplex/model/qmodel.html#QModel.set_solution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.model.qmodel.QModel.set_solution" title="Link to this definition">¶</a></dt>
+<dd><p>Sets the solution for the model. Used internally by the QModel’s
+solve method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>result</strong> (<em>dict</em>) – The solution dictionary containing ‘solution’ and
+‘objective’.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qplex.model.qmodel.QModel.solve">
+<span class="sig-name descname"><span class="pre">solve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'classical'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#qplex.model.options.Options" title="qplex.model.options.Options"><span class="pre">Options</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Options(method='classical',</span> <span class="pre">verbose=False,</span> <span class="pre">provider=None,</span> <span class="pre">backend=None,</span> <span class="pre">algorithm='qaoa',</span> <span class="pre">ansatz=None,</span> <span class="pre">p=2,</span> <span class="pre">layers=2,</span> <span class="pre">optimizer='COBYLA',</span> <span class="pre">tolerance=1e-10,</span> <span class="pre">max_iter=1000,</span> <span class="pre">penalty=None,</span> <span class="pre">shots=1024,</span> <span class="pre">seed=1)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qplex/model/qmodel.html#QModel.solve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.model.qmodel.QModel.solve" title="Link to this definition">¶</a></dt>
+<dd><p>Solves the model using the specified method and Options.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>method</strong> (<em>str</em><em>, </em><em>optional</em>) – The method to solve the model, either ‘classical’ or
+‘quantum’.</p></li>
+<li><p><strong>options</strong> (<a class="reference internal" href="#qplex.model.options.Options" title="qplex.model.options.Options"><em>Options</em></a><em>, </em><em>optional</em>) – The options for solving the model.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the method argument is not ‘classical’ or ‘quantum’.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
-<section id="module-contents">
-<h2>Module contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
+<section id="module-qplex.model">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-qplex.model" title="Link to this heading">¶</a></h2>
+<p>This module provides the qmodel for the definition of an optimization
+problem model.</p>
 </section>
 </section>
 

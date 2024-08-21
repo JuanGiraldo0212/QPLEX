@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>qplex.model.qmodel &#8212; QPLEX 0.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/basic.css?v=c058f7c8" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=27fed22d" />
+    <script src="../../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for qplex.model.qmodel</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">from</span> <span class="nn">docplex.mp.model</span> <span class="kn">import</span> <span class="n">Model</span>
+<span class="kn">from</span> <span class="nn">docplex.mp.solution</span> <span class="kn">import</span> <span class="n">SolveSolution</span>
+<span class="kn">from</span> <span class="nn">qiskit_optimization</span> <span class="kn">import</span> <span class="n">QuadraticProgram</span>
+<span class="kn">from</span> <span class="nn">qiskit_optimization.translators</span> <span class="kn">import</span> <span class="n">from_docplex_mp</span>
+<span class="kn">from</span> <span class="nn">qiskit_optimization.converters</span> <span class="kn">import</span> <span class="n">QuadraticProgramToQubo</span>
+<span class="kn">from</span> <span class="nn">qplex.commons</span> <span class="kn">import</span> <span class="n">solver_factory</span>
+<span class="kn">from</span> <span class="nn">qplex.commons</span> <span class="kn">import</span> <span class="n">ggaem_workflow</span><span class="p">,</span> <span class="n">get_ggaem_solution</span>
+<span class="kn">from</span> <span class="nn">qplex.model.options</span> <span class="kn">import</span> <span class="n">Options</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+
+<div class="viewcode-block" id="QModel">
+<a class="viewcode-back" href="../../../qplex.model.html#qplex.model.qmodel.QModel">[docs]</a>
+<span class="k">class</span> <span class="nc">QModel</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates an instance of a QModel.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name: str</span>
+<span class="sd">        The name of the model.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    ----------</span>
+<span class="sd">    An instance of a QModel.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">QModel</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">job_id</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">quantum_api_tokens</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;d-wave_token&#39;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;D-WAVE_API_TOKEN&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;ibmq_token&#39;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;IBMQ_API_TOKEN&#39;</span><span class="p">),</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exec_time</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">provider</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">backend</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">=</span> <span class="s1">&#39;NA&#39;</span>
+
+<div class="viewcode-block" id="QModel.get_qubo">
+<a class="viewcode-back" href="../../../qplex.model.html#qplex.model.qmodel.QModel.get_qubo">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_qubo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">penalty</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QuadraticProgram</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the QUBO encoding of this problem.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        penalty: float, optional</span>
+<span class="sd">            The penalty factor for the QUBO conversion.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        QuadraticProgram</span>
+<span class="sd">            The QUBO encoding of this problem.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">mod</span> <span class="o">=</span> <span class="n">from_docplex_mp</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">converter</span> <span class="o">=</span> <span class="n">QuadraticProgramToQubo</span><span class="p">(</span><span class="n">penalty</span><span class="o">=</span><span class="n">penalty</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">converter</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">mod</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="QModel.solve">
+<a class="viewcode-back" href="../../../qplex.model.html#qplex.model.qmodel.QModel.solve">[docs]</a>
+    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;classical&#39;</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="n">Options</span> <span class="o">=</span> <span class="n">Options</span><span class="p">()):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Solves the model using the specified method and Options.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        method: str, optional</span>
+<span class="sd">            The method to solve the model, either &#39;classical&#39; or</span>
+<span class="sd">            &#39;quantum&#39;.</span>
+<span class="sd">        options: Options, optional</span>
+<span class="sd">            The options for solving the model.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If the method argument is not &#39;classical&#39; or &#39;quantum&#39;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="n">method</span>
+        <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;classical&#39;</span><span class="p">:</span>
+            <span class="n">Model</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t0</span>
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;quantum&#39;</span><span class="p">:</span>
+            <span class="n">solver</span> <span class="o">=</span> <span class="n">solver_factory</span><span class="o">.</span><span class="n">get_solver</span><span class="p">(</span><span class="n">provider</span><span class="o">=</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;provider&#39;</span><span class="p">],</span>
+                                               <span class="n">quantum_api_tokens</span><span class="o">=</span>
+                                               <span class="bp">self</span><span class="o">.</span><span class="n">quantum_api_tokens</span><span class="p">,</span>
+                                               <span class="n">shots</span><span class="o">=</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;shots&#39;</span><span class="p">],</span>
+                                               <span class="n">backend</span><span class="o">=</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;backend&#39;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">options</span><span class="p">[</span><span class="s1">&#39;provider&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;d-wave&#39;</span><span class="p">:</span>
+                <span class="n">solution</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+                <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">optimal_counts</span> <span class="o">=</span> <span class="n">ggaem_workflow</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
+                                                <span class="n">solver</span><span class="o">=</span><span class="n">solver</span><span class="p">,</span>
+                                                <span class="n">verbose</span><span class="o">=</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;verbose&#39;</span><span class="p">],</span>
+                                                <span class="n">shots</span><span class="o">=</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;shots&#39;</span><span class="p">],</span>
+                                                <span class="n">algorithm</span><span class="o">=</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;algorithm&#39;</span><span class="p">],</span>
+                                                <span class="n">optimizer</span><span class="o">=</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;optimizer&#39;</span><span class="p">],</span>
+                                                <span class="n">tolerance</span><span class="o">=</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;tolerance&#39;</span><span class="p">],</span>
+                                                <span class="n">max_iter</span><span class="o">=</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;max_iter&#39;</span><span class="p">],</span>
+                                                <span class="n">ansatz</span><span class="o">=</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;ansatz&#39;</span><span class="p">],</span>
+                                                <span class="n">layers</span><span class="o">=</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;layers&#39;</span><span class="p">],</span>
+                                                <span class="n">p</span><span class="o">=</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;p&#39;</span><span class="p">],</span>
+                                                <span class="n">seed</span><span class="o">=</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;seed&#39;</span><span class="p">],</span>
+                                                <span class="n">penalty</span><span class="o">=</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;penalty&#39;</span><span class="p">])</span>
+                <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t0</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">=</span> <span class="n">options</span><span class="p">[</span><span class="s1">&#39;algorithm&#39;</span><span class="p">]</span>
+                <span class="n">solution</span> <span class="o">=</span> <span class="n">get_ggaem_solution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">optimal_counts</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">provider</span> <span class="o">=</span> <span class="n">options</span><span class="p">[</span><span class="s1">&#39;provider&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">backend</span> <span class="o">=</span> <span class="n">options</span><span class="p">[</span><span class="s1">&#39;backend&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_solution</span><span class="p">(</span><span class="n">solution</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid value for argument &#39;method&#39;. Must be &quot;</span>
+                             <span class="s2">&quot;&#39;classical&#39; or &#39;quantum&#39;&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">exec_time</span> <span class="o">=</span> <span class="n">end_time</span></div>
+
+
+<div class="viewcode-block" id="QModel.set_solution">
+<a class="viewcode-back" href="../../../qplex.model.html#qplex.model.qmodel.QModel.set_solution">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_solution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets the solution for the model. Used internally by the QModel&#39;s</span>
+<span class="sd">        solve method.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        result: dict</span>
+<span class="sd">            The solution dictionary containing &#39;solution&#39; and</span>
+<span class="sd">            &#39;objective&#39;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">solve_solution</span> <span class="o">=</span> <span class="n">SolveSolution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                                       <span class="n">var_value_map</span><span class="o">=</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;solution&#39;</span><span class="p">],</span>
+                                       <span class="n">obj</span><span class="o">=</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;objective&#39;</span><span class="p">],</span>
+                                       <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">Model</span><span class="o">.</span><span class="n">_set_solution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_solution</span><span class="o">=</span><span class="n">solve_solution</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="QModel.print_solution">
+<a class="viewcode-back" href="../../../qplex.model.html#qplex.model.qmodel.QModel.print_solution">[docs]</a>
+    <span class="k">def</span> <span class="nf">print_solution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">print_zeros</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                       <span class="n">solution_header_fmt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                       <span class="n">var_value_fmt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                       <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prints the solution of the model. Must be called after solve().</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        print_zeros: bool, optional</span>
+<span class="sd">            Whether to print variables with zero values.</span>
+<span class="sd">        solution_header_fmt: str, optional</span>
+<span class="sd">            Format string for the solution header.</span>
+<span class="sd">        var_value_fmt: str, optional</span>
+<span class="sd">            Format string for variable values.</span>
+<span class="sd">        kwargs: dict</span>
+<span class="sd">            Additional keyword arguments.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Results&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;----------&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Method: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Algorithm: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Provider: &quot;</span>
+              <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">provider</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">provider</span><span class="w"> </span><span class="ow">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="kc">None</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;N/A&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Backend: &quot;</span>
+              <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="w"> </span><span class="ow">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="kc">None</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;N/A&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Execution time: </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exec_time</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">QModel</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">print_solution</span><span class="p">(</span><span class="n">print_zeros</span><span class="p">,</span>
+                                           <span class="n">solution_header_fmt</span><span class="p">,</span>
+                                           <span class="n">var_value_fmt</span><span class="p">,</span>
+                                           <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;----------&quot;</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/QPLEX_logo.png" alt="Logo of QPLEX"/>
+            </a></p>
+<p class="logo">
+  <a href="../../../index.html">
+    <img class="logo" src="_static/{'link': 'https://qplex-landing.vercel.app/'}" alt="Logo" />
+    
+  </a>
+</p>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">qplex</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, J. Giraldo, J. Ossorio.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.0.2</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

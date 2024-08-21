@@ -37,20 +37,430 @@
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
 </section>
-<section id="qplex-solvers-base-solver-module">
-<h2>qplex.solvers.base_solver module<a class="headerlink" href="#qplex-solvers-base-solver-module" title="Link to this heading">¶</a></h2>
+<section id="module-qplex.solvers.base_solver">
+<span id="qplex-solvers-base-solver-module"></span><h2>qplex.solvers.base_solver module<a class="headerlink" href="#module-qplex.solvers.base_solver" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="qplex.solvers.base_solver.Solver">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qplex.solvers.base_solver.</span></span><span class="sig-name descname"><span class="pre">Solver</span></span><a class="reference internal" href="_modules/qplex/solvers/base_solver.html#Solver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.solvers.base_solver.Solver" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>Abstract base class for a quantum solver.</p>
+<p>This class defines the necessary methods for interacting with a quantum
+solver, including solving problems, parsing inputs and responses,
+and selecting the appropriate backend.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="qplex.solvers.base_solver.Solver.parse_input">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_form</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="_modules/qplex/solvers/base_solver.html#Solver.parse_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.solvers.base_solver.Solver.parse_input" title="Link to this definition">¶</a></dt>
+<dd><p>Parses the input model or problem formulation into a format suitable
+for solving.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_form</strong> – The input model or problem formulation, which could</p></li>
+<li><p><strong>representation.</strong> (<em>be a QModel instance</em><em> or </em><em>a string</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An object or data structure that the solver can use to perform
+the optimization.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qplex.solvers.base_solver.Solver.parse_response">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="reference internal" href="_modules/qplex/solvers/base_solver.html#Solver.parse_response"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.solvers.base_solver.Solver.parse_response" title="Link to this definition">¶</a></dt>
+<dd><p>Parses the response received from the backend solver.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>response</strong> – The raw response from the backend. The format of this</p></li>
+<li><p><strong>implementation.</strong> (<em>response depends on the specific backend and solver</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary containing the parsed response, which typically
+includes the solution and any relevant metadata or metrics.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qplex.solvers.base_solver.Solver.select_backend">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">select_backend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qubits</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="_modules/qplex/solvers/base_solver.html#Solver.select_backend"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.solvers.base_solver.Solver.select_backend" title="Link to this definition">¶</a></dt>
+<dd><p>Selects and configures the appropriate backend based on the number
+of qubits required.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>qubits</strong> – The minimum number of qubits needed for the backend.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The selected backend that meets the qubit requirement. This may
+involve initialization or configuration specific to the quantum
+provider.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qplex.solvers.base_solver.Solver.solve">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">solve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">formulation</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="reference internal" href="_modules/qplex/solvers/base_solver.html#Solver.solve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.solvers.base_solver.Solver.solve" title="Link to this definition">¶</a></dt>
+<dd><p>Solves the given problem formulation and returns the solution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>formulation</strong> – The problem formulation to be solved. This could be a
+model instance or a string representation of the
+problem.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary containing the solution to the problem. The
+structure of this dictionary depends on the specific
+implementation and problem.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
-<section id="qplex-solvers-braket-solver-module">
-<h2>qplex.solvers.braket_solver module<a class="headerlink" href="#qplex-solvers-braket-solver-module" title="Link to this heading">¶</a></h2>
+<section id="module-qplex.solvers.braket_solver">
+<span id="qplex-solvers-braket-solver-module"></span><h2>qplex.solvers.braket_solver module<a class="headerlink" href="#module-qplex.solvers.braket_solver" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="qplex.solvers.braket_solver.BraketSolver">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qplex.solvers.braket_solver.</span></span><span class="sig-name descname"><span class="pre">BraketSolver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qplex/solvers/braket_solver.html#BraketSolver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.solvers.braket_solver.BraketSolver" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#qplex.solvers.base_solver.Solver" title="qplex.solvers.base_solver.Solver"><code class="xref py py-class docutils literal notranslate"><span class="pre">Solver</span></code></a></p>
+<p>A quantum solver for Braket that can execute quantum circuits on AWS
+Braket’s devices or local simulators.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qplex.solvers.braket_solver.BraketSolver.shots">
+<span class="sig-name descname"><span class="pre">shots</span></span><a class="headerlink" href="#qplex.solvers.braket_solver.BraketSolver.shots" title="Link to this definition">¶</a></dt>
+<dd><p>The number of shots for the quantum experiment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qplex.solvers.braket_solver.BraketSolver.backend">
+<span class="sig-name descname"><span class="pre">backend</span></span><a class="headerlink" href="#qplex.solvers.braket_solver.BraketSolver.backend" title="Link to this definition">¶</a></dt>
+<dd><p>The name of the backend to be used, which can be a Braket
+device or a local simulator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qplex.solvers.braket_solver.BraketSolver.parse_input">
+<span class="sig-name descname"><span class="pre">parse_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">circuit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Program</span></span></span><a class="reference internal" href="_modules/qplex/solvers/braket_solver.html#BraketSolver.parse_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.solvers.braket_solver.BraketSolver.parse_input" title="Link to this definition">¶</a></dt>
+<dd><p>Converts a circuit string to an OpenQASMProgram, replacing ‘cx’ with
+‘cnot’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>circuit</strong> (<em>str</em>) – The quantum circuit as an OpenQASM string.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An OpenQASMProgram instance with the modified circuit.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>OpenQASMProgram</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qplex.solvers.braket_solver.BraketSolver.parse_response">
+<span class="sig-name descname"><span class="pre">parse_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/qplex/solvers/braket_solver.html#BraketSolver.parse_response"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.solvers.braket_solver.BraketSolver.parse_response" title="Link to this definition">¶</a></dt>
+<dd><p>Parses the response from the backend to extract measurement counts.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>response</strong> (<em>Any</em>) – The raw response from the backend.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary with the measurement counts.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qplex.solvers.braket_solver.BraketSolver.select_backend">
+<span class="sig-name descname"><span class="pre">select_backend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qubits</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="_modules/qplex/solvers/braket_solver.html#BraketSolver.select_backend"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.solvers.braket_solver.BraketSolver.select_backend" title="Link to this definition">¶</a></dt>
+<dd><p>Selects the appropriate backend based on the number of qubits and
+the specified backend name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>qubits</strong> (<em>int</em>) – The minimum number of qubits required.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The selected backend, which could be an AWS device or a local
+simulator.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qplex.solvers.braket_solver.BraketSolver.solve">
+<span class="sig-name descname"><span class="pre">solve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/qplex/solvers/braket_solver.html#BraketSolver.solve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.solvers.braket_solver.BraketSolver.solve" title="Link to this definition">¶</a></dt>
+<dd><p>Solves the given problem formulation using the specified backend.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>model</strong> (<em>str</em>) – The quantum circuit as an OpenQASM string to be executed.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary containing the measurement counts from the backend.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
-<section id="qplex-solvers-dwave-solver-module">
-<h2>qplex.solvers.dwave_solver module<a class="headerlink" href="#qplex-solvers-dwave-solver-module" title="Link to this heading">¶</a></h2>
+<section id="module-qplex.solvers.dwave_solver">
+<span id="qplex-solvers-dwave-solver-module"></span><h2>qplex.solvers.dwave_solver module<a class="headerlink" href="#module-qplex.solvers.dwave_solver" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="qplex.solvers.dwave_solver.DWaveSolver">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qplex.solvers.dwave_solver.</span></span><span class="sig-name descname"><span class="pre">DWaveSolver</span></span><a class="reference internal" href="_modules/qplex/solvers/dwave_solver.html#DWaveSolver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.solvers.dwave_solver.DWaveSolver" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#qplex.solvers.base_solver.Solver" title="qplex.solvers.base_solver.Solver"><code class="xref py py-class docutils literal notranslate"><span class="pre">Solver</span></code></a></p>
+<p>A quantum solver for D-Wave systems that can handle various types of models
+including constrained quadratic models, discrete quadratic models,
+and binary
+quadratic models.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="qplex.solvers.dwave_solver.DWaveSolver.parse_constraint">
+<span class="sig-name descname"><span class="pre">parse_constraint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">constraint</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">QuadraticModel</span></span></span><a class="reference internal" href="_modules/qplex/solvers/dwave_solver.html#DWaveSolver.parse_constraint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.solvers.dwave_solver.DWaveSolver.parse_constraint" title="Link to this definition">¶</a></dt>
+<dd><p>Converts a constraint into a D-Wave compatible QuadraticModel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>constraint</strong> (<em>Any</em>) – The constraint to be converted.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The D-Wave model representing the constraint.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>QuadraticModel</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qplex.solvers.dwave_solver.DWaveSolver.parse_input">
+<span class="sig-name descname"><span class="pre">parse_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model)</span> <span class="pre">-&gt;</span> <span class="pre">(typing.Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">&lt;class</span> <span class="pre">'str'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qplex/solvers/dwave_solver.html#DWaveSolver.parse_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.solvers.dwave_solver.DWaveSolver.parse_input" title="Link to this definition">¶</a></dt>
+<dd><p>Converts the input model into a D-Wave compatible model and
+determines the model type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>model</strong> (<a class="reference internal" href="qplex.model.html#qplex.model.qmodel.QModel" title="qplex.model.qmodel.QModel"><em>QModel</em></a>) – The model to be parsed, which includes problem
+constraints and objectives.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tuple containing the parsed model and the model type as
+a string.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qplex.solvers.dwave_solver.DWaveSolver.parse_objective">
+<span class="sig-name descname"><span class="pre">parse_objective</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parsed_model</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="_modules/qplex/solvers/dwave_solver.html#DWaveSolver.parse_objective"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.solvers.dwave_solver.DWaveSolver.parse_objective" title="Link to this definition">¶</a></dt>
+<dd><p>Converts the objective function of the model into the format
+required by D-Wave.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<a class="reference internal" href="qplex.model.html#qplex.model.qmodel.QModel" title="qplex.model.qmodel.QModel"><em>QModel</em></a>) – The original model containing the objective function.</p></li>
+<li><p><strong>parsed_model</strong> – The D-Wave model to which the objective function  will be added.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The D-Wave model with the objective function set.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qplex.solvers.dwave_solver.DWaveSolver.parse_response">
+<span class="sig-name descname"><span class="pre">parse_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/qplex/solvers/dwave_solver.html#DWaveSolver.parse_response"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.solvers.dwave_solver.DWaveSolver.parse_response" title="Link to this definition">¶</a></dt>
+<dd><p>Parses the response from the D-Wave solver.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>response</strong> (<em>Any</em>) – The raw response from the D-Wave solver.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary with ‘objective’ and ‘solution’ keys.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qplex.solvers.dwave_solver.DWaveSolver.select_backend">
+<span class="sig-name descname"><span class="pre">select_backend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/qplex/solvers/dwave_solver.html#DWaveSolver.select_backend"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.solvers.dwave_solver.DWaveSolver.select_backend" title="Link to this definition">¶</a></dt>
+<dd><p>This method is not implemented in this class.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qplex.solvers.dwave_solver.DWaveSolver.solve">
+<span class="sig-name descname"><span class="pre">solve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/qplex/solvers/dwave_solver.html#DWaveSolver.solve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.solvers.dwave_solver.DWaveSolver.solve" title="Link to this definition">¶</a></dt>
+<dd><p>Solves the given problem formulation using the D-Wave system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>model</strong> (<a class="reference internal" href="qplex.model.html#qplex.model.qmodel.QModel" title="qplex.model.qmodel.QModel"><em>QModel</em></a>) – The model to be solved, which includes quantum API tokens and
+the problem specification.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary containing the solution with ‘objective’ and
+‘solution’ keys.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
-<section id="qplex-solvers-ibmq-solver-module">
-<h2>qplex.solvers.ibmq_solver module<a class="headerlink" href="#qplex-solvers-ibmq-solver-module" title="Link to this heading">¶</a></h2>
+<section id="module-qplex.solvers.ibmq_solver">
+<span id="qplex-solvers-ibmq-solver-module"></span><h2>qplex.solvers.ibmq_solver module<a class="headerlink" href="#module-qplex.solvers.ibmq_solver" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="qplex.solvers.ibmq_solver.IBMQSolver">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qplex.solvers.ibmq_solver.</span></span><span class="sig-name descname"><span class="pre">IBMQSolver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qplex/solvers/ibmq_solver.html#IBMQSolver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.solvers.ibmq_solver.IBMQSolver" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#qplex.solvers.base_solver.Solver" title="qplex.solvers.base_solver.Solver"><code class="xref py py-class docutils literal notranslate"><span class="pre">Solver</span></code></a></p>
+<p>A quantum solver for IBMQ that can execute quantum circuits on IBM’s
+backend or a local simulator.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qplex.solvers.ibmq_solver.IBMQSolver.shots">
+<span class="sig-name descname"><span class="pre">shots</span></span><a class="headerlink" href="#qplex.solvers.ibmq_solver.IBMQSolver.shots" title="Link to this definition">¶</a></dt>
+<dd><p>The number of shots for the quantum experiment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qplex.solvers.ibmq_solver.IBMQSolver.backend">
+<span class="sig-name descname"><span class="pre">backend</span></span><a class="headerlink" href="#qplex.solvers.ibmq_solver.IBMQSolver.backend" title="Link to this definition">¶</a></dt>
+<dd><p>The name of the backend to be used, which can be an IBMQ
+device or a local simulator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qplex.solvers.ibmq_solver.IBMQSolver.service">
+<span class="sig-name descname"><span class="pre">service</span></span><a class="headerlink" href="#qplex.solvers.ibmq_solver.IBMQSolver.service" title="Link to this definition">¶</a></dt>
+<dd><p>The Qiskit runtime service instance for interacting with IBMQ’s
+backend.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>QiskitRuntimeService</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qplex.solvers.ibmq_solver.IBMQSolver.parse_input">
+<span class="sig-name descname"><span class="pre">parse_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">circuit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">QuantumCircuit</span></span></span><a class="reference internal" href="_modules/qplex/solvers/ibmq_solver.html#IBMQSolver.parse_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.solvers.ibmq_solver.IBMQSolver.parse_input" title="Link to this definition">¶</a></dt>
+<dd><p>Converts a circuit string to a Qiskit QuantumCircuit object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>circuit</strong> (<em>str</em>) – The quantum circuit as an OpenQASM string.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The quantum circuit object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>qiskit.QuantumCircuit</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qplex.solvers.ibmq_solver.IBMQSolver.parse_response">
+<span class="sig-name descname"><span class="pre">parse_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/qplex/solvers/ibmq_solver.html#IBMQSolver.parse_response"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.solvers.ibmq_solver.IBMQSolver.parse_response" title="Link to this definition">¶</a></dt>
+<dd><p>Parses the response from the backend to extract measurement counts.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>response</strong> (<em>dict</em>) – The raw response from the backend.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary with the measurement counts.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qplex.solvers.ibmq_solver.IBMQSolver.select_backend">
+<span class="sig-name descname"><span class="pre">select_backend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qubits</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">AerSimulator</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">BackendV2</span></span></span><a class="reference internal" href="_modules/qplex/solvers/ibmq_solver.html#IBMQSolver.select_backend"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.solvers.ibmq_solver.IBMQSolver.select_backend" title="Link to this definition">¶</a></dt>
+<dd><p>Selects the appropriate backend based on the number of qubits and
+the specified backend name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>qubits</strong> (<em>int</em>) – The number of qubits in the quantum circuit.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The selected backend, which could be an IBMQ device or a  local
+simulator.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qplex.solvers.ibmq_solver.IBMQSolver.solve">
+<span class="sig-name descname"><span class="pre">solve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/qplex/solvers/ibmq_solver.html#IBMQSolver.solve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.solvers.ibmq_solver.IBMQSolver.solve" title="Link to this definition">¶</a></dt>
+<dd><p>Solves the given problem formulation using the specified backend.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>model</strong> (<em>str</em>) – The quantum circuit as an OpenQASM string to be
+executed.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary containing the measurement counts from the
+backend.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
-<section id="module-contents">
-<h2>Module contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
+<section id="module-qplex.solvers">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-qplex.solvers" title="Link to this heading">¶</a></h2>
+<p>This module provides the different solvers.</p>
 </section>
 </section>
 

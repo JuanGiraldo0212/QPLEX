@@ -38,14 +38,105 @@
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
 </section>
-<section id="qplex-commons-ggaem-module">
-<h2>qplex.commons.ggaem module<a class="headerlink" href="#qplex-commons-ggaem-module" title="Link to this heading">¶</a></h2>
+<section id="module-qplex.commons.ggaem">
+<span id="qplex-commons-ggaem-module"></span><h2>qplex.commons.ggaem module<a class="headerlink" href="#module-qplex.commons.ggaem" title="Link to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="qplex.commons.ggaem.get_ggaem_solution">
+<span class="sig-prename descclassname"><span class="pre">qplex.commons.ggaem.</span></span><span class="sig-name descname"><span class="pre">get_ggaem_solution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimal_counts</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qplex/commons/ggaem.html#get_ggaem_solution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.commons.ggaem.get_ggaem_solution" title="Link to this definition">¶</a></dt>
+<dd><p>Extracts the best solution from the optimal parameter counts.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>Model</em>) – The optimization model that was solved.</p></li>
+<li><p><strong>optimal_counts</strong> (<em>dict</em>) – A dictionary of optimal parameter counts.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary containing the best solution and its objective value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="qplex.commons.ggaem.ggaem_workflow">
+<span class="sig-prename descclassname"><span class="pre">qplex.commons.ggaem.</span></span><span class="sig-name descname"><span class="pre">ggaem_workflow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solver</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="qplex.solvers.html#qplex.solvers.base_solver.Solver" title="qplex.solvers.base_solver.Solver"><span class="pre">Solver</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">algorithm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ansatz</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">penalty</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qplex/commons/ggaem.html#ggaem_workflow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.commons.ggaem.ggaem_workflow" title="Link to this definition">¶</a></dt>
+<dd><p>Runs the GGAEM (Generalized Grover Adaptive Execution Method) workflow.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>Model</em>) – The optimization model to be solved.</p></li>
+<li><p><strong>solver</strong> (<a class="reference internal" href="qplex.solvers.html#qplex.solvers.base_solver.Solver" title="qplex.solvers.base_solver.Solver"><em>Solver</em></a>) – The solver to be used for solving the model.</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em>) – If True, enables verbose output.</p></li>
+<li><p><strong>shots</strong> (<em>int</em>) – The number of shots for quantum execution.</p></li>
+<li><p><strong>algorithm</strong> (<em>str</em>) – The quantum algorithm to use (‘qaoa’ or ‘vqe’).</p></li>
+<li><p><strong>optimizer</strong> (<em>str</em>) – The classical optimizer to use.</p></li>
+<li><p><strong>max_iter</strong> (<em>int</em>) – The maximum number of iterations for the optimizer.</p></li>
+<li><p><strong>tolerance</strong> (<em>float</em>) – The tolerance for the optimizer.</p></li>
+<li><p><strong>ansatz</strong> (<em>str</em>) – The ansatz to use in the quantum algorithm.</p></li>
+<li><p><strong>p</strong> (<em>int</em>) – The depth of the ansatz for QAOA.</p></li>
+<li><p><strong>layers</strong> (<em>int</em>) – The number of layers in the ansatz for VQE.</p></li>
+<li><p><strong>seed</strong> (<em>int</em>) – The seed for the random number generator.</p></li>
+<li><p><strong>penalty</strong> (<em>float</em>) – The penalty factor for the QUBO conversion.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary of optimal parameter counts.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
-<section id="qplex-commons-solver-factory-module">
-<h2>qplex.commons.solver_factory module<a class="headerlink" href="#qplex-commons-solver-factory-module" title="Link to this heading">¶</a></h2>
+<section id="module-qplex.commons.solver_factory">
+<span id="qplex-commons-solver-factory-module"></span><h2>qplex.commons.solver_factory module<a class="headerlink" href="#module-qplex.commons.solver_factory" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="qplex.commons.solver_factory.SolverFactory">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qplex.commons.solver_factory.</span></span><span class="sig-name descname"><span class="pre">SolverFactory</span></span><a class="reference internal" href="_modules/qplex/commons/solver_factory.html#SolverFactory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.commons.solver_factory.SolverFactory" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A factory class for creating quantum solvers based on the specified
+provider.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="qplex.commons.solver_factory.SolverFactory.get_solver">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_solver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">provider</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantum_api_tokens</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qplex/commons/solver_factory.html#SolverFactory.get_solver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.commons.solver_factory.SolverFactory.get_solver" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the appropriate solver based on the specified provider and
+available tokens.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>provider</strong> (<em>str</em>) – The quantum provider (e.g., ‘d-wave’, ‘ibmq’, ‘braket’).</p></li>
+<li><p><strong>quantum_api_tokens</strong> (<em>dict</em>) – A dictionary containing API tokens for various quantum providers.</p></li>
+<li><p><strong>shots</strong> (<em>int</em>) – The number of shots for quantum execution.</p></li>
+<li><p><strong>backend</strong> (<em>str</em>) – The backend to use for the quantum provider.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An instance of the appropriate solver based on the specified
+provider.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>solver</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>RuntimeError</strong> – If the necessary credentials for the specified provider are
+    missing.</p></li>
+<li><p><strong>ValueError</strong> – If the specified provider is not recognized.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
-<section id="module-contents">
-<h2>Module contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
+<section id="module-qplex.commons">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-qplex.commons" title="Link to this heading">¶</a></h2>
+<p>This module provides different utility classes.</p>
 </section>
 </section>
 
