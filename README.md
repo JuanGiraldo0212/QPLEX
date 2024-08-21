@@ -22,6 +22,7 @@ The `QModel` module provides all the necessary functionality for creating and ex
 
 ```python3
 from qplex import QModel
+from qplex.model import Options
 # Problem definition
 weights = [4, 2, 5, 4, 5, 1, 3, 5]
 values = [10, 5, 18, 12, 15, 1, 2, 8]
@@ -79,7 +80,7 @@ execution_params = {
         "max_iter": 500,
         "shots": 10000
     }
-knapsack_model.solve(solver='quantum', **execution_params)
+knapsack_model.solve(solver='quantum', Options(**execution_params))
 ```
 
 Algorithms to be supported in the future:
