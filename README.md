@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/icon.svg?raw=true" alt="QPLEX"/>
+  <img src="assets/logo.svg?raw=true" alt="QPLEX"/>
 </p>
 
 ⚠️ **This library is currently under development.**
