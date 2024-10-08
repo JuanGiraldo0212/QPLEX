@@ -7,7 +7,7 @@ class Solver(ABC):
     Abstract base class for a quantum solver.
 
     This class defines the necessary methods for interacting with a quantum
-    solver, including solving problems, parsing inputs and responses,
+    backend provider, including solving problems, parsing inputs and responses,
     and selecting the appropriate backend.
     """
 

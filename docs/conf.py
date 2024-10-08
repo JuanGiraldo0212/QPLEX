@@ -31,7 +31,8 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_logo = '_static/QPLEX_logo.png'
+html_logo = '_static/icon.svg'
+html_favicon = '_static/favicon.ico'
 html_theme = 'alabaster'
 html_static_path = ['_static']
 
