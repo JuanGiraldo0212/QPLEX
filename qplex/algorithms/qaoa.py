@@ -1,5 +1,4 @@
 import numpy as np
-import qiskit.qasm3
 
 from qplex.algorithms.base_algorithm import Algorithm
 
