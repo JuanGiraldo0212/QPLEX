@@ -23,7 +23,7 @@ def qiskit_runtime_workflow(model, backend: str, verbose: bool, shots: int,
 
     vqc = loads(algorithm_instance.parse_to_vqc())
 
-    if backend is None or backend == "":
+    if backend is None or backend == "" or backend == 'simulator':
         print('No backend specified. Using least busy...')
         selected_backend = service.least_busy(min_num_qubits=vqc.num_qubits)
     else:

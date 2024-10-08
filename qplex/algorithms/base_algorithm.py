@@ -17,14 +17,9 @@ class Algorithm(ABC):
     ----------
     model : Model
         The optimization model to be solved.
-    solver : Solver
-        The solver to be used for solving the model.
-    verbose : bool
-        If True, enables verbose output.
-    shots : int
-        The number of shots for quantum execution.
     qubo : QuadraticProgram or None
-        The QUBO (Quadratic Unconstrained Binary Optimization) encoding of the problem.
+        The QUBO (Quadratic Unconstrained Binary Optimization) encoding of
+        the problem.
     iteration : int
         The current iteration number of the optimization process.
     """
@@ -42,11 +37,6 @@ class Algorithm(ABC):
         self.model = model
         self.qubo: QuadraticProgram | None = None
         self.iteration = 0
-
-    @property
-    @abstractmethod
-    def num_params(self):
-        ...
 
     @abstractmethod
     def create_circuit(self) -> str:
