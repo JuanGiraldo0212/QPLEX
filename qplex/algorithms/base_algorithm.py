@@ -37,6 +37,7 @@ class Algorithm(ABC):
         self.model = model
         self.qubo: QuadraticProgram | None = None
         self.iteration = 0
+        self.circuit = None
 
     @abstractmethod
     def create_circuit(self) -> str:
@@ -80,15 +81,20 @@ class Algorithm(ABC):
         """
         ...
 
-    @abstractmethod
-    def parse_to_vqc(self):
+    def remove_parameters(self):
         """
-        Returns the variational circuit version of the algorithm using
-        OpenQASM3 input types.
+        Removes the theta parameters from the OpenQASM3 parameterized
+        string. It does not change the placeholders for the parameters in
+        the circuit.
+        """
+        if not hasattr(self, 'circuit') or self.circuit is None:
+            raise AttributeError(
+                "The 'circuit' attribute is not defined. Ensure the circuit "
+                "is instantiated in the specific algorithm.")
 
-        Returns
-        -------
-        str
-            The string representing the OpenQASM3 variational quantum circuit.
-        """
-        ...
+        lines = self.circuit.splitlines()
+
+        filtered_lines = [line for line in lines if
+                          not line.startswith("input float[64]")]
+
+        self.circuit = "\n".join(filtered_lines)

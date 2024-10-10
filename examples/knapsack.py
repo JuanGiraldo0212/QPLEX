@@ -1,6 +1,6 @@
 from typing import List
 from qplex import QModel
-from qplex.model import Options
+from qplex.model.options import Options
 
 
 def model_knapsack_problem(values: List, weights: List, const: int) -> QModel:
@@ -25,8 +25,8 @@ def main():
     execution_params = {
         "provider": "ibmq",
         # Change to the desired backend (i.e., ibmq_qasm_simulator)
-        "backend": "simulator",
-        "workflow": 'qiskit_runtime',
+        # "backend": "ibm",
+        "workflow": 'ibm_session',
         "verbose": True,
         "penalty": 10,
         "algorithm": "qaoa",

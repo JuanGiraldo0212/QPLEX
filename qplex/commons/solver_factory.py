@@ -1,6 +1,6 @@
-from qplex.solvers import IBMQSolver
-from qplex.solvers import DWaveSolver
-from qplex.solvers.braket_solver import BraketSolver
+from qplex.solvers import IBMQSolver, DWaveSolver, BraketSolver
+
+from typing import Any
 
 
 class SolverFactory:
@@ -9,9 +9,15 @@ class SolverFactory:
     provider.
     """
 
+    PROVIDERS = {
+        'd-wave': 'd-wave_token',
+        'ibmq': 'ibmq_token',
+        'braket': None
+    }
+
     @staticmethod
     def get_solver(provider: str, quantum_api_tokens: dict, shots: int,
-                   backend: str):
+                   backend: str, provider_options: dict[str, Any]):
         """
         Returns the appropriate solver based on the specified provider and
         available tokens.
@@ -26,6 +32,8 @@ class SolverFactory:
             The number of shots for quantum execution.
         backend: str
             The backend to use for the quantum provider.
+        provider_options: dict[str, Any]
+            A dictionary containing the configuration for the provider.
 
         Returns
         -------
@@ -41,27 +49,31 @@ class SolverFactory:
         ValueError
             If the specified provider is not recognized.
         """
-        dwave_token = quantum_api_tokens.get("d-wave_token")
-        ibmq_token = quantum_api_tokens.get("ibmq_token")
-        if provider is None:
-            if dwave_token:
-                return DWaveSolver()
-            if ibmq_token:
-                return IBMQSolver(token=ibmq_token, shots=shots,
-                                  backend=backend)
-            raise RuntimeError("Missing credentials for quantum provider")
-        if provider == 'd-wave':
-            if dwave_token is None:
+        if provider not in SolverFactory.PROVIDERS:
+            raise ValueError(f"Unknown provider: {provider}")
+
+        token_name = SolverFactory.PROVIDERS.get(provider)
+
+        if token_name:
+            token = quantum_api_tokens.get(token_name)
+            if token is None:
                 raise RuntimeError(
-                    "Missing credentials for the D-Wave provider")
+                    f"Missing credentials for the {provider} provider")
+        else:
+            token = None
+
+        if provider == 'd-wave':
             return DWaveSolver()
+
         if provider == 'ibmq':
-            if ibmq_token is None:
-                raise RuntimeError("Missing credentials for the IBM provider")
-            return IBMQSolver(token=ibmq_token, shots=shots, backend=backend)
-        if provider == "braket":
+            return IBMQSolver(token=token, shots=shots, backend=backend,
+                              optimization_level=provider_options.get(
+                                  'optimization_level', 1))
+
+        if provider == 'braket':
             return BraketSolver(shots=shots, backend=backend)
-        raise ValueError(provider)
+
+        raise ValueError(f"Unsupported provider: {provider}")
 
 
 solver_factory = SolverFactory()

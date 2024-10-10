@@ -62,7 +62,10 @@ class Options(MutableMapping):
                  max_iter: int = 1000,
                  penalty: float = None,
                  shots: int = 1024,
-                 seed: int = 1):
+                 seed: int = 1,
+                 provider_options=None):
+        if provider_options is None:
+            provider_options = {}
         self._options = {
             'method': method,
             'verbose': verbose,
@@ -80,6 +83,7 @@ class Options(MutableMapping):
             'penalty': penalty,
             'shots': shots,
             'seed': seed,
+            'provider_options': provider_options
         }
 
         self._validate_optimizer()

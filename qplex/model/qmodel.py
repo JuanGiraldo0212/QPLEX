@@ -6,8 +6,8 @@ from qiskit_optimization import QuadraticProgram
 from qiskit_optimization.translators import from_docplex_mp
 from qiskit_optimization.converters import QuadraticProgramToQubo
 from qplex.commons import solver_factory
-from qplex.commons import ggaem_workflow, get_ggaem_solution
-from qplex.workflows import qiskit_runtime_workflow
+from qplex.commons.workflow_utils import get_solution_from_counts
+from qplex.workflows import ibm_session_workflow, ggaem_workflow
 from qplex.model.options import Options
 import os
 
@@ -84,62 +84,27 @@ class QModel(Model):
                                                quantum_api_tokens=
                                                self.quantum_api_tokens,
                                                shots=options['shots'],
-                                               backend=options['backend'])
+                                               backend=options['backend'],
+                                               provider_options=options[
+                                                   'provider_options'])
             if options['provider'] == 'd-wave':
                 solution = solver.solve(self)
                 end_time = time.time() - t0
                 self.algorithm = 'N/A'
             else:
                 if options['provider'] == 'ibmq' and options['workflow'] == \
-                        'qiskit_runtime':
-                    optimal_counts = qiskit_runtime_workflow(model=self,
-                                                             backend=options[
-                                                                 'backend'],
-                                                             shots=options[
-                                                                 'shots'],
-                                                             algorithm=options[
-                                                                 'algorithm'],
-                                                             ansatz=options[
-                                                                 'ansatz'],
-                                                             layers=options[
-                                                                 'layers'],
-                                                             p=options['p'],
-                                                             seed=options[
-                                                             'seed'],
-                                                             penalty=options[
-                                                                 'penalty'],
-                                                             verbose=options[
-                                                                 'verbose'],
-                                                             optimizer=options[
-                                                                 'optimizer'],
-                                                             callback=options[
-                                                                 'callback'],
-                                                             max_iter=options[
-                                                                 'max_iter'],
-                                                             tolerance=options[
-                                                                 'tolerance'])
+                        'ibm_session':
+                    optimal_counts = ibm_session_workflow(model=self,
+                                                          ibmq_solver=
+                                                          solver,
+                                                          options=options)
                 else:
                     optimal_counts = ggaem_workflow(model=self,
                                                     solver=solver,
-                                                    verbose=options['verbose'],
-                                                    shots=options['shots'],
-                                                    algorithm=options[
-                                                        'algorithm'],
-                                                    optimizer=options[
-                                                        'optimizer'],
-                                                    callback=options[
-                                                        'callback'],
-                                                    tolerance=options[
-                                                        'tolerance'],
-                                                    max_iter=options['max_iter'],
-                                                    ansatz=options['ansatz'],
-                                                    layers=options['layers'],
-                                                    p=options['p'],
-                                                    seed=options['seed'],
-                                                    penalty=options['penalty'])
+                                                    options=options)
                 end_time = time.time() - t0
                 self.algorithm = options['algorithm']
-                solution = get_ggaem_solution(self, optimal_counts)
+                solution = get_solution_from_counts(self, optimal_counts)
             self.provider = options['provider']
             self.backend = options['backend']
             self.set_solution(solution)
