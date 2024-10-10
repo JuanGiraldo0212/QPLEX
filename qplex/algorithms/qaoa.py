@@ -1,7 +1,7 @@
 import numpy as np
 
 from qplex.algorithms.base_algorithm import Algorithm
-from qplex.solvers.base_solver import Solver
+from qplex.commons.circuit_utils import replace_params
 
 
 class QAOA(Algorithm):
@@ -21,10 +21,11 @@ class QAOA(Algorithm):
         The number of qubits in the quantum circuit.
     circuit : str
         The OpenQASM2 representation of the quantum circuit.
+    num_params : int
+        The number of parameters for the QAOA variational circuit.
     """
 
-    def __init__(self, model, solver: Solver, verbose: bool,
-                 shots: int, p: int, seed: int, penalty: float):
+    def __init__(self, model, p: int, seed: int, penalty: float):
         """
         Initializes the QAOA algorithm with the given parameters.
 
@@ -32,12 +33,6 @@ class QAOA(Algorithm):
         ----------
         model : QModel
             The optimization model to be solved.
-        solver : Solver
-            The solver to be used for solving the model.
-        verbose : bool
-            If True, enables verbose output.
-        shots : int
-            The number of shots for quantum execution.
         p : int
             The number of repetitions of the two parameterized unitary
             operations.
@@ -46,9 +41,10 @@ class QAOA(Algorithm):
         penalty : float
             The penalty factor for the QUBO conversion.
         """
-        super().__init__(model, solver, verbose, shots)
+        super().__init__(model)
         self.p: int = p
         self.n: int = 0
+        self.num_params = 2 * self.p
         self.circuit: str = self.create_circuit(penalty=penalty)
         np.random.seed(seed)
 
@@ -75,35 +71,42 @@ class QAOA(Algorithm):
         """
         self.qubo = self.model.get_qubo(penalty=kwargs['penalty'])
         self.n = self.qubo.get_num_binary_vars()
-        circuit = f"""
-        qreg q[{self.n}];
-        creg c[{self.n}];
-        """
-        for i in range(self.n):
-            circuit += f"h q[{i}];\n"
+
+        circuit_lines = [f"input float[64] theta{i};" for i in
+                         range(self.num_params)]
+
+        circuit_lines.extend([f"qreg q[{self.n}];", f"creg c[{self.n}];"])
+
+        circuit_lines.extend([f"h q[{i}];" for i in range(self.n)])
+
+        linear_terms = self.qubo.objective.linear.to_array()
+        quadratic_terms = self.qubo.objective.quadratic.to_array()
 
         for idx in range(self.p):
-            linear_terms = self.qubo.objective.linear.to_array()
-            for i, w in enumerate(linear_terms):
-                circuit += f"rz(rz_angle_{i}_{idx}) q[{i}];\n"
+            theta_2idx = f"theta{2 * idx}"
+            theta_2idx_plus_1 = f"theta{2 * idx + 1}"
 
-            quadratic_terms = self.qubo.objective.quadratic.to_array()
+            for i, w in enumerate(linear_terms):
+                h_sum = sum(quadratic_terms[i])
+                circuit_lines.append(
+                    f"rz({theta_2idx} * {(w + h_sum)}) q[{i}];")
+
             for i in range(self.n):
                 for j in range(i + 1, self.n):
                     w = quadratic_terms[i, j]
                     if w != 0:
-                        circuit += f"cx q[{int(i)}], q[{int(j)}];\n"
-                        circuit += f"rz(rzz_angle_{i}_{j}_{idx}) q[" \
-                                   f"{int(j)}];\n"
-                        circuit += f"cx q[{int(i)}], q[{int(j)}];\n"
+                        circuit_lines.append(f"cx q[{i}], q[{j}];")
+                        circuit_lines.append(
+                            f"rz({theta_2idx} * {w / 2}) q[{j}];")
+                        circuit_lines.append(f"cx q[{i}], q[{j}];")
 
             for i in range(self.n):
-                circuit += f"rx(rx_angle_{i}_{idx}) q[{i}];\n"
+                circuit_lines.append(f"rx(2 * {theta_2idx_plus_1}) q[{i}];")
 
-        for i in range(self.n):
-            circuit += f"measure q[{i}] -> c[{i}];\n"
+        circuit_lines.extend(
+            [f"measure q[{i}] -> c[{i}];" for i in range(self.n)])
 
-        return circuit
+        return "\n".join(circuit_lines)
 
     def update_params(self, params: np.ndarray) -> str:
         """
@@ -122,32 +125,8 @@ class QAOA(Algorithm):
         str
             The updated OpenQASM3 string for the QAOA circuit.
         """
-        updated_circuit = self.circuit
-        quadratic_terms = self.qubo.objective.quadratic.to_array(
-            symmetric=True)
-        linear_terms = self.qubo.objective.linear.to_array()
-        for idx in range(self.p):
-            for i, w in enumerate(linear_terms):
-                h_sum = 0
-                for j in range(len(linear_terms)):
-                    h_sum += quadratic_terms[i][j]
-                updated_circuit = updated_circuit.replace(
-                    f"rz_angle_{i}_{idx}",
-                    f"{params[2 * idx] * (w + h_sum)}")
 
-            for i in range(self.n):
-                for j in range(i + 1, self.n):
-                    w = quadratic_terms[i, j]
-                    if w != 0:
-                        updated_circuit = updated_circuit.replace(
-                            f"rzz_angle_{i}_{j}_{idx}",
-                            f"{params[2 * idx] * w / 2}")
-
-            for i in range(self.n):
-                updated_circuit = updated_circuit.replace(
-                    f"rx_angle_{i}_{idx}", f"{2 * params[2 * idx + 1]}")
-
-        return updated_circuit
+        return replace_params(self.circuit, params)
 
     def get_starting_point(self) -> np.ndarray:
         """

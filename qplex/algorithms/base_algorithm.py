@@ -17,20 +17,14 @@ class Algorithm(ABC):
     ----------
     model : Model
         The optimization model to be solved.
-    solver : Solver
-        The solver to be used for solving the model.
-    verbose : bool
-        If True, enables verbose output.
-    shots : int
-        The number of shots for quantum execution.
     qubo : QuadraticProgram or None
-        The QUBO (Quadratic Unconstrained Binary Optimization) encoding of the problem.
+        The QUBO (Quadratic Unconstrained Binary Optimization) encoding of
+        the problem.
     iteration : int
         The current iteration number of the optimization process.
     """
 
-    def __init__(self, model, solver: Solver, verbose: bool,
-                 shots: int):
+    def __init__(self, model):
         """
         Initializes the Algorithm with the given model, solver,
         verbosity, and shots.
@@ -39,19 +33,11 @@ class Algorithm(ABC):
         ----------
         model : Model
             The optimization model to be solved.
-        solver : Solver
-            The solver to be used for solving the model.
-        verbose : bool
-            If True, enables verbose output.
-        shots : int
-            The number of shots for quantum execution.
         """
         self.model = model
-        self.solver = solver
-        self.verbose = verbose
-        self.shots: int = shots
         self.qubo: QuadraticProgram | None = None
         self.iteration = 0
+        self.circuit = None
 
     @abstractmethod
     def create_circuit(self) -> str:
@@ -83,35 +69,6 @@ class Algorithm(ABC):
         """
         ...
 
-    def cost_function(self, params: np.ndarray) -> float:
-        """
-        Defines the cost function to be used for the classical optimization routine.
-
-        This method calculates the cost based on the given parameters by
-        updating the quantum circuit, solving it, and evaluating the energy.
-
-        Parameters
-        ----------
-        params : np.ndarray
-            The new set of parameters for the circuit.
-
-        Returns
-        -------
-        float
-            The cost for the current parameters.
-        """
-        qc = self.update_params(params)
-        counts = self.solver.solve(qc)
-        energy = 0
-        for sample, count in counts.items():
-            sample = [int(n) for n in sample]
-            energy += count * self.qubo.objective.evaluate(sample)
-        self.iteration += 1
-        cost = energy / self.shots
-        if self.verbose:
-            print(f'Iteration {self.iteration}:\nCost = {cost}')
-        return cost
-
     @abstractmethod
     def get_starting_point(self) -> np.ndarray:
         """
@@ -123,3 +80,21 @@ class Algorithm(ABC):
             An array representing the starting point.
         """
         ...
+
+    def remove_parameters(self):
+        """
+        Removes the theta parameters from the OpenQASM3 parameterized
+        string. It does not change the placeholders for the parameters in
+        the circuit.
+        """
+        if not hasattr(self, 'circuit') or self.circuit is None:
+            raise AttributeError(
+                "The 'circuit' attribute is not defined. Ensure the circuit "
+                "is instantiated in the specific algorithm.")
+
+        lines = self.circuit.splitlines()
+
+        filtered_lines = [line for line in lines if
+                          not line.startswith("input float[64]")]
+
+        self.circuit = "\n".join(filtered_lines)
