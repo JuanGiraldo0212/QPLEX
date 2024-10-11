@@ -1,5 +1,5 @@
 from typing import List
-from qplex import Info
+from qplex.info import Info
 from qplex import QModel
 from qplex.model.options import Options
 

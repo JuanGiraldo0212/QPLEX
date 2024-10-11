@@ -1,15 +1,21 @@
 import importlib
 import yaml
+import logging
 from pathlib import Path
+
+from qplex import __version__
 
 
 class Info:
+    _config = None
 
     @classmethod
     def _load_config(cls):
-        config_path = Path(__file__).parent / "config.yaml"
-        with open(config_path, "r") as f:
-            return yaml.safe_load(f)
+        if cls._config is None:
+            config_path = Path(__file__).parent / "config.yaml"
+            with open(config_path, "r") as f:
+                cls._config = yaml.safe_load(f)
+        return cls._config
 
     @classmethod
     def providers(cls):
@@ -19,13 +25,15 @@ class Info:
     @classmethod
     def backends(cls, provider):
         if provider not in cls.providers():
-            raise ValueError(f"Unsupported provider for : {provider}")
+            raise ValueError(f"Unsupported provider: {provider}")
 
         try:
             provider_module = importlib.import_module(
                 f"qplex.solvers.{provider}_solver")
             return provider_module.get_backends()
-        except ImportError:
+        except ImportError as e:
+            logging.error(
+                f"Failed to import module for provider {provider}: {e}")
             return []
 
     @classmethod
@@ -35,4 +43,4 @@ class Info:
 
     @classmethod
     def version(cls):
-        return "1.0.0"
+        return __version__
