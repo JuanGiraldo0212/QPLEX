@@ -6,5 +6,3 @@ problem model.
 from . import constants
 from . import options
 from . import qmodel
-
-from .options import Options
