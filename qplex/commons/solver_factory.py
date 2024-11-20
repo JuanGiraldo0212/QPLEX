@@ -63,7 +63,8 @@ class SolverFactory:
             token = None
 
         if provider == 'd-wave':
-            return DWaveSolver()
+            return DWaveSolver(time_limit=provider_options.get('time_limit',
+                                                               None))
 
         if provider == 'ibmq':
             return IBMQSolver(token=token, shots=shots, backend=backend,
