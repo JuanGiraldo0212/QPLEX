@@ -19,8 +19,7 @@ class SolverFactory:
     def get_solver(provider: str, quantum_api_tokens: dict, shots: int,
                    backend: str, provider_options: dict[str, Any]):
         """
-        Returns the appropriate solver based on the specified provider and
-        available tokens.
+        Return a solver based on the specified provider and available tokens.
 
         Parameters
         ----------
@@ -63,15 +62,18 @@ class SolverFactory:
             token = None
 
         if provider == 'd-wave':
-            return DWaveSolver(time_limit=provider_options.get('time_limit',
-                                                               None))
+            return DWaveSolver(token=token, backend=backend,
+                               time_limit=provider_options.get('time_limit',
+                                                               None),
+                               num_reads=provider_options.get('num_reads',
+                                                              100))
 
-        if provider == 'ibmq':
+        elif provider == 'ibmq':
             return IBMQSolver(token=token, shots=shots, backend=backend,
                               optimization_level=provider_options.get(
                                   'optimization_level', 1))
 
-        if provider == 'braket':
+        elif provider == 'braket':
             return BraketSolver(shots=shots, backend=backend,
                                 device_parameters=provider_options.get(
                                     'device_parameters', {}))
