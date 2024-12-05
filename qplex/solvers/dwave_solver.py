@@ -1,10 +1,13 @@
 from typing import Dict, Any
 
 from qplex.model.constants import VAR_TYPE
+
 from dwave.system import (LeapHybridCQMSampler, LeapHybridBQMSampler,
                           LeapHybridDQMSampler, )
+from dwave.preprocessing.presolve import Presolver
 from dimod import (ConstrainedQuadraticModel, QuadraticModel,
                    DiscreteQuadraticModel, BinaryQuadraticModel, )
+import dimod
 from qplex.solvers.base_solver import Solver
 
 
@@ -15,6 +18,12 @@ class DWaveSolver(Solver):
     and binary
     quadratic models.
     """
+
+    def __init__(self, time_limit):
+        super().__init__()
+        self.presolver = None
+        self.original_cqm = None
+        self.time_limit = time_limit
 
     def solve(self, model) -> Dict[str, Any]:
         """
@@ -38,14 +47,21 @@ class DWaveSolver(Solver):
         if model_type == VAR_TYPE['C']:
             sampler = LeapHybridCQMSampler(token=token)
             sampleset = sampler.sample_cqm(parsed_model,
+                                           time_limit=self.time_limit,
                                            label=model.name).filter(
                 lambda row: row.is_feasible)
+            sampleset = dimod.SampleSet.from_samples_cqm(
+                self.presolver.restore_samples(sampleset), self.original_cqm)
         elif model_type == VAR_TYPE['I']:
             sampler = LeapHybridDQMSampler(token=token)
-            sampleset = sampler.sample_dqm(parsed_model, label=model.name)
+            sampleset = sampler.sample_dqm(parsed_model,
+                                           time_limit=self.time_limit,
+                                           label=model.name)
         else:
             sampler = LeapHybridBQMSampler(token=token)
-            sampleset = sampler.sample(parsed_model, label=model.name)
+            sampleset = sampler.sample(parsed_model,
+                                       time_limit=self.time_limit,
+                                       label=model.name)
 
         best = sampleset.first
         response = self.parse_response(best)
@@ -99,6 +115,10 @@ class DWaveSolver(Solver):
                 rhs = constraint.right_expr.constant
                 parsed_model.add_constraint(const_qm, sense=sense, rhs=rhs,
                                             label=constraint.lpt_name)
+            self.original_cqm = parsed_model
+            self.presolver = Presolver(parsed_model)
+            self.presolver.apply()
+            parsed_model = self.presolver.detach_model()
         else:
             model_type = VAR_TYPE['B']
             if any(VAR_TYPE[var.vartype.cplex_typecode] == VAR_TYPE['I'] for

@@ -23,9 +23,9 @@ def main():
     knapsack_model = model_knapsack_problem(values, weights, const)
 
     execution_params = {
-        "provider": "ibmq",
+        "provider": "d-wave",
         # Change to the desired backend (i.e., ibmq_sherbrooke)
-        "backend": "simulator",
+        # "backend": "simulator",
         "verbose": True,
         "penalty": 10,
         "algorithm": "qaoa",
