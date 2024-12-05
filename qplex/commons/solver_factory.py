@@ -71,7 +71,9 @@ class SolverFactory:
                                   'optimization_level', 1))
 
         if provider == 'braket':
-            return BraketSolver(shots=shots, backend=backend)
+            return BraketSolver(shots=shots, backend=backend,
+                                device_parameters=provider_options.get(
+                                    'device_parameters', {}))
 
         raise ValueError(f"Unsupported provider: {provider}")
 

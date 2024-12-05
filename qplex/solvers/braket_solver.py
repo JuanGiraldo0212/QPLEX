@@ -19,7 +19,7 @@ class BraketSolver(Solver):
         device or a local simulator.
     """
 
-    def __init__(self, shots: int, backend: str):
+    def __init__(self, shots: int, backend: str, device_parameters):
         """
         Initializes the BraketSolver with the specified number of shots and
         backend.
@@ -34,6 +34,7 @@ class BraketSolver(Solver):
         """
         self.shots = shots
         self.backend = backend
+        self.device_parameters = device_parameters
 
     def solve(self, model: str) -> dict:
         """
@@ -51,7 +52,9 @@ class BraketSolver(Solver):
         """
         qc = self.parse_input(model)
         backend = self.select_backend(0)
-        response = backend.run(qc, shots=self.shots).result()
+        response = (backend.run(qc, shots=self.shots,
+                                device_parameters=self.device_parameters)
+                    .result())
         counts = self.parse_response(response)
         return counts
 
