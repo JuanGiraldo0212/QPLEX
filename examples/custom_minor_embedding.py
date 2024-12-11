@@ -1,11 +1,20 @@
+"""Solves an instance of the max cut problem on a D-Wave Sampler using
+minorminer to find a suitable embedding of the problem's graph to the
+Pegasus topology of the D-Wave advantage system."""
+
 import networkx as nx
 import numpy as np
+import minorminer
+import os
+import dimod
+from dwave.system import DWaveSampler
+from dwave.system import FixedEmbeddingComposite
 
 from qplex import QModel
 from qplex.model.options import Options
 
 
-def model_max_cut_problem() -> QModel:
+def model_max_cut_problem() -> tuple[QModel, nx.Graph]:
     graph = nx.Graph()
     graph.add_nodes_from(np.arange(0, 6, 1))
     edges = [(0, 1, 2.0), (0, 2, 3.0), (0, 3, 2.0), (0, 4, 4.0), (0, 5, 1.0),
@@ -32,16 +41,23 @@ def model_max_cut_problem() -> QModel:
     obj_fn = linear_terms + quadratic_terms
     model.set_objective('max', obj_fn)
 
-    return model
+    return model, graph
 
 
 def main():
-    max_cut_model = model_max_cut_problem()
+    max_cut_model, graph = model_max_cut_problem()
+    pegasus_edgelist = DWaveSampler(token=os.environ.get('D-WAVE_API_TOKEN')).edgelist
+    problem_edgelist = list(graph.edges)
+
+    # Find the embedding
+    embedding = minorminer.find_embedding(problem_edgelist, pegasus_edgelist)
 
     execution_params = {
         "provider": "d-wave",
-        # Change to the desired backend (i.e., hybrid_solver)
         "backend": "hybrid_solver",
+        "provider_options": {
+            "embedding": embedding
+        }
     }
 
     max_cut_model.solve("quantum", Options(**execution_params))

@@ -23,14 +23,18 @@ def main():
     knapsack_model = model_knapsack_problem(values, weights, const)
 
     execution_params = {
-        "provider": "ibmq",
+        "provider": "d-wave",
         # Change to the desired backend (i.e., ibmq_sherbrooke)
         "backend": "simulator",
         "verbose": True,
         "penalty": 10,
         "algorithm": "qaoa",
-        "p": 2,
-        "shots": 1024
+        "p": 6,
+        "shots": 5120,
+        "max_iter": 10000,
+        "provider_options": {
+            "time_limit": 6,
+        }
     }
 
     knapsack_model.solve("quantum", Options(**execution_params))

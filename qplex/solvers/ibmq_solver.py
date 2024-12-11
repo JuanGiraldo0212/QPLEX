@@ -4,7 +4,7 @@ from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
 from qiskit.providers import BackendV2
 from qplex.solvers.base_solver import Solver
 from qiskit_aer import AerSimulator
-from qiskit_ibm_runtime import (QiskitRuntimeService, SamplerV2 as Sampler,)
+from qiskit_ibm_runtime import (QiskitRuntimeService, SamplerV2 as Sampler, )
 
 
 class IBMQSolver(Solver):
@@ -16,7 +16,7 @@ class IBMQSolver(Solver):
     ----------
     shots : int
         The number of shots for the quantum experiment.
-    backend : str
+    _backend : str
         The name of the backend to be used, which can be an IBMQ
         device or a local simulator.
     service : QiskitRuntimeService
@@ -45,13 +45,19 @@ class IBMQSolver(Solver):
             The desired optimization level for the Qiskit circuit.
         """
         self.shots = shots
-        self.backend = backend
         if backend is None:
             print('No backend specified. Using least busy...')
+            self._backend = ''
+        else:
+            self._backend = backend
         QiskitRuntimeService.save_account(channel="ibm_quantum",
                                           token=token, overwrite=True)
         self.service = QiskitRuntimeService()
         self.optimization_level = optimization_level
+
+    @property
+    def backend(self):
+        return self._backend
 
     def solve(self, model: str) -> dict:
         """
@@ -76,7 +82,7 @@ class IBMQSolver(Solver):
                                                     self.optimization_level)
         isa_circuit = pass_manager.run(qc)
 
-        if self.backend == 'simulator':
+        if self._backend == 'simulator':
             raw_counts = backend.run(isa_circuit).result().get_counts()
         else:
             sampler = Sampler(backend)
@@ -149,8 +155,8 @@ class IBMQSolver(Solver):
             The selected backend, which could be an IBMQ device or a  local
             simulator.
         """
-        if self.backend != "simulator":
-            if self.backend is None or self.backend == "":
+        if self._backend != "simulator":
+            if self._backend == "":
                 return self.service.least_busy(min_num_qubits=qubits)
-            return self.service.backend(self.backend)
+            return self.service.backend(self._backend)
         return AerSimulator()

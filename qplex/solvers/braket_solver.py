@@ -14,7 +14,7 @@ class BraketSolver(Solver):
     ----------
     shots : int
         The number of shots for the quantum experiment.
-    backend : str
+    _backend : str
         The name of the backend to be used, which can be a Braket
         device or a local simulator.
     """
@@ -33,8 +33,12 @@ class BraketSolver(Solver):
             be a Braket device or a local simulator.
         """
         self.shots = shots
-        self.backend = backend
+        self._backend = backend
         self.device_parameters = device_parameters
+
+    @property
+    def backend(self):
+        return self._backend
 
     def solve(self, model: str) -> dict:
         """
@@ -110,6 +114,6 @@ class BraketSolver(Solver):
             The selected backend, which could be an AWS device or a local
             simulator.
         """
-        if self.backend != "simulator":
-            return AwsDevice(f"arn:aws:braket:::{self.backend}")
+        if self._backend != "simulator":
+            return AwsDevice(f"arn:aws:braket:::{self._backend}")
         return LocalSimulator(backend="braket_sv")

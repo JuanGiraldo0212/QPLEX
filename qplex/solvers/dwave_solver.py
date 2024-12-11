@@ -4,7 +4,7 @@ from qplex.model.constants import VAR_TYPE
 
 from dwave.system import (LeapHybridCQMSampler, LeapHybridBQMSampler,
                           LeapHybridDQMSampler, DWaveSampler,
-                          EmbeddingComposite, )
+                          AutoEmbeddingComposite, FixedEmbeddingComposite)
 from dimod import (ConstrainedQuadraticModel, QuadraticModel,
                    DiscreteQuadraticModel, BinaryQuadraticModel, )
 from qplex.solvers.base_solver import Solver
@@ -17,16 +17,26 @@ class DWaveSolver(Solver):
     models (DQM), and binary quadratic models (BQM).
     """
 
-    def __init__(self, token, backend='hybrid_solver', time_limit=None,
-                 num_reads=100, topology='pegasus'):
+    def __init__(self, token, time_limit, num_reads, topology,
+                 embedding, backend):
         super().__init__()
         self.token = token
-        self.backend = backend
-        self.presolver = None
-        self.original_cqm = None
         self.time_limit = time_limit
         self.num_reads = num_reads
         self.topology = topology
+        self.embedding = embedding
+        if backend is None:
+            print("No backend specified for D-Wave solver. Using hybrid "
+                  "solver...")
+            self._backend = 'hybrid_solver'
+        else:
+            self._backend = backend
+        self.presolver = None
+        self.original_cqm = None
+
+    @property
+    def backend(self):
+        return self._backend
 
     def solve(self, model) -> Dict[str, Any]:
         """
@@ -50,7 +60,7 @@ class DWaveSolver(Solver):
 
         # QPU requested and model is not constrained nor contains integer
         # variables
-        if self.backend == 'd-wave_sampler' and model_type not in (VAR_TYPE[
+        if self._backend != 'hybrid_solver' and model_type not in (VAR_TYPE[
                                                                        'C'],
                                                                    VAR_TYPE[
                                                                        'I']):
@@ -216,16 +226,16 @@ class DWaveSolver(Solver):
         hybrid_samplers = {
             VAR_TYPE['C']: LeapHybridCQMSampler,
             VAR_TYPE['I']: LeapHybridDQMSampler,
+            VAR_TYPE['B']: LeapHybridBQMSampler,
         }
 
-        if self.backend == 'hybrid_solver':
-            sampler_class = hybrid_samplers.get(model_type,
-                                                LeapHybridBQMSampler)
+        if self._backend == 'hybrid_solver':
+            sampler_class = hybrid_samplers.get(model_type)
             return sampler_class(token=self.token)
 
-        elif self.backend == 'd-wave_sampler':
+        elif self._backend == 'd-wave_sampler':
             # User requested a DWaveSampler, but model is not QUBO-compatible.
-            if model_type in hybrid_samplers:
+            if model_type in (VAR_TYPE['C'], VAR_TYPE['I']):
                 print(
                     "The selected backend requires a QUBO-compatible model, "
                     "but the given model contains constraints or discrete "
@@ -237,8 +247,12 @@ class DWaveSolver(Solver):
 
             qpu = DWaveSampler(solver=dict(topology__type=self.topology),
                                token=self.token)
+            self._backend = qpu.solver.name
             print(
-                f"Selected {qpu.solver.name} with {len(qpu.nodelist)} qubits.")
-            return EmbeddingComposite(qpu)
+                f"Selected {self._backend} with {len(qpu.nodelist)} qubits.")
 
-        raise ValueError(f"Unsupported backend: {self.backend}")
+            if self.embedding is None:
+                return AutoEmbeddingComposite(qpu)
+            return FixedEmbeddingComposite(qpu, self.embedding)
+
+        raise ValueError(f"Unsupported backend: {self._backend}")

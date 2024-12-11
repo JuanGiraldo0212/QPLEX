@@ -106,7 +106,7 @@ class QModel(Model):
                 self.algorithm = options['algorithm']
                 solution = get_solution_from_counts(self, optimal_counts)
             self.provider = options['provider']
-            self.backend = options['backend']
+            self.backend = solver.backend
             self.set_solution(solution)
         else:
             raise ValueError("Invalid value for argument 'method'. Must be "
@@ -155,10 +155,7 @@ class QModel(Model):
         print(f"Algorithm: {self.algorithm}")
         print(f"Provider: "
               f"{self.provider if self.provider is not None else 'N/A'}")
-        print(f"Backend: "
-              f""
-              f""
-              f"{self.backend if (self.backend is not None) and self.provider != 'd-wave' else 'N/A'}")
+        print(f"Backend: {self.backend}")
         print(f"Execution time: {round(self.exec_time, 2)} seconds")
         super(QModel, self).print_solution(print_zeros,
                                            solution_header_fmt,

@@ -62,11 +62,17 @@ class SolverFactory:
             token = None
 
         if provider == 'd-wave':
-            return DWaveSolver(token=token, backend=backend,
+            return DWaveSolver(token=token,
                                time_limit=provider_options.get('time_limit',
                                                                None),
                                num_reads=provider_options.get('num_reads',
-                                                              100))
+                                                              100),
+                               topology=provider_options.get('topology',
+                                                             'pegasus'),
+                               embedding=provider_options.get('embedding',
+                                                              None),
+                               backend=backend,
+                               )
 
         elif provider == 'ibmq':
             return IBMQSolver(token=token, shots=shots, backend=backend,
