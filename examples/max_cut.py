@@ -2,7 +2,7 @@ import networkx as nx
 import numpy as np
 
 from qplex import QModel
-from qplex.model import Options
+from qplex.model.options import Options
 
 
 def model_max_cut_problem() -> QModel:
