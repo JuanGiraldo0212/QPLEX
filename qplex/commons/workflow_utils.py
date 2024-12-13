@@ -1,4 +1,8 @@
-def get_solution_from_counts(model, optimal_counts):
+from qiskit_optimization.converters import QuadraticProgramToQubo
+
+
+def get_solution_from_counts(model, optimal_counts, interpret=False,
+                             interpreter: QuadraticProgramToQubo=None):
     """
     Extracts the best solution from the optimal parameter counts obtained
     from a quantum algorithm's execution.
@@ -17,6 +21,11 @@ def get_solution_from_counts(model, optimal_counts):
         A dictionary of bitstrings (represented as strings of 0s and 1s)
         and their corresponding frequencies or counts from the quantum
         measurement results.
+    interpret: bool
+        Whether the provided results should be interpreted from expanded
+        binary variables into the original model's variables.
+    interpreter: QuadraticProgramToQubo
+        The interpreter to interpret the binary variables.
 
     Returns
     -------
@@ -28,7 +37,13 @@ def get_solution_from_counts(model, optimal_counts):
     """
     best_solution, best_count = max(optimal_counts.items(),
                                     key=lambda x: x[1])
-
+    print(f'raw best_solution: {list(best_solution)}')
+    if interpret:
+        if not interpreter:
+            raise ValueError("Missing interpreter")
+        best_solution = [int(x) for x in best_solution]
+        best_solution = interpreter.interpret(best_solution)
+    print(f'interpreted best_solution: {list(best_solution)}')
     values = {}
     for i, var in enumerate(model.iter_variables()):
         values[var.name] = int(best_solution[i])

@@ -4,7 +4,7 @@ from qplex.model.constants import VAR_TYPE
 
 from dwave.system import (LeapHybridCQMSampler, LeapHybridBQMSampler,
                           LeapHybridDQMSampler, DWaveSampler,
-                          AutoEmbeddingComposite, FixedEmbeddingComposite)
+                          AutoEmbeddingComposite, FixedEmbeddingComposite, )
 from dimod import (ConstrainedQuadraticModel, QuadraticModel,
                    DiscreteQuadraticModel, BinaryQuadraticModel, )
 from qplex.solvers.base_solver import Solver
@@ -54,8 +54,8 @@ class DWaveSolver(Solver):
             A dictionary containing the solution with 'objective' and
             'solution' keys.
         """
-        parsed_model, model_type = self.parse_input(model)
-
+        parsed_model = self.parse_input(model)
+        model_type = model.type
         sampler = self.select_backend(parsed_model, model_type)
 
         # QPU requested and model is not constrained nor contains integer
@@ -129,8 +129,7 @@ class DWaveSolver(Solver):
             A tuple containing the parsed model and the model type as
             a string.
         """
-        if len(list(model.iter_constraints())) > 0:
-            model_type = VAR_TYPE['C']
+        if model.type == VAR_TYPE['C']:
             obj = self.parse_objective(model, QuadraticModel())
             parsed_model = ConstrainedQuadraticModel()
             parsed_model.set_objective(obj)
@@ -141,15 +140,13 @@ class DWaveSolver(Solver):
                 parsed_model.add_constraint(const_qm, sense=sense, rhs=rhs,
                                             label=constraint.lpt_name)
         else:
-            model_type = VAR_TYPE['B']
-            if any(VAR_TYPE[var.vartype.cplex_typecode] == VAR_TYPE['I'] for
-                   var in model.iter_variables()):
-                model_type = VAR_TYPE['I']
-            parsed_model = DiscreteQuadraticModel() if model_type == VAR_TYPE[
-                'I'] else BinaryQuadraticModel(vartype='BINARY')
+            if model.type == VAR_TYPE['B']:
+                parsed_model = DiscreteQuadraticModel()
+            else:
+                parsed_model = BinaryQuadraticModel(vartype='BINARY')
             parsed_model = self.parse_objective(model, parsed_model)
 
-        return parsed_model, model_type
+        return parsed_model
 
     def parse_objective(self, model, parsed_model) -> Any:
         """

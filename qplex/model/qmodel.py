@@ -9,6 +9,8 @@ from qplex.commons import solver_factory
 from qplex.commons.workflow_utils import get_solution_from_counts
 from qplex.workflows import ibm_session_workflow, ggaem_workflow
 from qplex.model.options import Options
+from qplex.commons.model_utils import get_model_type, get_var_type
+from qplex.model.constants import VAR_TYPE
 import os
 
 
@@ -27,8 +29,7 @@ class QModel(Model):
     """
 
     def __init__(self, name):
-        super(QModel, self).__init__(name)
-        self.job_id = None
+        self.docplex_model = super(QModel, self).__init__(name)
         self.quantum_api_tokens = {
             'd-wave_token': os.environ.get('D-WAVE_API_TOKEN'),
             'ibmq_token': os.environ.get('IBMQ_API_TOKEN'),
@@ -38,6 +39,8 @@ class QModel(Model):
         self.provider = None
         self.backend = None
         self.algorithm = 'NA'
+        self.converter = None
+        self.type = None
 
     def get_qubo(self, penalty: float | None = None) -> QuadraticProgram:
         """
@@ -53,9 +56,9 @@ class QModel(Model):
         QuadraticProgram
             The QUBO encoding of this problem.
         """
-        mod = from_docplex_mp(self)
-        converter = QuadraticProgramToQubo(penalty=penalty)
-        return converter.convert(mod)
+        quadratic_program = from_docplex_mp(self)
+        self.converter = QuadraticProgramToQubo(penalty=penalty)
+        return self.converter.convert(quadratic_program)
 
     def solve(self, method: str = 'classical', options: Options = Options()):
         """
@@ -75,6 +78,7 @@ class QModel(Model):
             If the method argument is not 'classical' or 'quantum'.
         """
         self.method = method
+        self.type = get_model_type(self)
         t0 = time.time()
         if method == 'classical':
             Model.solve(self)
@@ -104,7 +108,14 @@ class QModel(Model):
                                                     options=options)
                 end_time = time.time() - t0
                 self.algorithm = options['algorithm']
-                solution = get_solution_from_counts(self, optimal_counts)
+                if get_var_type(self) == VAR_TYPE['I']:
+                    solution = get_solution_from_counts(self,
+                                                        optimal_counts,
+                                                        interpret=True,
+                                                        interpreter=
+                                                        self.converter)
+                else:
+                    solution = get_solution_from_counts(self, optimal_counts)
             self.provider = options['provider']
             self.backend = solver.backend
             self.set_solution(solution)

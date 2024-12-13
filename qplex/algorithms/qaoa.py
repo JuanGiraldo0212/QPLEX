@@ -77,7 +77,8 @@ class QAOA(Algorithm):
         self.qubo = self.model.get_qubo(penalty=kwargs['penalty'])
         self.n = self.qubo.get_num_binary_vars()
 
-        circuit_lines = [f"input float[64] theta{i};" for i in range(self.num_params)]
+        circuit_lines = [f"input float[64] theta{i};" for i in
+                         range(self.num_params)]
 
         circuit_lines.extend([f"qreg q[{self.n}];", f"creg c[{self.n}];"])
 
@@ -100,13 +101,15 @@ class QAOA(Algorithm):
                     w = quadratic_terms[i, j]
                     if w != 0:
                         circuit_lines.append(f"cx q[{i}], q[{j}];")
-                        circuit_lines.append(f"rz({theta_2idx} * {w / 2}) q[{j}];")
+                        circuit_lines.append(
+                            f"rz({theta_2idx} * {w / 2}) q[{j}];")
                         circuit_lines.append(f"cx q[{i}], q[{j}];")
 
             for i in range(self.n):
                 circuit_lines.append(f"rx(2 * {theta_2idx_plus_1}) q[{i}];")
 
-        circuit_lines.extend([f"measure q[{i}] -> c[{i}];" for i in range(self.n)])
+        circuit_lines.extend(
+            [f"measure q[{i}] -> c[{i}];" for i in range(self.n)])
 
         return "\n".join(circuit_lines)
 
@@ -122,7 +125,8 @@ class QAOA(Algorithm):
         Parameters
         ----------
         params : np.ndarray
-            The new set of parameters for the QAOA circuit, typically representing
+            The new set of parameters for the QAOA circuit, typically
+            representing
             rotation angles in the circuit's gates.
 
         Returns
