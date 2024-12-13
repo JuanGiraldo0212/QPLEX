@@ -11,6 +11,17 @@ class Solver(ABC):
     and selecting the appropriate backend.
     """
 
+    @property
+    @abstractmethod
+    def backend(self) -> str:
+        """
+        Abstract property for the backend.
+
+        Returns:
+            The name of the backend being used by the solver.
+        """
+        pass
+
     @abstractmethod
     def solve(self, formulation) -> Dict:
         """
