@@ -2,25 +2,18 @@ from qiskit_optimization.converters import QuadraticProgramToQubo
 
 
 def get_solution_from_counts(model, optimal_counts, interpret=False,
-                             interpreter: QuadraticProgramToQubo=None):
+                             interpreter: QuadraticProgramToQubo = None):
     """
     Extracts the best solution from the optimal parameter counts obtained
     from a quantum algorithm's execution.
 
-    This function takes the model and the counts of possible solutions
-    (bitstrings) from a quantum run and extracts the best solution by
-    selecting the most frequent bitstring and computing
-    its objective value.
-
     Parameters
     ----------
     model: Model
-        The optimization model that was solved, typically represented as a
-        QUBO (Quadratic Unconstrained Binary Optimization) problem.
+        The optimization model that was solved.
     optimal_counts: dict
         A dictionary of bitstrings (represented as strings of 0s and 1s)
-        and their corresponding frequencies or counts from the quantum
-        measurement results.
+        and their corresponding counts from the quantum measurement results.
     interpret: bool
         Whether the provided results should be interpreted from expanded
         binary variables into the original model's variables.
@@ -35,43 +28,62 @@ def get_solution_from_counts(model, optimal_counts, interpret=False,
           values (0 or 1) representing the optimal solution.
         - 'objective': The computed objective value of the best solution.
     """
-    best_solution, best_count = max(optimal_counts.items(),
-                                    key=lambda x: x[1])
+    if interpret and not interpreter:
+        raise ValueError("Missing interpreter")
+
+    best_solution, _ = max(optimal_counts.items(),
+                           key=lambda x: x[1])
     print(f'raw best_solution: {list(best_solution)}')
     if interpret:
-        if not interpreter:
-            raise ValueError("Missing interpreter")
         best_solution = [int(x) for x in best_solution]
         best_solution = interpreter.interpret(best_solution)
     print(f'interpreted best_solution: {list(best_solution)}')
+
     values = {}
     for i, var in enumerate(model.iter_variables()):
         values[var.name] = int(best_solution[i])
 
-    obj_value = 0
-    linear_terms = model.get_objective_expr().iter_terms()
-    quadratic_terms = list(model.get_objective_expr().iter_quad_triplets())
-
-    if len(linear_terms) > 0:
-        for t in linear_terms:
-            obj_value += (values[t[0].name] * t[1])
-
-    if len(quadratic_terms) > 0:
-        for t in quadratic_terms:
-            obj_value += (values[t[0].name] * values[t[1].name] * t[2])
+    obj_value = compute_objective(model, values)
 
     solution = {'objective': obj_value, 'solution': values}
     return solution
 
 
+def compute_objective(model, values):
+    """
+        Computes the objective value of a solution for the provided model.
+
+        Parameters
+        ----------
+        model : Model
+            The optimization model that contains the linear and quadratic
+            terms.
+        values : dict
+            A dictionary mapping variable names (as strings) to their values
+            (as integers, typically 0 or 1).
+
+        Returns
+        -------
+        float
+            The computed objective value for the given solution.
+    """
+    obj_value = 0
+    obj_expr = model.get_objective_expr()
+
+    # Add linear terms
+    for var, coeff in obj_expr.iter_terms():
+        obj_value += values[var.name] * coeff
+
+    # Add quadratic terms
+    for var1, var2, coeff in obj_expr.iter_quad_triplets():
+        obj_value += values[var1.name] * values[var2.name] * coeff
+
+    return obj_value
+
+
 def calculate_energy(counts, shots, algorithm_instance):
     """
     Calculates the energy (or cost function value) of a quantum solution.
-
-    This function computes the average energy of the quantum measurement
-    results based on the provided counts (bitstrings and their frequencies).
-    The energy is computed by evaluating the objective function for each
-    sampled bitstring and taking the weighted average based on the counts.
 
     Parameters
     ----------
@@ -83,8 +95,6 @@ def calculate_energy(counts, shots, algorithm_instance):
         The total number of measurement shots, used to normalize the energy.
     algorithm_instance : Algorithm
         The instance of the quantum algorithm (e.g., QAOA or VQE) being used.
-        This instance contains the QUBO model, which is used to evaluate the
-        objective function of the bitstrings.
 
     Returns
     -------
