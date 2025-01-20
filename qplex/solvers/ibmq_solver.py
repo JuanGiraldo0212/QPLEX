@@ -91,6 +91,25 @@ class IBMQSolver(Solver):
         return counts
 
     def run(self, qc, sampler):
+        """
+        Execute the given quantum circuit using the specified sampler.
+
+        Parameters
+        ----------
+        qc : QuantumCircuit
+            The quantum circuit to be executed.
+        sampler : Any
+            The sampler used to run the quantum circuit. This could be a
+            quantum simulator or a quantum hardware backend that supports
+            the `run` method.
+
+        Returns
+        -------
+        dict
+            A dictionary containing the raw measurement counts, where the
+            keys are the bitstrings and the values are their respective counts.
+        """
+
         pub = (qc,)
         result = sampler.run([pub], shots=self.shots).result()
         data = result[0].data

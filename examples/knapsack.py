@@ -23,17 +23,17 @@ def main():
     knapsack_model = model_knapsack_problem(values, weights, const)
 
     execution_params = {
-        "provider": "d-wave",
+        "provider": "braket",
         # Change to the desired backend (i.e., ibmq_sherbrooke)
         "backend": "simulator",
-        "verbose": True,
-        "penalty": 10,
         "algorithm": "qaoa",
-        "p": 6,
-        "shots": 5120,
-        "max_iter": 10000,
+        "p": 4,
+        "max_iter": 500,
+        "shots": 1024,
         "provider_options": {
-            "time_limit": 6,
+            "device_parameters": {
+                "providerLevelParameters": {"postprocessingType": "SAMPLING"}
+            }
         }
     }
 

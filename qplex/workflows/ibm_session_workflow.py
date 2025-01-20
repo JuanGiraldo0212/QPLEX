@@ -49,7 +49,8 @@ def ibm_session_workflow(model, ibmq_solver, options):
     vqc = ibmq_solver.parse_input(algorithm_instance.circuit)
     backend = ibmq_solver.select_backend(vqc.num_qubits)
     pass_manager = generate_preset_pass_manager(backend=backend,
-                                                optimization_level=ibmq_solver.optimization_level)
+                                                optimization_level=
+                                                ibmq_solver.optimization_level)
 
     starting_point = algorithm_instance.get_starting_point()
 
