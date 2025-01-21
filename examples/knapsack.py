@@ -1,6 +1,6 @@
 from typing import List
 from qplex import QModel
-from qplex.model.options import Options
+from qplex.model.execution_config import ExecutionConfig
 
 
 def model_knapsack_problem(values: List, weights: List, const: int) -> QModel:
@@ -22,22 +22,18 @@ def main():
 
     knapsack_model = model_knapsack_problem(values, weights, const)
 
-    execution_params = {
-        "provider": "d-wave",
-        # Change to the desired backend (i.e., ibmq_sherbrooke)
-        "backend": "simulator",
-        "verbose": True,
-        "penalty": 10,
-        "algorithm": "qaoa",
-        "p": 6,
-        "shots": 5120,
-        "max_iter": 10000,
-        "provider_options": {
-            "time_limit": 6,
-        }
-    }
+    execution_config = ExecutionConfig(
+        provider="ibmq",
+        backend="simulator",
+        verbose=True,
+        penalty=10,
+        algorithm="qao-ansatz",
+        p=2,
+        shots=1024,
+        max_iter=100
+    )
 
-    knapsack_model.solve("quantum", Options(**execution_params))
+    knapsack_model.solve("quantum", execution_config)
     print(knapsack_model.print_solution())
 
 

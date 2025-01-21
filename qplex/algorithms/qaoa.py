@@ -1,7 +1,8 @@
 import numpy as np
 
 from qplex.algorithms.base_algorithm import Algorithm
-from qplex.commons.circuit_utils import replace_params
+from qplex.algorithms.mixers import QuantumMixer
+from qplex.utils.circuit_utils import replace_params
 
 
 class QAOA(Algorithm):
@@ -27,7 +28,8 @@ class QAOA(Algorithm):
         equal to 2 times the number of repetitions (p).
     """
 
-    def __init__(self, model, p: int, seed: int, penalty: float):
+    def __init__(self, model, p: int, seed: int, penalty: float,
+                 mixer: QuantumMixer = None):
         """
         Initializes the QAOA algorithm with the given parameters.
 
@@ -44,11 +46,17 @@ class QAOA(Algorithm):
         penalty : float
             The penalty factor for the QUBO conversion, used to penalize
             constraint violations in the QUBO formulation.
+        mixer : QuantumMixer
+            The mixer or driver of the QAOA variational circuit
         """
         super().__init__(model)
         self.p: int = p
         self.n: int = 0
         self.num_params = 2 * self.p
+        if mixer is None:
+            raise ValueError(
+                f"Expected mixer to be provided, got {mixer}")
+        self.mixer = mixer
         self.circuit: str = self.create_circuit(penalty=penalty)
         np.random.seed(seed)
 
@@ -77,7 +85,8 @@ class QAOA(Algorithm):
         self.qubo = self.model.get_qubo(penalty=kwargs['penalty'])
         self.n = self.qubo.get_num_binary_vars()
 
-        circuit_lines = [f"input float[64] theta{i};" for i in range(self.num_params)]
+        circuit_lines = [f"input float[64] theta{i};" for i in
+                         range(self.num_params)]
 
         circuit_lines.extend([f"qreg q[{self.n}];", f"creg c[{self.n}];"])
 
@@ -100,13 +109,15 @@ class QAOA(Algorithm):
                     w = quadratic_terms[i, j]
                     if w != 0:
                         circuit_lines.append(f"cx q[{i}], q[{j}];")
-                        circuit_lines.append(f"rz({theta_2idx} * {w / 2}) q[{j}];")
+                        circuit_lines.append(
+                            f"rz({theta_2idx} * {w / 2}) q[{j}];")
                         circuit_lines.append(f"cx q[{i}], q[{j}];")
 
-            for i in range(self.n):
-                circuit_lines.append(f"rx(2 * {theta_2idx_plus_1}) q[{i}];")
+            circuit_lines.extend(
+                self.mixer.generate_circuit(self.n, theta_2idx_plus_1))
 
-        circuit_lines.extend([f"measure q[{i}] -> c[{i}];" for i in range(self.n)])
+        circuit_lines.extend(
+            [f"measure q[{i}] -> c[{i}];" for i in range(self.n)])
 
         return "\n".join(circuit_lines)
 
@@ -131,6 +142,9 @@ class QAOA(Algorithm):
             The updated OpenQASM3 string for the QAOA circuit with the new
             parameter values.
         """
+        if len(params) != self.num_params:
+            raise ValueError(
+                f"Expected {self.num_params} parameters, got {len(params)}")
         return replace_params(self.circuit, params)
 
     def get_starting_point(self) -> np.ndarray:

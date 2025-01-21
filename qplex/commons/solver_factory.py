@@ -1,6 +1,40 @@
-from qplex.solvers import IBMQSolver, DWaveSolver, BraketSolver
+from typing import Any, Optional, Dict
+from dataclasses import dataclass
+from enum import Enum
 
-from typing import Any
+from qplex.solvers import IBMQSolver, DWaveSolver, BraketSolver
+from qplex.solvers.base_solver import Solver
+
+
+class ProviderType(Enum):
+    DWAVE = "d-wave"
+    IBMQ = "ibmq"
+    BRAKET = "braket"
+
+
+@dataclass
+class ProviderConfig:
+    backend: str
+    shots: Optional[int]
+    provider_options: Optional[Dict[str, Any]] = None
+
+
+@dataclass
+class DWaveConfig(ProviderConfig):
+    time_limit: Optional[int] = None
+    num_reads: int = 100
+    topology: str = "pegasus"
+    embedding: Optional[Any] = None
+
+
+@dataclass
+class IMBQConfig(ProviderConfig):
+    optimization_level: int = 1
+
+
+@dataclass
+class BraketConfig(ProviderConfig):
+    device_parameters: Dict[str, Any] = None
 
 
 class SolverFactory:
@@ -9,34 +43,31 @@ class SolverFactory:
     provider.
     """
 
-    PROVIDERS = {
-        'd-wave': 'd-wave_token',
-        'ibmq': 'ibmq_token',
-        'braket': None
+    _TOKEN_MAP = {
+        ProviderType.DWAVE: "d-wave_token",
+        ProviderType.IBMQ: "ibmq_token",
+        ProviderType.BRAKET: None
     }
 
-    @staticmethod
-    def get_solver(provider: str, quantum_api_tokens: dict, shots: int,
-                   backend: str, provider_options: dict[str, Any]):
+    @classmethod
+    def get_solver(cls, provider: ProviderType, quantum_api_tokens: dict,
+                   config: ProviderConfig) -> Solver:
         """
         Return a solver based on the specified provider and available tokens.
 
         Parameters
         ----------
-        provider: str
+        provider: ProviderType
             The quantum provider (e.g., 'd-wave', 'ibmq', 'braket').
         quantum_api_tokens: dict
             A dictionary containing API tokens for various quantum providers.
-        shots: int
-            The number of shots for quantum execution.
-        backend: str
-            The backend to use for the quantum provider.
-        provider_options: dict[str, Any]
-            A dictionary containing the configuration for the provider.
+        config: ProviderConfig
+            A ProviderConfig instance containing the configuration for the
+            provider.
 
         Returns
         -------
-        solver
+        solver: Solver
             An instance of the appropriate solver based on the specified
             provider.
 
@@ -48,43 +79,51 @@ class SolverFactory:
         ValueError
             If the specified provider is not recognized.
         """
-        if provider not in SolverFactory.PROVIDERS:
+        if not isinstance(provider, ProviderType):
             raise ValueError(f"Unknown provider: {provider}")
 
-        token_name = SolverFactory.PROVIDERS.get(provider)
+        token_key = cls._TOKEN_MAP.get(provider)
+        token = quantum_api_tokens.get(token_key) if token_key else None
 
-        if token_name:
-            token = quantum_api_tokens.get(token_name)
-            if token is None:
-                raise RuntimeError(
-                    f"Missing credentials for the {provider} provider")
-        else:
-            token = None
+        if token_key and token is None:
+            raise RuntimeError(f"Missing credentials for {provider.value}")
 
-        if provider == 'd-wave':
+        if provider == ProviderType.DWAVE:
+            d_wave_config = DWaveConfig(
+                backend=config.backend,
+                **config.provider_options
+            )
             return DWaveSolver(token=token,
-                               time_limit=provider_options.get('time_limit',
-                                                               None),
-                               num_reads=provider_options.get('num_reads',
-                                                              100),
-                               topology=provider_options.get('topology',
-                                                             'pegasus'),
-                               embedding=provider_options.get('embedding',
-                                                              None),
-                               backend=backend,
+                               time_limit=d_wave_config.time_limit,
+                               num_reads=d_wave_config.num_reads,
+                               topology=d_wave_config.topology,
+                               embedding=d_wave_config.embedding,
+                               backend=d_wave_config.backend
                                )
 
-        elif provider == 'ibmq':
-            return IBMQSolver(token=token, shots=shots, backend=backend,
-                              optimization_level=provider_options.get(
-                                  'optimization_level', 1))
+        elif provider == ProviderType.IBMQ:
+            ibmq_config = IMBQConfig(
+                backend=config.backend,
+                shots=config.shots,
+                **config.provider_options
+            )
+            return IBMQSolver(
+                token=token,
+                shots=ibmq_config.shots,
+                backend=ibmq_config.backend,
+                optimization_level=ibmq_config.optimization_level
+            )
 
         elif provider == 'braket':
-            return BraketSolver(shots=shots, backend=backend,
-                                device_parameters=provider_options.get(
-                                    'device_parameters', {}))
+            braket_config = BraketConfig(
+                backend=config.backend,
+                shots=config.shots,
+                **config.provider_options
+            )
+            return BraketSolver(
+                shots=braket_config.shots,
+                backend=braket_config.backend,
+                device_parameters=braket_config.device_parameters or {}
+            )
 
         raise ValueError(f"Unsupported provider: {provider}")
-
-
-solver_factory = SolverFactory()

@@ -2,11 +2,13 @@ from qiskit_ibm_runtime import (SamplerV2 as Sampler, Session)
 from scipy.optimize import minimize
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
 
-from qplex.algorithms import QAOA, VQE
-from qplex.commons.workflow_utils import calculate_energy
+from qplex.commons.algorithm_factory import AlgorithmFactory, AlgorithmConfig, \
+    AlgorithmType
+from qplex.model.execution_config import ExecutionConfig
+from qplex.utils.workflow_utils import calculate_energy
 
 
-def ibm_session_workflow(model, ibmq_solver, options):
+def ibm_session_workflow(model, ibmq_solver, options: ExecutionConfig):
     """
     Executes a quantum optimization workflow using IBM Quantum Runtime.
 
@@ -26,30 +28,33 @@ def ibm_session_workflow(model, ibmq_solver, options):
         A dictionary representing the optimal measurement results (bitstring
         counts) obtained after optimizing the quantum circuit's parameters.
     """
-    algorithm = options['algorithm']
-    penalty = options['penalty']
-    seed = options['seed']
-    verbose = options['verbose']
-    optimizer = options['optimizer']
-    callback = options['callback']
-    max_iter = options['max_iter']
-    tolerance = options['tolerance']
 
     service = ibmq_solver.service
-    algorithm_instance = None
 
-    if algorithm == "qaoa":
-        algorithm_instance = QAOA(model, p=options['p'], penalty=penalty,
-                                  seed=seed)
-    elif algorithm == "vqe":
-        algorithm_instance = VQE(model, layers=options['layers'],
-                                 penalty=penalty, seed=seed,
-                                 ansatz=options['ansatz'])
+    verbose = options.verbose
+    optimizer = options.optimizer
+    callback = options.callback
+    max_iter = options.max_iter
+    tolerance = options.tolerance
+
+    algorithm_config = AlgorithmConfig(
+        algorithm=AlgorithmType(options.algorithm),
+        penalty=options.penalty,
+        seed=options.seed,
+        p=options.p,
+        mixer=options.mixer,
+        layers=options.layers,
+        ansatz=options.ansatz
+    )
+
+    algorithm_instance = AlgorithmFactory.get_algorithm(model,
+                                                        algorithm_config)
 
     vqc = ibmq_solver.parse_input(algorithm_instance.circuit)
     backend = ibmq_solver.select_backend(vqc.num_qubits)
     pass_manager = generate_preset_pass_manager(backend=backend,
-                                                optimization_level=ibmq_solver.optimization_level)
+                                                optimization_level=
+                                                ibmq_solver.optimization_level)
 
     starting_point = algorithm_instance.get_starting_point()
 

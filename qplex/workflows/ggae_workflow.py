@@ -1,12 +1,15 @@
 from scipy.optimize import minimize
-from qplex.algorithms import QAOA, VQE
+
+from qplex.commons.algorithm_factory import AlgorithmConfig, AlgorithmType
+from qplex.commons.algorithm_factory import AlgorithmFactory
+from qplex.model.execution_config import ExecutionConfig
 from qplex.solvers.base_solver import Solver
-from qplex.commons.workflow_utils import calculate_energy
+from qplex.utils.workflow_utils import calculate_energy
 
 import numpy as np
 
 
-def ggaem_workflow(model, solver: Solver, options):
+def ggae_workflow(model, solver: Solver, options: ExecutionConfig):
     """
     Runs the GGAEM (Generalized Gate-Based Algorithm Execution Manager)
     workflow.
@@ -25,24 +28,24 @@ def ggaem_workflow(model, solver: Solver, options):
     dict
         A dictionary of optimal parameter counts.
     """
-    shots = options['shots']
-    algorithm = options['algorithm']
-    penalty = options['penalty']
-    seed = options['seed']
-    verbose = options['verbose']
-    optimizer = options['optimizer']
-    callback = options['callback']
-    max_iter = options['max_iter']
-    tolerance = options['tolerance']
+    shots = options.shots
+    verbose = options.verbose
+    optimizer = options.optimizer
+    callback = options.callback
+    max_iter = options.max_iter
+    tolerance = options.tolerance
 
-    algorithm_instance = None
-    if algorithm == "qaoa":
-        algorithm_instance = QAOA(model, p=options['p'], penalty=penalty,
-                                  seed=seed)
-    elif algorithm == "vqe":
-        algorithm_instance = VQE(model, layers=options['layers'],
-                                 penalty=penalty,
-                                 seed=seed, ansatz=options['ansatz'])
+    algorithm_config = AlgorithmConfig(
+        algorithm=AlgorithmType(options.algorithm),
+        penalty=options.penalty,
+        seed=options.seed,
+        p=options.p,
+        mixer=options.mixer,
+        layers=options.layers,
+        ansatz=options.ansatz
+    )
+    algorithm_instance = AlgorithmFactory.get_algorithm(model,
+                                                        algorithm_config)
 
     algorithm_instance.remove_parameters()
 
