@@ -50,6 +50,7 @@ class QAOA(Algorithm):
         self.n: int = 0
         self.num_params = 2 * self.p
         self.circuit: str = self.create_circuit(penalty=penalty)
+
         np.random.seed(seed)
 
     def create_circuit(self, *args, **kwargs) -> str:
