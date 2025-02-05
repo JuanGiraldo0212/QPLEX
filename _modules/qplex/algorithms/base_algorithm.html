@@ -5,11 +5,11 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>qplex.algorithms.base_algorithm &#8212; QPLEX 0.1.0 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d1102ebc" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/basic.css?v=c058f7c8" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/basic.css?v=686e5160" />
     <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=27fed22d" />
     <script src="../../../_static/documentation_options.js?v=01f34227"></script>
-    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -32,75 +32,73 @@
           <div class="body" role="main">
             
   <h1>Source code for qplex.algorithms.base_algorithm</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
-<span class="kn">from</span> <span class="nn">qiskit_optimization</span> <span class="kn">import</span> <span class="n">QuadraticProgram</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_optimization</span><span class="w"> </span><span class="kn">import</span> <span class="n">QuadraticProgram</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">qplex.solvers.base_solver</span> <span class="kn">import</span> <span class="n">Solver</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qplex.solvers.base_solver</span><span class="w"> </span><span class="kn">import</span> <span class="n">Solver</span>
 
 
 <div class="viewcode-block" id="Algorithm">
 <a class="viewcode-back" href="../../../qplex.algorithms.html#qplex.algorithms.base_algorithm.Algorithm">[docs]</a>
-<span class="k">class</span> <span class="nc">Algorithm</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Algorithm</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Abstract base class for a quantum algorithm.</span>
+<span class="sd">    Abstract base class for quantum algorithms.</span>
 
 <span class="sd">    This class provides a template for quantum algorithms, encapsulating</span>
 <span class="sd">    the common elements and enforcing the implementation of specific methods</span>
-<span class="sd">    in subclasses.</span>
+<span class="sd">    in subclasses. It is designed for variational quantum algorithms like</span>
+<span class="sd">    QAOA and VQE, which require creating quantum circuits and updating</span>
+<span class="sd">    parameters for optimization.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
 <span class="sd">    model : Model</span>
-<span class="sd">        The optimization model to be solved.</span>
-<span class="sd">    solver : Solver</span>
-<span class="sd">        The solver to be used for solving the model.</span>
-<span class="sd">    verbose : bool</span>
-<span class="sd">        If True, enables verbose output.</span>
-<span class="sd">    shots : int</span>
-<span class="sd">        The number of shots for quantum execution.</span>
+<span class="sd">        The optimization model to be solved, typically defined using the</span>
+<span class="sd">        QuadraticProgram class from qiskit_optimization.</span>
 <span class="sd">    qubo : QuadraticProgram or None</span>
-<span class="sd">        The QUBO (Quadratic Unconstrained Binary Optimization) encoding of the problem.</span>
+<span class="sd">        The QUBO (Quadratic Unconstrained Binary Optimization) encoding of</span>
+<span class="sd">        the problem, initialized as None and generated as needed.</span>
 <span class="sd">    iteration : int</span>
-<span class="sd">        The current iteration number of the optimization process.</span>
+<span class="sd">        The current iteration number of the optimization process, used to</span>
+<span class="sd">        track the progress of the algorithm.</span>
+<span class="sd">    circuit : str or None</span>
+<span class="sd">        A string representation of the quantum circuit, in OpenQASM3</span>
+<span class="sd">        format. Initially set to None and constructed via the `create_circuit`</span>
+<span class="sd">        method in the subclass.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">solver</span><span class="p">:</span> <span class="n">Solver</span><span class="p">,</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
-                 <span class="n">shots</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Initializes the Algorithm with the given model, solver,</span>
-<span class="sd">        verbosity, and shots.</span>
+<span class="sd">        Initializes the Algorithm with the provided optimization model.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        model : Model</span>
-<span class="sd">            The optimization model to be solved.</span>
-<span class="sd">        solver : Solver</span>
-<span class="sd">            The solver to be used for solving the model.</span>
-<span class="sd">        verbose : bool</span>
-<span class="sd">            If True, enables verbose output.</span>
-<span class="sd">        shots : int</span>
-<span class="sd">            The number of shots for quantum execution.</span>
+<span class="sd">            The optimization model to be solved, which should be an instance</span>
+<span class="sd">            of QModel or similar.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">solver</span> <span class="o">=</span> <span class="n">solver</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">shots</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">shots</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">qubo</span><span class="p">:</span> <span class="n">QuadraticProgram</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">iteration</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">qubo</span><span class="p">:</span> <span class="n">QuadraticProgram</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Holds the QUBO encoding</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">iteration</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Tracks the current iteration of the optimization</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Quantum circuit string, initialized as None</span>
 
 <div class="viewcode-block" id="Algorithm.create_circuit">
 <a class="viewcode-back" href="../../../qplex.algorithms.html#qplex.algorithms.base_algorithm.Algorithm.create_circuit">[docs]</a>
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">create_circuit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_circuit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Creates a quantum circuit in the form of an OpenQASM2 string from</span>
+<span class="sd">        Creates a quantum circuit in the form of an OpenQASM3 string from</span>
 <span class="sd">        an optimization model.</span>
+
+<span class="sd">        This method constructs the circuit using the quantum algorithm&#39;s</span>
+<span class="sd">        ansatz and problem-specific gates. It needs to be implemented by</span>
+<span class="sd">        subclasses like QAOA or VQE.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        str</span>
-<span class="sd">            An OpenQASM2 string representing the quantum circuit.</span>
+<span class="sd">            An OpenQASM3 string representing the quantum circuit.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="o">...</span></div>
 
@@ -108,68 +106,77 @@
 <div class="viewcode-block" id="Algorithm.update_params">
 <a class="viewcode-back" href="../../../qplex.algorithms.html#qplex.algorithms.base_algorithm.Algorithm.update_params">[docs]</a>
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">update_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Updates the parameters of the quantum circuit.</span>
+
+<span class="sd">        This method updates the circuit&#39;s gates according to new parameters,</span>
+<span class="sd">        often used in variational quantum algorithms where parameters are</span>
+<span class="sd">        iteratively optimized.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        params : np.ndarray</span>
-<span class="sd">            The new set of parameters for the circuit.</span>
+<span class="sd">            The new set of parameters for the circuit, typically representing</span>
+<span class="sd">            angles for rotation gates or other tunable parameters.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        str</span>
-<span class="sd">            The updated OpenQASM2 string.</span>
+<span class="sd">            The updated OpenQASM3 string with the new parameter values.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="o">...</span></div>
-
-
-<div class="viewcode-block" id="Algorithm.cost_function">
-<a class="viewcode-back" href="../../../qplex.algorithms.html#qplex.algorithms.base_algorithm.Algorithm.cost_function">[docs]</a>
-    <span class="k">def</span> <span class="nf">cost_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Defines the cost function to be used for the classical optimization routine.</span>
-
-<span class="sd">        This method calculates the cost based on the given parameters by</span>
-<span class="sd">        updating the quantum circuit, solving it, and evaluating the energy.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        params : np.ndarray</span>
-<span class="sd">            The new set of parameters for the circuit.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        float</span>
-<span class="sd">            The cost for the current parameters.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">qc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_params</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
-        <span class="n">counts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">qc</span><span class="p">)</span>
-        <span class="n">energy</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">for</span> <span class="n">sample</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">counts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">sample</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">sample</span><span class="p">]</span>
-            <span class="n">energy</span> <span class="o">+=</span> <span class="n">count</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">qubo</span><span class="o">.</span><span class="n">objective</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">iteration</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="n">cost</span> <span class="o">=</span> <span class="n">energy</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">shots</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Iteration </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">iteration</span><span class="si">}</span><span class="s1">:</span><span class="se">\n</span><span class="s1">Cost = </span><span class="si">{</span><span class="n">cost</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">cost</span></div>
 
 
 <div class="viewcode-block" id="Algorithm.get_starting_point">
 <a class="viewcode-back" href="../../../qplex.algorithms.html#qplex.algorithms.base_algorithm.Algorithm.get_starting_point">[docs]</a>
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">get_starting_point</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_starting_point</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Defines the starting point for the optimization.</span>
+<span class="sd">        Defines the starting point for the optimization process.</span>
+
+<span class="sd">        This method provides the initial parameter values for the optimization</span>
+<span class="sd">        routine, often used in variational quantum algorithms to begin</span>
+<span class="sd">        parameter tuning.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        np.ndarray</span>
-<span class="sd">            An array representing the starting point.</span>
+<span class="sd">            An array representing the starting point parameters for the</span>
+<span class="sd">            optimization.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="o">...</span></div>
+
+
+<div class="viewcode-block" id="Algorithm.remove_parameters">
+<a class="viewcode-back" href="../../../qplex.algorithms.html#qplex.algorithms.base_algorithm.Algorithm.remove_parameters">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">remove_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Removes the parameter input lines from the quantum circuit string.</span>
+
+<span class="sd">        This method removes lines in the circuit string that declare</span>
+<span class="sd">        parameter inputs (i.e., `input float[64] thetaX;`) but keeps the</span>
+<span class="sd">        placeholders (like &#39;thetaX&#39;) in the circuit. This is useful for</span>
+<span class="sd">        working with unparameterized circuits or circuits where parameters</span>
+<span class="sd">        are defined externally, such as when using the GGAE workflow from</span>
+<span class="sd">        QPLEX.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        AttributeError</span>
+<span class="sd">            If the &#39;circuit&#39; attribute is not defined or is None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;circuit&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span>
+                <span class="s2">&quot;The &#39;circuit&#39; attribute is not defined. Ensure the circuit &quot;</span>
+                <span class="s2">&quot;is instantiated in the specific algorithm.&quot;</span><span class="p">)</span>
+
+        <span class="n">lines</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
+
+        <span class="n">filtered_lines</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span> <span class="k">if</span>
+                          <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;input float[64]&quot;</span><span class="p">)]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">filtered_lines</span><span class="p">)</span></div>
 </div>
 
 </pre></div>
@@ -222,7 +229,7 @@
       &#169;2024, J. Giraldo, J. Ossorio.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.0.2</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.1.3</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       
     </div>

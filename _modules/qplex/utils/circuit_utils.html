@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>qplex.utils.circuit_utils &#8212; QPLEX 0.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/basic.css?v=686e5160" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=27fed22d" />
+    <script src="../../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for qplex.utils.circuit_utils</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+
+<div class="viewcode-block" id="replace_params">
+<a class="viewcode-back" href="../../../qplex.utils.html#qplex.utils.circuit_utils.replace_params">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">replace_params</span><span class="p">(</span><span class="n">circuit</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Replaces parameter placeholders in a quantum circuit string with actual</span>
+<span class="sd">    values.</span>
+
+<span class="sd">    This function takes a quantum circuit in the form of a string and replaces</span>
+<span class="sd">    placeholders of the form &#39;thetaX&#39; (where X is an integer index) with the</span>
+<span class="sd">    corresponding values from a provided array of parameters. This is</span>
+<span class="sd">    commonly used in</span>
+<span class="sd">    parameterized quantum circuits for variational algorithms like VQE and</span>
+<span class="sd">    QAOA, where gates</span>
+<span class="sd">    depend on tunable parameters.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">    ----------</span>
+<span class="sd">    circuit : str</span>
+<span class="sd">        The quantum circuit as a string in which parameter placeholders of</span>
+<span class="sd">        the form &#39;thetaX&#39; (e.g., theta0, theta1) need to be replaced by</span>
+<span class="sd">        actual numerical values.</span>
+
+<span class="sd">    params : np.ndarray</span>
+<span class="sd">        A 1-dimensional numpy array containing the numerical parameter</span>
+<span class="sd">        values. Each index in the array corresponds to a specific placeholder</span>
+<span class="sd">        in the circuit string. For example, params[0] replaces &#39;theta0&#39;,</span>
+<span class="sd">        params[1] replaces &#39;theta1&#39;, and so on.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    -------</span>
+<span class="sd">    str</span>
+<span class="sd">        The quantum circuit string with all placeholders replaced by the</span>
+<span class="sd">        corresponding values from the `params` array.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">    ------</span>
+<span class="sd">    IndexError</span>
+<span class="sd">        If the circuit string contains a &#39;thetaX&#39; placeholder where X is</span>
+<span class="sd">        greater than or equal to the length of the `params` array, this will</span>
+<span class="sd">        raise an IndexError because no corresponding parameter is available.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">    -------</span>
+<span class="sd">    Given a circuit:</span>
+<span class="sd">        circuit = &quot;ry(theta0) q[0];\nrz(theta1) q[1];\n&quot;</span>
+<span class="sd">    And the parameters:</span>
+<span class="sd">        params = np.array([0.5, 1.2])</span>
+<span class="sd">    The result will be:</span>
+<span class="sd">        &quot;ry(0.5) q[0];\nrz(1.2) q[1];\n&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">replacer</span><span class="p">(</span><span class="n">match</span><span class="p">):</span>
+        <span class="n">param_index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="n">param_index</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;theta(\d+)&#39;</span><span class="p">,</span> <span class="n">replacer</span><span class="p">,</span> <span class="n">circuit</span><span class="p">)</span></div>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/icon.svg" alt="Logo of QPLEX"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">qplex</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, J. Giraldo, J. Ossorio.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.1.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

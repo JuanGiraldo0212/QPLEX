@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>qplex.utils package &#8212; QPLEX 0.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=686e5160" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
+    <script src="_static/documentation_options.js?v=01f34227"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="qplex.workflows package" href="qplex.workflows.html" />
+    <link rel="prev" title="qplex.solvers package" href="qplex.solvers.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="qplex-utils-package">
+<h1>qplex.utils package<a class="headerlink" href="#qplex-utils-package" title="Link to this heading">¶</a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
+</section>
+<section id="module-qplex.utils.circuit_utils">
+<span id="qplex-utils-circuit-utils-module"></span><h2>qplex.utils.circuit_utils module<a class="headerlink" href="#module-qplex.utils.circuit_utils" title="Link to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="qplex.utils.circuit_utils.replace_params">
+<span class="sig-prename descclassname"><span class="pre">qplex.utils.circuit_utils.</span></span><span class="sig-name descname"><span class="pre">replace_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">circuit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/qplex/utils/circuit_utils.html#replace_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.utils.circuit_utils.replace_params" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Replaces parameter placeholders in a quantum circuit string with actual
+values.</p>
+<p>This function takes a quantum circuit in the form of a string and replaces
+placeholders of the form ‘thetaX’ (where X is an integer index) with the
+corresponding values from a provided array of parameters. This is
+commonly used in
+parameterized quantum circuits for variational algorithms like VQE and
+QAOA, where gates
+depend on tunable parameters.</p>
+<dl class="simple">
+<dt>circuit<span class="classifier">str</span></dt><dd><p>The quantum circuit as a string in which parameter placeholders of
+the form ‘thetaX’ (e.g., theta0, theta1) need to be replaced by
+actual numerical values.</p>
+</dd>
+<dt>params<span class="classifier">np.ndarray</span></dt><dd><p>A 1-dimensional numpy array containing the numerical parameter
+values. Each index in the array corresponds to a specific placeholder
+in the circuit string. For example, params[0] replaces ‘theta0’,
+params[1] replaces ‘theta1’, and so on.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>str</dt><dd><p>The quantum circuit string with all placeholders replaced by the
+corresponding values from the <cite>params</cite> array.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>IndexError</dt><dd><p>If the circuit string contains a ‘thetaX’ placeholder where X is
+greater than or equal to the length of the <cite>params</cite> array, this will
+raise an IndexError because no corresponding parameter is available.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Given a circuit:</dt><dd><p>circuit = “ry(theta0) q[0];</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>rz(theta1) q[1];
+“</p>
+<blockquote>
+<div><dl class="simple">
+<dt>And the parameters:</dt><dd><p>params = np.array([0.5, 1.2])</p>
+</dd>
+<dt>The result will be:</dt><dd><p>“ry(0.5) q[0];</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>rz(1.2) q[1];
+“</p>
+</dd></dl>
+
+</section>
+<section id="module-qplex.utils.model_utils">
+<span id="qplex-utils-model-utils-module"></span><h2>qplex.utils.model_utils module<a class="headerlink" href="#module-qplex.utils.model_utils" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="qplex.utils.model_utils.ConstraintInfo">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qplex.utils.model_utils.</span></span><span class="sig-name descname"><span class="pre">ConstraintInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="qplex.model.html#qplex.model.constants.ConstraintType" title="qplex.model.constants.ConstraintType"><span class="pre">ConstraintType</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">additional_constraints</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="qplex.model.html#qplex.model.constants.ConstraintType" title="qplex.model.constants.ConstraintType"><span class="pre">ConstraintType</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qplex/utils/model_utils.html#ConstraintInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.utils.model_utils.ConstraintInfo" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Stores information about detected constraints</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qplex.utils.model_utils.ConstraintInfo.additional_constraints">
+<span class="sig-name descname"><span class="pre">additional_constraints</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="qplex.model.html#qplex.model.constants.ConstraintType" title="qplex.model.constants.ConstraintType"><span class="pre">ConstraintType</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#qplex.utils.model_utils.ConstraintInfo.additional_constraints" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qplex.utils.model_utils.ConstraintInfo.parameters">
+<span class="sig-name descname"><span class="pre">parameters</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#qplex.utils.model_utils.ConstraintInfo.parameters" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qplex.utils.model_utils.ConstraintInfo.type">
+<span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="qplex.model.html#qplex.model.constants.ConstraintType" title="qplex.model.constants.ConstraintType"><span class="pre">ConstraintType</span></a></em><a class="headerlink" href="#qplex.utils.model_utils.ConstraintInfo.type" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="qplex.utils.model_utils.get_model_constraint_info">
+<span class="sig-prename descclassname"><span class="pre">qplex.utils.model_utils.</span></span><span class="sig-name descname"><span class="pre">get_model_constraint_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#qplex.utils.model_utils.ConstraintInfo" title="qplex.utils.model_utils.ConstraintInfo"><span class="pre">ConstraintInfo</span></a></span></span><a class="reference internal" href="_modules/qplex/utils/model_utils.html#get_model_constraint_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.utils.model_utils.get_model_constraint_info" title="Link to this definition">¶</a></dt>
+<dd><p>Analyzes a DOcplex model to determine constraint types.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>model</strong> (<em>Model</em>) – The DOcplex model to analyze</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Information about detected constraints</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qplex.utils.model_utils.ConstraintInfo" title="qplex.utils.model_utils.ConstraintInfo">ConstraintInfo</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-qplex.utils.workflow_utils">
+<span id="qplex-utils-workflow-utils-module"></span><h2>qplex.utils.workflow_utils module<a class="headerlink" href="#module-qplex.utils.workflow_utils" title="Link to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="qplex.utils.workflow_utils.calculate_energy">
+<span class="sig-prename descclassname"><span class="pre">qplex.utils.workflow_utils.</span></span><span class="sig-name descname"><span class="pre">calculate_energy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">counts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shots</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">algorithm_instance</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qplex/utils/workflow_utils.html#calculate_energy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.utils.workflow_utils.calculate_energy" title="Link to this definition">¶</a></dt>
+<dd><p>Calculates the energy (or cost function value) of a quantum solution.</p>
+<p>This function computes the average energy of the quantum measurement
+results based on the provided counts (bitstrings and their frequencies).
+The energy is computed by evaluating the objective function for each
+sampled bitstring and taking the weighted average based on the counts.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>counts</strong> (<em>dict</em>) – A dictionary of bitstrings (represented as strings of 0s and 1s) and
+their corresponding frequencies (or counts) from the quantum
+measurement results.</p></li>
+<li><p><strong>shots</strong> (<em>int</em>) – The total number of measurement shots, used to normalize the energy.</p></li>
+<li><p><strong>algorithm_instance</strong> (<a class="reference internal" href="qplex.algorithms.html#qplex.algorithms.base_algorithm.Algorithm" title="qplex.algorithms.base_algorithm.Algorithm"><em>Algorithm</em></a>) – The instance of the quantum algorithm (e.g., QAOA or VQE) being used.
+This instance contains the QUBO model, which is used to evaluate the
+objective function of the bitstrings.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The average energy (or cost function value) of the quantum solution,
+normalized by the total number of shots.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="qplex.utils.workflow_utils.get_solution_from_counts">
+<span class="sig-prename descclassname"><span class="pre">qplex.utils.workflow_utils.</span></span><span class="sig-name descname"><span class="pre">get_solution_from_counts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimal_counts</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qplex/utils/workflow_utils.html#get_solution_from_counts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.utils.workflow_utils.get_solution_from_counts" title="Link to this definition">¶</a></dt>
+<dd><p>Extracts the best solution from the optimal parameter counts obtained
+from a quantum algorithm’s execution.</p>
+<p>This function takes the model and the counts of possible solutions
+(bitstrings) from a quantum run and extracts the best solution by
+selecting the most frequent bitstring and computing
+its objective value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>Model</em>) – The optimization model that was solved, typically represented as a
+QUBO (Quadratic Unconstrained Binary Optimization) problem.</p></li>
+<li><p><strong>optimal_counts</strong> (<em>dict</em>) – A dictionary of bitstrings (represented as strings of 0s and 1s)
+and their corresponding frequencies or counts from the quantum
+measurement results.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>A dictionary containing the best solution with the following keys:
+- ‘solution’: A dictionary of variable names mapped to their binary</p>
+<blockquote>
+<div><p>values (0 or 1) representing the optimal solution.</p>
+</div></blockquote>
+<ul class="simple">
+<li><p>’objective’: The computed objective value of the best solution.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-qplex.utils">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-qplex.utils" title="Link to this heading">¶</a></h2>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/icon.svg" alt="Logo of QPLEX"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">qplex</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="qplex.html">qplex package</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">qplex</a><ul>
+  <li><a href="qplex.html">qplex package</a><ul>
+      <li>Previous: <a href="qplex.solvers.html" title="previous chapter">qplex.solvers package</a></li>
+      <li>Next: <a href="qplex.workflows.html" title="next chapter">qplex.workflows package</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, J. Giraldo, J. Ossorio.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.1.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="_sources/qplex.utils.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

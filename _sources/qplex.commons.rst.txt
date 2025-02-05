@@ -4,10 +4,18 @@ qplex.commons package
 Submodules
 ----------
 
-qplex.commons.ggaem module
---------------------------
+qplex.commons.algorithm\_factory module
+---------------------------------------
 
-.. automodule:: qplex.commons.ggaem
+.. automodule:: qplex.commons.algorithm_factory
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+qplex.commons.optimization\_callback module
+-------------------------------------------
+
+.. automodule:: qplex.commons.optimization_callback
    :members:
    :undoc-members:
    :show-inheritance:

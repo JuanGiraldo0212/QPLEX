@@ -1,6 +1,14 @@
 qplex.algorithms package
 ========================
 
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   qplex.algorithms.mixers
+
 Submodules
 ----------
 

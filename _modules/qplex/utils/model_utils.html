@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>qplex.utils.model_utils &#8212; QPLEX 0.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/basic.css?v=686e5160" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=27fed22d" />
+    <script src="../../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for qplex.utils.model_utils</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Set</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">docplex.mp.constr</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearConstraint</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">docplex.mp.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">ComparisonType</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">qplex.model.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConstraintType</span>
+
+
+<div class="viewcode-block" id="ConstraintInfo">
+<a class="viewcode-back" href="../../../qplex.utils.html#qplex.utils.model_utils.ConstraintInfo">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ConstraintInfo</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Stores information about detected constraints&quot;&quot;&quot;</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="n">ConstraintType</span>
+    <span class="n">parameters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">additional_constraints</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">ConstraintType</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="get_model_constraint_info">
+<a class="viewcode-back" href="../../../qplex.utils.html#qplex.utils.model_utils.get_model_constraint_info">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_model_constraint_info</span><span class="p">(</span><span class="n">model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ConstraintInfo</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Analyzes a DOcplex model to determine constraint types.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    model : Model</span>
+<span class="sd">        The DOcplex model to analyze</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ConstraintInfo</span>
+<span class="sd">        Information about detected constraints</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">constraints</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">LinearConstraint</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">iter_constraints</span><span class="p">())</span>
+    <span class="n">detected_constraints</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="n">ConstraintType</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="n">parameters</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># Helper functions for coefficient analysis</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_coefficients</span><span class="p">(</span><span class="n">const</span><span class="p">:</span> <span class="n">LinearConstraint</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">coef</span> <span class="k">for</span> <span class="n">var</span><span class="p">,</span> <span class="n">coef</span> <span class="ow">in</span>
+                <span class="n">const</span><span class="o">.</span><span class="n">get_left_expr</span><span class="p">()</span><span class="o">.</span><span class="n">iter_terms</span><span class="p">()}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_unique_coefs</span><span class="p">(</span><span class="n">const</span><span class="p">:</span> <span class="n">LinearConstraint</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="n">coef</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">coef</span> <span class="ow">in</span> <span class="n">const</span><span class="o">.</span><span class="n">get_left_expr</span><span class="p">()</span><span class="o">.</span><span class="n">iter_terms</span><span class="p">())</span>
+
+    <span class="c1"># Check for cardinality constraints (sum x_i = k)</span>
+    <span class="n">cardinality_constraints</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">const</span> <span class="k">for</span> <span class="n">const</span> <span class="ow">in</span> <span class="n">constraints</span>
+        <span class="k">if</span> <span class="n">const</span><span class="o">.</span><span class="n">sense</span> <span class="o">==</span> <span class="n">ComparisonType</span><span class="o">.</span><span class="n">EQ</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span><span class="n">coef</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">coef</span>
+                                                    <span class="ow">in</span> <span class="n">get_coefficients</span><span class="p">(</span><span class="n">const</span><span class="p">)</span>
+                                                    <span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span>
+            <span class="n">const</span><span class="o">.</span><span class="n">get_right_expr</span><span class="p">(),</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span>
+    <span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">cardinality_constraints</span><span class="p">:</span>
+        <span class="n">detected_constraints</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ConstraintType</span><span class="o">.</span><span class="n">CARDINALITY</span><span class="p">)</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;cardinality_k&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cardinality_constraints</span><span class="p">[</span>
+            <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_right_expr</span><span class="p">()</span>
+
+    <span class="c1"># Check for partition constraints (sum x_i - sum y_i = 0)</span>
+    <span class="n">partition_constraints</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">const</span> <span class="k">for</span> <span class="n">const</span> <span class="ow">in</span> <span class="n">constraints</span>
+        <span class="k">if</span> <span class="n">const</span><span class="o">.</span><span class="n">sense</span> <span class="o">==</span> <span class="n">ComparisonType</span><span class="o">.</span><span class="n">EQ</span>
+           <span class="ow">and</span> <span class="n">const</span><span class="o">.</span><span class="n">get_right_expr</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span>
+           <span class="ow">and</span> <span class="n">get_unique_coefs</span><span class="p">(</span><span class="n">const</span><span class="p">)</span> <span class="o">==</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">}</span>
+    <span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">partition_constraints</span><span class="p">:</span>
+        <span class="n">detected_constraints</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ConstraintType</span><span class="o">.</span><span class="n">PARTITION</span><span class="p">)</span>
+
+    <span class="c1"># Check for inequality constraints</span>
+    <span class="n">inequality_constraints</span> <span class="o">=</span> <span class="p">[</span><span class="n">const</span> <span class="k">for</span> <span class="n">const</span> <span class="ow">in</span> <span class="n">constraints</span>
+                              <span class="k">if</span> <span class="p">(</span><span class="n">const</span><span class="o">.</span><span class="n">sense</span> <span class="o">==</span> <span class="n">ComparisonType</span><span class="o">.</span><span class="n">LE</span> <span class="ow">or</span>
+                                  <span class="n">const</span><span class="o">.</span><span class="n">sense</span> <span class="o">==</span> <span class="n">ComparisonType</span><span class="o">.</span><span class="n">GE</span><span class="p">)</span>
+                              <span class="ow">and</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">coef</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">coef</span> <span class="ow">in</span>
+                                          <span class="n">get_coefficients</span><span class="p">(</span><span class="n">const</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+                              <span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">inequality_constraints</span><span class="p">:</span>
+        <span class="n">detected_constraints</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ConstraintType</span><span class="o">.</span><span class="n">INEQUALITY</span><span class="p">)</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;inequality_bounds&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="n">const</span><span class="o">.</span><span class="n">sense</span><span class="p">,</span> <span class="n">const</span><span class="o">.</span><span class="n">get_right_expr</span><span class="p">())</span>
+            <span class="k">for</span> <span class="n">const</span> <span class="ow">in</span> <span class="n">inequality_constraints</span>
+        <span class="p">]</span>
+
+    <span class="c1"># Multiple constraints handling</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">detected_constraints</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ConstraintInfo</span><span class="p">(</span>
+            <span class="nb">type</span><span class="o">=</span><span class="n">ConstraintType</span><span class="o">.</span><span class="n">MULTIPLE</span><span class="p">,</span>
+            <span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span>
+            <span class="n">additional_constraints</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">detected_constraints</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">detected_constraints</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">constraint_type</span> <span class="o">=</span> <span class="n">detected_constraints</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">ConstraintInfo</span><span class="p">(</span>
+            <span class="nb">type</span><span class="o">=</span><span class="n">constraint_type</span><span class="p">,</span>
+            <span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span>
+        <span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;No constraints detected&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ConstraintInfo</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">ConstraintType</span><span class="o">.</span><span class="n">UNCONSTRAINED</span><span class="p">)</span></div>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/icon.svg" alt="Logo of QPLEX"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">qplex</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, J. Giraldo, J. Ossorio.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.1.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

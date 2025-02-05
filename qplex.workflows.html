@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>qplex.workflows package &#8212; QPLEX 0.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=686e5160" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
+    <script src="_static/documentation_options.js?v=01f34227"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="qplex.utils package" href="qplex.utils.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="qplex-workflows-package">
+<h1>qplex.workflows package<a class="headerlink" href="#qplex-workflows-package" title="Link to this heading">¶</a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
+</section>
+<section id="module-qplex.workflows.ggae_workflow">
+<span id="qplex-workflows-ggae-workflow-module"></span><h2>qplex.workflows.ggae_workflow module<a class="headerlink" href="#module-qplex.workflows.ggae_workflow" title="Link to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="qplex.workflows.ggae_workflow.ggae_workflow">
+<span class="sig-prename descclassname"><span class="pre">qplex.workflows.ggae_workflow.</span></span><span class="sig-name descname"><span class="pre">ggae_workflow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solver</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="qplex.solvers.html#qplex.solvers.base_solver.Solver" title="qplex.solvers.base_solver.Solver"><span class="pre">Solver</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="qplex.model.html#qplex.model.execution_config.ExecutionConfig" title="qplex.model.execution_config.ExecutionConfig"><span class="pre">ExecutionConfig</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qplex/workflows/ggae_workflow.html#ggae_workflow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.workflows.ggae_workflow.ggae_workflow" title="Link to this definition">¶</a></dt>
+<dd><p>Runs the GGAEM (Generalized Gate-Based Algorithm Execution Manager)
+workflow.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>Model</em>) – The optimization model to be solved.</p></li>
+<li><p><strong>solver</strong> (<a class="reference internal" href="qplex.solvers.html#qplex.solvers.base_solver.Solver" title="qplex.solvers.base_solver.Solver"><em>Solver</em></a>) – The solver to be used for solving the model.</p></li>
+<li><p><strong>options</strong> (<em>Options</em>) – A dictionary containing configuration options for the workflow.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary of optimal parameter counts.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-qplex.workflows.ibm_session_workflow">
+<span id="qplex-workflows-ibm-session-workflow-module"></span><h2>qplex.workflows.ibm_session_workflow module<a class="headerlink" href="#module-qplex.workflows.ibm_session_workflow" title="Link to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="qplex.workflows.ibm_session_workflow.compute_counts">
+<span class="sig-prename descclassname"><span class="pre">qplex.workflows.ibm_session_workflow.</span></span><span class="sig-name descname"><span class="pre">compute_counts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solver</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampler</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qplex/workflows/ibm_session_workflow.html#compute_counts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.workflows.ibm_session_workflow.compute_counts" title="Link to this definition">¶</a></dt>
+<dd><p>Computes the measurement results (bitstring counts) for a given set of
+parameters.</p>
+<p>This function binds the parameters to the quantum circuit, runs the
+circuit using the provided sampler, and parses the raw measurement
+results into meaningful counts.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>params</strong> (<em>np.ndarray</em>) – An array of parameters to assign to the quantum circuit.</p></li>
+<li><p><strong>solver</strong> (<a class="reference internal" href="qplex.solvers.html#qplex.solvers.base_solver.Solver" title="qplex.solvers.base_solver.Solver"><em>Solver</em></a>) – The solver instance responsible for running the quantum circuit and
+processing the results.</p></li>
+<li><p><strong>qc</strong> (<em>QuantumCircuit</em>) – The transpiled quantum circuit.</p></li>
+<li><p><strong>sampler</strong> (<em>Sampler</em>) – The sampler instance responsible for running the quantum circuit on
+the quantum backend.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary of bitstring counts representing the measurement results
+from the quantum execution.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="qplex.workflows.ibm_session_workflow.ibm_session_workflow">
+<span class="sig-prename descclassname"><span class="pre">qplex.workflows.ibm_session_workflow.</span></span><span class="sig-name descname"><span class="pre">ibm_session_workflow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ibmq_solver</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="qplex.model.html#qplex.model.execution_config.ExecutionConfig" title="qplex.model.execution_config.ExecutionConfig"><span class="pre">ExecutionConfig</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qplex/workflows/ibm_session_workflow.html#ibm_session_workflow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.workflows.ibm_session_workflow.ibm_session_workflow" title="Link to this definition">¶</a></dt>
+<dd><p>Executes a quantum optimization workflow using IBM Quantum Runtime.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>Model</em>) – The optimization model to be solved, typically formulated as a QUBO.</p></li>
+<li><p><strong>ibmq_solver</strong> (<a class="reference internal" href="qplex.solvers.html#qplex.solvers.base_solver.Solver" title="qplex.solvers.base_solver.Solver"><em>Solver</em></a>) – The IBM Quantum solver instance responsible for managing the quantum
+backend, parsing input, and processing the results.</p></li>
+<li><p><strong>options</strong> (<em>Options</em>) – A dictionary containing configuration options for the workflow.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary representing the optimal measurement results (bitstring
+counts) obtained after optimizing the quantum circuit’s parameters.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-qplex.workflows">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-qplex.workflows" title="Link to this heading">¶</a></h2>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/icon.svg" alt="Logo of QPLEX"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">qplex</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="qplex.html">qplex package</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">qplex</a><ul>
+  <li><a href="qplex.html">qplex package</a><ul>
+      <li>Previous: <a href="qplex.utils.html" title="previous chapter">qplex.utils package</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, J. Giraldo, J. Ossorio.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.1.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="_sources/qplex.workflows.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

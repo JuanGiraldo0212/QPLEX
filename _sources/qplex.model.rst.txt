@@ -12,10 +12,10 @@ qplex.model.constants module
    :undoc-members:
    :show-inheritance:
 
-qplex.model.options module
---------------------------
+qplex.model.execution\_config module
+------------------------------------
 
-.. automodule:: qplex.model.options
+.. automodule:: qplex.model.execution_config
    :members:
    :undoc-members:
    :show-inheritance:

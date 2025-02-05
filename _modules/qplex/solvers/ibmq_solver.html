@@ -5,11 +5,11 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>qplex.solvers.ibmq_solver &#8212; QPLEX 0.1.0 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d1102ebc" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/basic.css?v=c058f7c8" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/basic.css?v=686e5160" />
     <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=27fed22d" />
     <script src="../../../_static/documentation_options.js?v=01f34227"></script>
-    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -32,17 +32,18 @@
           <div class="body" role="main">
             
   <h1>Source code for qplex.solvers.ibmq_solver</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">qiskit.qasm3</span>
-<span class="kn">from</span> <span class="nn">qiskit</span> <span class="kn">import</span> <span class="n">transpile</span>
-<span class="kn">from</span> <span class="nn">qiskit.providers</span> <span class="kn">import</span> <span class="n">BackendV2</span>
-<span class="kn">from</span> <span class="nn">qplex.solvers.base_solver</span> <span class="kn">import</span> <span class="n">Solver</span>
-<span class="kn">from</span> <span class="nn">qiskit_aer</span> <span class="kn">import</span> <span class="n">AerSimulator</span>
-<span class="kn">from</span> <span class="nn">qiskit_ibm_runtime</span> <span class="kn">import</span> <span class="n">QiskitRuntimeService</span><span class="p">,</span> <span class="n">SamplerV2</span> <span class="k">as</span> <span class="n">Sampler</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qiskit.qasm3</span><span class="w"> </span><span class="kn">import</span> <span class="n">loads</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit</span><span class="w"> </span><span class="kn">import</span> <span class="n">QuantumCircuit</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit.transpiler.preset_passmanagers</span><span class="w"> </span><span class="kn">import</span> <span class="n">generate_preset_pass_manager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit.providers</span><span class="w"> </span><span class="kn">import</span> <span class="n">BackendV2</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qplex.solvers.base_solver</span><span class="w"> </span><span class="kn">import</span> <span class="n">Solver</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_aer</span><span class="w"> </span><span class="kn">import</span> <span class="n">AerSimulator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_ibm_runtime</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">QiskitRuntimeService</span><span class="p">,</span> <span class="n">SamplerV2</span> <span class="k">as</span> <span class="n">Sampler</span><span class="p">,</span> <span class="p">)</span>
 
 
 <div class="viewcode-block" id="IBMQSolver">
 <a class="viewcode-back" href="../../../qplex.solvers.html#qplex.solvers.ibmq_solver.IBMQSolver">[docs]</a>
-<span class="k">class</span> <span class="nc">IBMQSolver</span><span class="p">(</span><span class="n">Solver</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">IBMQSolver</span><span class="p">(</span><span class="n">Solver</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A quantum solver for IBMQ that can execute quantum circuits on IBM&#39;s</span>
 <span class="sd">    backend or a local simulator.</span>
@@ -51,15 +52,18 @@
 <span class="sd">    ----------</span>
 <span class="sd">    shots : int</span>
 <span class="sd">        The number of shots for the quantum experiment.</span>
-<span class="sd">    backend : str</span>
+<span class="sd">    _backend : str</span>
 <span class="sd">        The name of the backend to be used, which can be an IBMQ</span>
 <span class="sd">        device or a local simulator.</span>
 <span class="sd">    service : QiskitRuntimeService</span>
 <span class="sd">        The Qiskit runtime service instance for interacting with IBMQ&#39;s</span>
 <span class="sd">        backend.</span>
+<span class="sd">    optimization_level : int</span>
+<span class="sd">        The desired optimization level for the Qiskit circuit.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">shots</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">shots</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">optimization_level</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initializes the IBMQSolver with the specified token, number of</span>
 <span class="sd">        shots, and backend.</span>
@@ -73,16 +77,27 @@
 <span class="sd">        backend : str</span>
 <span class="sd">            The backend to use for solving the problem,</span>
 <span class="sd">            which can be an IBMQ device or a local simulator.</span>
+<span class="sd">        optimization_level : int</span>
+<span class="sd">            The desired optimization level for the Qiskit circuit.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">shots</span> <span class="o">=</span> <span class="n">shots</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">backend</span> <span class="o">=</span> <span class="n">backend</span>
+        <span class="k">if</span> <span class="n">backend</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;No backend specified. Using least busy...&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_backend</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_backend</span> <span class="o">=</span> <span class="n">backend</span>
         <span class="n">QiskitRuntimeService</span><span class="o">.</span><span class="n">save_account</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="s2">&quot;ibm_quantum&quot;</span><span class="p">,</span>
                                           <span class="n">token</span><span class="o">=</span><span class="n">token</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">service</span> <span class="o">=</span> <span class="n">QiskitRuntimeService</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">optimization_level</span> <span class="o">=</span> <span class="n">optimization_level</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">backend</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_backend</span>
 
 <div class="viewcode-block" id="IBMQSolver.solve">
 <a class="viewcode-back" href="../../../qplex.solvers.html#qplex.solvers.ibmq_solver.IBMQSolver.solve">[docs]</a>
-    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Solves the given problem formulation using the specified backend.</span>
 
@@ -100,23 +115,34 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">qc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_input</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
         <span class="n">backend</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">select_backend</span><span class="p">(</span><span class="n">qc</span><span class="o">.</span><span class="n">num_qubits</span><span class="p">)</span>
-        <span class="n">transpiled_qc</span> <span class="o">=</span> <span class="n">transpile</span><span class="p">(</span><span class="n">qc</span><span class="p">,</span> <span class="n">backend</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span> <span class="o">==</span> <span class="s1">&#39;simulator&#39;</span><span class="p">:</span>
-            <span class="n">response</span> <span class="o">=</span> <span class="n">backend</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">transpiled_qc</span><span class="p">)</span><span class="o">.</span><span class="n">result</span><span class="p">()</span><span class="o">.</span><span class="n">get_counts</span><span class="p">()</span>
+        <span class="n">pass_manager</span> <span class="o">=</span> <span class="n">generate_preset_pass_manager</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span>
+                                                    <span class="n">optimization_level</span><span class="o">=</span>
+                                                    <span class="bp">self</span><span class="o">.</span><span class="n">optimization_level</span><span class="p">)</span>
+        <span class="n">isa_circuit</span> <span class="o">=</span> <span class="n">pass_manager</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">qc</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_backend</span> <span class="o">==</span> <span class="s1">&#39;simulator&#39;</span><span class="p">:</span>
+            <span class="n">raw_counts</span> <span class="o">=</span> <span class="n">backend</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">isa_circuit</span><span class="p">)</span><span class="o">.</span><span class="n">result</span><span class="p">()</span><span class="o">.</span><span class="n">get_counts</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">sampler</span> <span class="o">=</span> <span class="n">Sampler</span><span class="p">(</span><span class="n">backend</span><span class="p">)</span>
-            <span class="n">pub</span> <span class="o">=</span> <span class="p">(</span><span class="n">transpiled_qc</span><span class="p">,)</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="n">sampler</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="n">pub</span><span class="p">],</span> <span class="n">shots</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">shots</span><span class="p">)</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
-            <span class="n">bits</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">c</span>
-            <span class="n">response</span> <span class="o">=</span> <span class="n">bits</span><span class="o">.</span><span class="n">get_counts</span><span class="p">()</span>
-        <span class="n">counts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_response</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+            <span class="n">raw_counts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">isa_circuit</span><span class="p">,</span> <span class="n">sampler</span><span class="p">)</span>
+        <span class="n">counts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_response</span><span class="p">(</span><span class="n">raw_counts</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">counts</span></div>
+
+
+<div class="viewcode-block" id="IBMQSolver.run">
+<a class="viewcode-back" href="../../../qplex.solvers.html#qplex.solvers.ibmq_solver.IBMQSolver.run">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qc</span><span class="p">,</span> <span class="n">sampler</span><span class="p">):</span>
+        <span class="n">pub</span> <span class="o">=</span> <span class="p">(</span><span class="n">qc</span><span class="p">,)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">sampler</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="n">pub</span><span class="p">],</span> <span class="n">shots</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">shots</span><span class="p">)</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">bits</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">c</span>
+        <span class="n">raw_counts</span> <span class="o">=</span> <span class="n">bits</span><span class="o">.</span><span class="n">get_counts</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">raw_counts</span></div>
 
 
 <div class="viewcode-block" id="IBMQSolver.parse_input">
 <a class="viewcode-back" href="../../../qplex.solvers.html#qplex.solvers.ibmq_solver.IBMQSolver.parse_input">[docs]</a>
-    <span class="k">def</span> <span class="nf">parse_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">circuit</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">qiskit</span><span class="o">.</span><span class="n">QuantumCircuit</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parse_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">circuit</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QuantumCircuit</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Converts a circuit string to a Qiskit QuantumCircuit object.</span>
 
@@ -134,13 +160,13 @@
 <span class="s2">        OPENQASM 3.0;</span>
 <span class="s2">        include &quot;stdgates.inc&quot;;</span>
 <span class="s2">        &quot;&quot;&quot;</span> <span class="o">+</span> <span class="n">circuit</span>
-        <span class="n">qc</span> <span class="o">=</span> <span class="n">qiskit</span><span class="o">.</span><span class="n">qasm3</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">circuit</span><span class="p">)</span>
+        <span class="n">qc</span> <span class="o">=</span> <span class="n">loads</span><span class="p">(</span><span class="n">circuit</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">qc</span></div>
 
 
 <div class="viewcode-block" id="IBMQSolver.parse_response">
 <a class="viewcode-back" href="../../../qplex.solvers.html#qplex.solvers.ibmq_solver.IBMQSolver.parse_response">[docs]</a>
-    <span class="k">def</span> <span class="nf">parse_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parse_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parses the response from the backend to extract measurement counts.</span>
 
@@ -163,7 +189,7 @@
 
 <div class="viewcode-block" id="IBMQSolver.select_backend">
 <a class="viewcode-back" href="../../../qplex.solvers.html#qplex.solvers.ibmq_solver.IBMQSolver.select_backend">[docs]</a>
-    <span class="k">def</span> <span class="nf">select_backend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qubits</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AerSimulator</span> <span class="o">|</span> <span class="n">BackendV2</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">select_backend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qubits</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AerSimulator</span> <span class="o">|</span> <span class="n">BackendV2</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Selects the appropriate backend based on the number of qubits and</span>
 <span class="sd">        the specified backend name.</span>
@@ -179,8 +205,10 @@
 <span class="sd">            The selected backend, which could be an IBMQ device or a  local</span>
 <span class="sd">            simulator.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span> <span class="o">!=</span> <span class="s2">&quot;simulator&quot;</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">backend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_backend</span> <span class="o">!=</span> <span class="s2">&quot;simulator&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_backend</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">least_busy</span><span class="p">(</span><span class="n">min_num_qubits</span><span class="o">=</span><span class="n">qubits</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">backend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_backend</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">AerSimulator</span><span class="p">()</span></div>
 </div>
 
@@ -234,7 +262,7 @@
       &#169;2024, J. Giraldo, J. Ossorio.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.0.2</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.1.3</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       
     </div>

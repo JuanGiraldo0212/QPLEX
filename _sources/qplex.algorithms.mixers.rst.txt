@@ -1,0 +1,69 @@
+qplex.algorithms.mixers package
+===============================
+
+Submodules
+----------
+
+qplex.algorithms.mixers.cardinality\_mixer module
+-------------------------------------------------
+
+.. automodule:: qplex.algorithms.mixers.cardinality_mixer
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+qplex.algorithms.mixers.composite\_mixer module
+-----------------------------------------------
+
+.. automodule:: qplex.algorithms.mixers.composite_mixer
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+qplex.algorithms.mixers.inequality\_mixer module
+------------------------------------------------
+
+.. automodule:: qplex.algorithms.mixers.inequality_mixer
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+qplex.algorithms.mixers.mixer\_factory module
+---------------------------------------------
+
+.. automodule:: qplex.algorithms.mixers.mixer_factory
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+qplex.algorithms.mixers.partition\_mixer module
+-----------------------------------------------
+
+.. automodule:: qplex.algorithms.mixers.partition_mixer
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+qplex.algorithms.mixers.quantum\_mixer module
+---------------------------------------------
+
+.. automodule:: qplex.algorithms.mixers.quantum_mixer
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+qplex.algorithms.mixers.standard\_mixer module
+----------------------------------------------
+
+.. automodule:: qplex.algorithms.mixers.standard_mixer
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: qplex.algorithms.mixers
+   :members:
+   :undoc-members:
+   :show-inheritance:

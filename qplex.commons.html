@@ -6,17 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>qplex.commons package &#8212; QPLEX 0.1.0 documentation</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d1102ebc" />
-    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=c058f7c8" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=686e5160" />
     <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
     <script src="_static/documentation_options.js?v=01f34227"></script>
-    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="qplex.model package" href="qplex.model.html" />
-    <link rel="prev" title="qplex.algorithms package" href="qplex.algorithms.html" />
+    <link rel="prev" title="qplex.algorithms.mixers package" href="qplex.algorithms.mixers.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -39,62 +39,365 @@
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
 </section>
-<section id="module-qplex.commons.ggaem">
-<span id="qplex-commons-ggaem-module"></span><h2>qplex.commons.ggaem module<a class="headerlink" href="#module-qplex.commons.ggaem" title="Link to this heading">¶</a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="qplex.commons.ggaem.get_ggaem_solution">
-<span class="sig-prename descclassname"><span class="pre">qplex.commons.ggaem.</span></span><span class="sig-name descname"><span class="pre">get_ggaem_solution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimal_counts</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qplex/commons/ggaem.html#get_ggaem_solution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.commons.ggaem.get_ggaem_solution" title="Link to this definition">¶</a></dt>
-<dd><p>Extracts the best solution from the optimal parameter counts.</p>
+<section id="module-qplex.commons.algorithm_factory">
+<span id="qplex-commons-algorithm-factory-module"></span><h2>qplex.commons.algorithm_factory module<a class="headerlink" href="#module-qplex.commons.algorithm_factory" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="qplex.commons.algorithm_factory.AlgorithmConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qplex.commons.algorithm_factory.</span></span><span class="sig-name descname"><span class="pre">AlgorithmConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">algorithm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#qplex.commons.algorithm_factory.AlgorithmType" title="qplex.commons.algorithm_factory.AlgorithmType"><span class="pre">AlgorithmType</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">penalty</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mixer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ansatz</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qplex/commons/algorithm_factory.html#AlgorithmConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.commons.algorithm_factory.AlgorithmConfig" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Configuration dataclass for gate-based quantum algorithms.</p>
+<p>This class encapsulates the parameters needed to configure and instantiate
+quantum algorithms for combinatorial optimization problems.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qplex.commons.algorithm_factory.AlgorithmConfig.algorithm">
+<span class="sig-name descname"><span class="pre">algorithm</span></span><a class="headerlink" href="#qplex.commons.algorithm_factory.AlgorithmConfig.algorithm" title="Link to this definition">¶</a></dt>
+<dd><p>The type of quantum algorithm to use.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>model</strong> (<em>Model</em>) – The optimization model that was solved.</p></li>
-<li><p><strong>optimal_counts</strong> (<em>dict</em>) – A dictionary of optimal parameter counts.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A dictionary containing the best solution and its objective value.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>dict</p>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qplex.commons.algorithm_factory.AlgorithmType" title="qplex.commons.algorithm_factory.AlgorithmType">AlgorithmType</a></p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="py function">
-<dt class="sig sig-object py" id="qplex.commons.ggaem.ggaem_workflow">
-<span class="sig-prename descclassname"><span class="pre">qplex.commons.ggaem.</span></span><span class="sig-name descname"><span class="pre">ggaem_workflow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solver</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="qplex.solvers.html#qplex.solvers.base_solver.Solver" title="qplex.solvers.base_solver.Solver"><span class="pre">Solver</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">algorithm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ansatz</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">penalty</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qplex/commons/ggaem.html#ggaem_workflow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.commons.ggaem.ggaem_workflow" title="Link to this definition">¶</a></dt>
-<dd><p>Runs the GGAEM (Generalized Grover Adaptive Execution Method) workflow.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qplex.commons.algorithm_factory.AlgorithmConfig.penalty">
+<span class="sig-name descname"><span class="pre">penalty</span></span><a class="headerlink" href="#qplex.commons.algorithm_factory.AlgorithmConfig.penalty" title="Link to this definition">¶</a></dt>
+<dd><p>The penalty coefficient for constraint violations
+in the Hamiltonian.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>model</strong> (<em>Model</em>) – The optimization model to be solved.</p></li>
-<li><p><strong>solver</strong> (<a class="reference internal" href="qplex.solvers.html#qplex.solvers.base_solver.Solver" title="qplex.solvers.base_solver.Solver"><em>Solver</em></a>) – The solver to be used for solving the model.</p></li>
-<li><p><strong>verbose</strong> (<em>bool</em>) – If True, enables verbose output.</p></li>
-<li><p><strong>shots</strong> (<em>int</em>) – The number of shots for quantum execution.</p></li>
-<li><p><strong>algorithm</strong> (<em>str</em>) – The quantum algorithm to use (‘qaoa’ or ‘vqe’).</p></li>
-<li><p><strong>optimizer</strong> (<em>str</em>) – The classical optimizer to use.</p></li>
-<li><p><strong>max_iter</strong> (<em>int</em>) – The maximum number of iterations for the optimizer.</p></li>
-<li><p><strong>tolerance</strong> (<em>float</em>) – The tolerance for the optimizer.</p></li>
-<li><p><strong>ansatz</strong> (<em>str</em>) – The ansatz to use in the quantum algorithm.</p></li>
-<li><p><strong>p</strong> (<em>int</em>) – The depth of the ansatz for QAOA.</p></li>
-<li><p><strong>layers</strong> (<em>int</em>) – The number of layers in the ansatz for VQE.</p></li>
-<li><p><strong>seed</strong> (<em>int</em>) – The seed for the random number generator.</p></li>
-<li><p><strong>penalty</strong> (<em>float</em>) – The penalty factor for the QUBO conversion.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A dictionary of optimal parameter counts.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>dict</p>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qplex.commons.algorithm_factory.AlgorithmConfig.seed">
+<span class="sig-name descname"><span class="pre">seed</span></span><a class="headerlink" href="#qplex.commons.algorithm_factory.AlgorithmConfig.seed" title="Link to this definition">¶</a></dt>
+<dd><p>Random seed for reproducibility of results.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qplex.commons.algorithm_factory.AlgorithmConfig.p">
+<span class="sig-name descname"><span class="pre">p</span></span><a class="headerlink" href="#qplex.commons.algorithm_factory.AlgorithmConfig.p" title="Link to this definition">¶</a></dt>
+<dd><p>Number of layers in the QAOA circuit. Only used for
+QAOA and QAOAnsatz algorithms.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qplex.commons.algorithm_factory.AlgorithmConfig.mixer">
+<span class="sig-name descname"><span class="pre">mixer</span></span><a class="headerlink" href="#qplex.commons.algorithm_factory.AlgorithmConfig.mixer" title="Link to this definition">¶</a></dt>
+<dd><p>Custom mixer operator for the QAOA framework.
+Only used for QAOA and QAOAnsatz algorithms.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qplex.commons.algorithm_factory.AlgorithmConfig.layers">
+<span class="sig-name descname"><span class="pre">layers</span></span><a class="headerlink" href="#qplex.commons.algorithm_factory.AlgorithmConfig.layers" title="Link to this definition">¶</a></dt>
+<dd><p>Number of layers in the VQE ansatz circuit.
+Only used for VQE algorithm.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qplex.commons.algorithm_factory.AlgorithmConfig.ansatz">
+<span class="sig-name descname"><span class="pre">ansatz</span></span><a class="headerlink" href="#qplex.commons.algorithm_factory.AlgorithmConfig.ansatz" title="Link to this definition">¶</a></dt>
+<dd><p>Custom ansatz circuit for VQE. If None, uses the
+default hardware-efficient ansatz.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">algorithm</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#qplex.commons.algorithm_factory.AlgorithmType" title="qplex.commons.algorithm_factory.AlgorithmType"><span class="pre">AlgorithmType</span></a></em><a class="headerlink" href="#id0" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">ansatz</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id1" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">layers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id2" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id3">
+<span class="sig-name descname"><span class="pre">mixer</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id3" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id4">
+<span class="sig-name descname"><span class="pre">p</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id4" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id5">
+<span class="sig-name descname"><span class="pre">penalty</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#id5" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id6">
+<span class="sig-name descname"><span class="pre">seed</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#id6" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="qplex.commons.algorithm_factory.AlgorithmFactory">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qplex.commons.algorithm_factory.</span></span><span class="sig-name descname"><span class="pre">AlgorithmFactory</span></span><a class="reference internal" href="_modules/qplex/commons/algorithm_factory.html#AlgorithmFactory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.commons.algorithm_factory.AlgorithmFactory" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Factory class for creating quantum algorithm instances.</p>
+<p>This class implements the Factory pattern to instantiate appropriate
+quantum algorithms based on the provided configuration. It handles the
+creation of QAOA, QAOAnsatz, and VQE algorithm objects with their
+respective parameters.</p>
+<p>The factory determines the appropriate mixer operator for optimization
+problems when using QAOAnsatz, and ensures all necessary parameters are
+properly configured for each algorithm type.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="qplex.commons.algorithm_factory.AlgorithmFactory.get_algorithm">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_algorithm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#qplex.commons.algorithm_factory.AlgorithmConfig" title="qplex.commons.algorithm_factory.AlgorithmConfig"><span class="pre">AlgorithmConfig</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="qplex.algorithms.html#qplex.algorithms.base_algorithm.Algorithm" title="qplex.algorithms.base_algorithm.Algorithm"><span class="pre">Algorithm</span></a></span></span><a class="reference internal" href="_modules/qplex/commons/algorithm_factory.html#AlgorithmFactory.get_algorithm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.commons.algorithm_factory.AlgorithmFactory.get_algorithm" title="Link to this definition">¶</a></dt>
+<dd><p>Creates and returns a quantum algorithm instance based on configuration.</p>
+<section id="parameters">
+<h3>Parameters:<a class="headerlink" href="#parameters" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>model: The optimization model to be solved, typically a DOcplex model</dt><dd><p>instance containing the problem formulation.</p>
+</dd>
+<dt>config (AlgorithmConfig): Configuration object specifying the algorithm</dt><dd><p>type and its parameters.</p>
+</dd>
+</dl>
+</section>
+<section id="returns">
+<h3>Returns:<a class="headerlink" href="#returns" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>Algorithm: An instance of the specified quantum algorithm configured</dt><dd><p>according to the provided parameters.</p>
+</dd>
+</dl>
+</section>
+<section id="raises">
+<h3>Raises:<a class="headerlink" href="#raises" title="Link to this heading">¶</a></h3>
+<p>ValueError: If the specified algorithm type is not supported.</p>
+</section>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="qplex.commons.algorithm_factory.AlgorithmType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qplex.commons.algorithm_factory.</span></span><span class="sig-name descname"><span class="pre">AlgorithmType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qplex/commons/algorithm_factory.html#AlgorithmType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.commons.algorithm_factory.AlgorithmType" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>Supported gate-based quantum algorithms.</p>
+<p>This enum defines the gate-based quantum algorithms that can be used to
+solve optimization problems in QPLEX. It currently supports QAOA (Quantum
+Approximate Optimization Algorithm), QAOAnsatz (Quantum Alternating
+Operator Ansatz), and VQE (Variational Quantum Eigensolver).</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qplex.commons.algorithm_factory.AlgorithmType.QAOA">
+<span class="sig-name descname"><span class="pre">QAOA</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'qaoa'</span></em><a class="headerlink" href="#qplex.commons.algorithm_factory.AlgorithmType.QAOA" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qplex.commons.algorithm_factory.AlgorithmType.QAO_ANSATZ">
+<span class="sig-name descname"><span class="pre">QAO_ANSATZ</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'qao-ansatz'</span></em><a class="headerlink" href="#qplex.commons.algorithm_factory.AlgorithmType.QAO_ANSATZ" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qplex.commons.algorithm_factory.AlgorithmType.VQE">
+<span class="sig-name descname"><span class="pre">VQE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'vqe'</span></em><a class="headerlink" href="#qplex.commons.algorithm_factory.AlgorithmType.VQE" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-qplex.commons.optimization_callback">
+<span id="qplex-commons-optimization-callback-module"></span><h2>qplex.commons.optimization_callback module<a class="headerlink" href="#module-qplex.commons.optimization_callback" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="qplex.commons.optimization_callback.OptimizationCallback">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qplex.commons.optimization_callback.</span></span><span class="sig-name descname"><span class="pre">OptimizationCallback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_callback</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qplex/commons/optimization_callback.html#OptimizationCallback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.commons.optimization_callback.OptimizationCallback" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class to track the optimization process and provide an optional
+customizable callback.</p>
+<p>This class allows tracking the current iteration and parameter values
+during the optimization
+process using the callback mechanism of <cite>scipy.optimize.minimize</cite>.
+Additionally, users can
+provide a custom callback function to extend or modify the behavior
+during each iteration.</p>
+<section id="attributes">
+<h3>Attributes:<a class="headerlink" href="#attributes" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>iteration<span class="classifier">int</span></dt><dd><p>Tracks the current iteration count of the optimization process.</p>
+</dd>
+<dt>user_callback<span class="classifier">Optional[Callable[[np.ndarray], None]]</span></dt><dd><p>A user-defined callback function that accepts the current parameters
+<cite>xk</cite> and is executed
+at each iteration. This function allows for customized behavior
+during optimization.</p>
+</dd>
+</dl>
+</section>
+<section id="methods">
+<h3>Methods:<a class="headerlink" href="#methods" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>__call__(xk: np.ndarray):</dt><dd><p>The method called at each iteration during the optimization process.
+It prints the current
+iteration number and parameters, and invokes the user-defined
+callback if provided.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="qplex.commons.optimization_callback.OptimizationHistory">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qplex.commons.optimization_callback.</span></span><span class="sig-name descname"><span class="pre">OptimizationHistory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterations:</span> <span class="pre">~typing.List[int]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters:</span> <span class="pre">~typing.List[~numpy.ndarray]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">objectives:</span> <span class="pre">~typing.List[float]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timestamps:</span> <span class="pre">~typing.List[~datetime.datetime]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata:</span> <span class="pre">~typing.Dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">~typing.Any]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qplex/commons/optimization_callback.html#OptimizationHistory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.commons.optimization_callback.OptimizationHistory" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Tracks optimization progress</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qplex.commons.optimization_callback.OptimizationHistory.iterations">
+<span class="sig-name descname"><span class="pre">iterations</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#qplex.commons.optimization_callback.OptimizationHistory.iterations" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qplex.commons.optimization_callback.OptimizationHistory.metadata">
+<span class="sig-name descname"><span class="pre">metadata</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#qplex.commons.optimization_callback.OptimizationHistory.metadata" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qplex.commons.optimization_callback.OptimizationHistory.objectives">
+<span class="sig-name descname"><span class="pre">objectives</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#qplex.commons.optimization_callback.OptimizationHistory.objectives" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qplex.commons.optimization_callback.OptimizationHistory.parameters">
+<span class="sig-name descname"><span class="pre">parameters</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#qplex.commons.optimization_callback.OptimizationHistory.parameters" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qplex.commons.optimization_callback.OptimizationHistory.timestamps">
+<span class="sig-name descname"><span class="pre">timestamps</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">datetime</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#qplex.commons.optimization_callback.OptimizationHistory.timestamps" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 </section>
 <section id="module-qplex.commons.solver_factory">
 <span id="qplex-commons-solver-factory-module"></span><h2>qplex.commons.solver_factory module<a class="headerlink" href="#module-qplex.commons.solver_factory" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="qplex.commons.solver_factory.BraketConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qplex.commons.solver_factory.</span></span><span class="sig-name descname"><span class="pre">BraketConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider_options</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device_parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qplex/commons/solver_factory.html#BraketConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.commons.solver_factory.BraketConfig" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#qplex.commons.solver_factory.ProviderConfig" title="qplex.commons.solver_factory.ProviderConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProviderConfig</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qplex.commons.solver_factory.BraketConfig.device_parameters">
+<span class="sig-name descname"><span class="pre">device_parameters</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#qplex.commons.solver_factory.BraketConfig.device_parameters" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="qplex.commons.solver_factory.DWaveConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qplex.commons.solver_factory.</span></span><span class="sig-name descname"><span class="pre">DWaveConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider_options</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_reads</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">topology</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'pegasus'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embedding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qplex/commons/solver_factory.html#DWaveConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.commons.solver_factory.DWaveConfig" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#qplex.commons.solver_factory.ProviderConfig" title="qplex.commons.solver_factory.ProviderConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProviderConfig</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qplex.commons.solver_factory.DWaveConfig.embedding">
+<span class="sig-name descname"><span class="pre">embedding</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#qplex.commons.solver_factory.DWaveConfig.embedding" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qplex.commons.solver_factory.DWaveConfig.num_reads">
+<span class="sig-name descname"><span class="pre">num_reads</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">100</span></em><a class="headerlink" href="#qplex.commons.solver_factory.DWaveConfig.num_reads" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qplex.commons.solver_factory.DWaveConfig.time_limit">
+<span class="sig-name descname"><span class="pre">time_limit</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#qplex.commons.solver_factory.DWaveConfig.time_limit" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qplex.commons.solver_factory.DWaveConfig.topology">
+<span class="sig-name descname"><span class="pre">topology</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'pegasus'</span></em><a class="headerlink" href="#qplex.commons.solver_factory.DWaveConfig.topology" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="qplex.commons.solver_factory.IMBQConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qplex.commons.solver_factory.</span></span><span class="sig-name descname"><span class="pre">IMBQConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider_options</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimization_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qplex/commons/solver_factory.html#IMBQConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.commons.solver_factory.IMBQConfig" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#qplex.commons.solver_factory.ProviderConfig" title="qplex.commons.solver_factory.ProviderConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProviderConfig</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qplex.commons.solver_factory.IMBQConfig.optimization_level">
+<span class="sig-name descname"><span class="pre">optimization_level</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#qplex.commons.solver_factory.IMBQConfig.optimization_level" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="qplex.commons.solver_factory.ProviderConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qplex.commons.solver_factory.</span></span><span class="sig-name descname"><span class="pre">ProviderConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider_options</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qplex/commons/solver_factory.html#ProviderConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.commons.solver_factory.ProviderConfig" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qplex.commons.solver_factory.ProviderConfig.backend">
+<span class="sig-name descname"><span class="pre">backend</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#qplex.commons.solver_factory.ProviderConfig.backend" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qplex.commons.solver_factory.ProviderConfig.provider_options">
+<span class="sig-name descname"><span class="pre">provider_options</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#qplex.commons.solver_factory.ProviderConfig.provider_options" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qplex.commons.solver_factory.ProviderConfig.shots">
+<span class="sig-name descname"><span class="pre">shots</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#qplex.commons.solver_factory.ProviderConfig.shots" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="qplex.commons.solver_factory.ProviderType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qplex.commons.solver_factory.</span></span><span class="sig-name descname"><span class="pre">ProviderType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qplex/commons/solver_factory.html#ProviderType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.commons.solver_factory.ProviderType" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>An enumeration.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qplex.commons.solver_factory.ProviderType.BRAKET">
+<span class="sig-name descname"><span class="pre">BRAKET</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'braket'</span></em><a class="headerlink" href="#qplex.commons.solver_factory.ProviderType.BRAKET" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qplex.commons.solver_factory.ProviderType.DWAVE">
+<span class="sig-name descname"><span class="pre">DWAVE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'d-wave'</span></em><a class="headerlink" href="#qplex.commons.solver_factory.ProviderType.DWAVE" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qplex.commons.solver_factory.ProviderType.IBMQ">
+<span class="sig-name descname"><span class="pre">IBMQ</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ibmq'</span></em><a class="headerlink" href="#qplex.commons.solver_factory.ProviderType.IBMQ" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="qplex.commons.solver_factory.SolverFactory">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qplex.commons.solver_factory.</span></span><span class="sig-name descname"><span class="pre">SolverFactory</span></span><a class="reference internal" href="_modules/qplex/commons/solver_factory.html#SolverFactory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.commons.solver_factory.SolverFactory" title="Link to this definition">¶</a></dt>
@@ -103,24 +406,23 @@
 provider.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="qplex.commons.solver_factory.SolverFactory.get_solver">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_solver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">provider</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantum_api_tokens</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qplex/commons/solver_factory.html#SolverFactory.get_solver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.commons.solver_factory.SolverFactory.get_solver" title="Link to this definition">¶</a></dt>
-<dd><p>Returns the appropriate solver based on the specified provider and
-available tokens.</p>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_solver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">provider</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#qplex.commons.solver_factory.ProviderType" title="qplex.commons.solver_factory.ProviderType"><span class="pre">ProviderType</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantum_api_tokens</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#qplex.commons.solver_factory.ProviderConfig" title="qplex.commons.solver_factory.ProviderConfig"><span class="pre">ProviderConfig</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="qplex.solvers.html#qplex.solvers.base_solver.Solver" title="qplex.solvers.base_solver.Solver"><span class="pre">Solver</span></a></span></span><a class="reference internal" href="_modules/qplex/commons/solver_factory.html#SolverFactory.get_solver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.commons.solver_factory.SolverFactory.get_solver" title="Link to this definition">¶</a></dt>
+<dd><p>Return a solver based on the specified provider and available tokens.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>provider</strong> (<em>str</em>) – The quantum provider (e.g., ‘d-wave’, ‘ibmq’, ‘braket’).</p></li>
+<li><p><strong>provider</strong> (<a class="reference internal" href="#qplex.commons.solver_factory.ProviderType" title="qplex.commons.solver_factory.ProviderType"><em>ProviderType</em></a>) – The quantum provider (e.g., ‘d-wave’, ‘ibmq’, ‘braket’).</p></li>
 <li><p><strong>quantum_api_tokens</strong> (<em>dict</em>) – A dictionary containing API tokens for various quantum providers.</p></li>
-<li><p><strong>shots</strong> (<em>int</em>) – The number of shots for quantum execution.</p></li>
-<li><p><strong>backend</strong> (<em>str</em>) – The backend to use for the quantum provider.</p></li>
+<li><p><strong>config</strong> (<a class="reference internal" href="#qplex.commons.solver_factory.ProviderConfig" title="qplex.commons.solver_factory.ProviderConfig"><em>ProviderConfig</em></a>) – A ProviderConfig instance containing the configuration for the
+provider.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>An instance of the appropriate solver based on the specified
+<dd class="field-even"><p><strong>solver</strong> – An instance of the appropriate solver based on the specified
 provider.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>solver</p>
+<dd class="field-odd"><p><a class="reference internal" href="qplex.solvers.html#qplex.solvers.base_solver.Solver" title="qplex.solvers.base_solver.Solver">Solver</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -174,7 +476,7 @@ provider.</p>
   <li><a href="index.html">Documentation overview</a><ul>
   <li><a href="modules.html">qplex</a><ul>
   <li><a href="qplex.html">qplex package</a><ul>
-      <li>Previous: <a href="qplex.algorithms.html" title="previous chapter">qplex.algorithms package</a></li>
+      <li>Previous: <a href="qplex.algorithms.mixers.html" title="previous chapter">qplex.algorithms.mixers package</a></li>
       <li>Next: <a href="qplex.model.html" title="next chapter">qplex.model package</a></li>
   </ul></li>
   </ul></li>
@@ -197,7 +499,7 @@ provider.</p>
       &#169;2024, J. Giraldo, J. Ossorio.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.0.2</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.1.3</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       
       |

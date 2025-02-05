@@ -11,6 +11,8 @@ Subpackages
    qplex.commons
    qplex.model
    qplex.solvers
+   qplex.utils
+   qplex.workflows
 
 Module contents
 ---------------
