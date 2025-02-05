@@ -1,8 +1,10 @@
 from typing import Dict, Any
 
 from qplex.model.constants import VAR_TYPE
+
 from dwave.system import (LeapHybridCQMSampler, LeapHybridBQMSampler,
-                          LeapHybridDQMSampler, )
+                          LeapHybridDQMSampler, DWaveSampler,
+                          AutoEmbeddingComposite, FixedEmbeddingComposite)
 from dimod import (ConstrainedQuadraticModel, QuadraticModel,
                    DiscreteQuadraticModel, BinaryQuadraticModel, )
 from qplex.solvers.base_solver import Solver
@@ -10,15 +12,35 @@ from qplex.solvers.base_solver import Solver
 
 class DWaveSolver(Solver):
     """
-    A quantum solver for D-Wave systems that can handle various types of models
-    including constrained quadratic models, discrete quadratic models,
-    and binary
-    quadratic models.
+    A solver for D-Wave quantum systems capable of handling various model
+    types, including constrained quadratic models (CQM), discrete quadratic
+    models (DQM), and binary quadratic models (BQM).
     """
+
+    def __init__(self, token, time_limit, num_reads, topology,
+                 embedding, backend):
+        super().__init__()
+        self.token = token
+        self.time_limit = time_limit
+        self.num_reads = num_reads
+        self.topology = topology
+        self.embedding = embedding
+        if backend is None:
+            print("No backend specified for D-Wave solver. Using hybrid "
+                  "solver...")
+            self._backend = 'hybrid_solver'
+        else:
+            self._backend = backend
+        self.presolver = None
+        self.original_cqm = None
+
+    @property
+    def backend(self):
+        return self._backend
 
     def solve(self, model) -> Dict[str, Any]:
         """
-        Solves the given problem formulation using the D-Wave system.
+        Solve the given problem formulation using a D-Wave solver.
 
         Parameters
         ----------
@@ -32,28 +54,48 @@ class DWaveSolver(Solver):
             A dictionary containing the solution with 'objective' and
             'solution' keys.
         """
-        token = model.quantum_api_tokens.get("d-wave_token")
         parsed_model, model_type = self.parse_input(model)
 
-        if model_type == VAR_TYPE['C']:
-            sampler = LeapHybridCQMSampler(token=token)
-            sampleset = sampler.sample_cqm(parsed_model,
-                                           label=model.name).filter(
-                lambda row: row.is_feasible)
-        elif model_type == VAR_TYPE['I']:
-            sampler = LeapHybridDQMSampler(token=token)
-            sampleset = sampler.sample_dqm(parsed_model, label=model.name)
-        else:
-            sampler = LeapHybridBQMSampler(token=token)
-            sampleset = sampler.sample(parsed_model, label=model.name)
+        sampler = self.select_backend(parsed_model, model_type)
 
+        # QPU requested and model is not constrained nor contains integer
+        # variables
+        if self._backend != 'hybrid_solver' and model_type not in (VAR_TYPE[
+                                                                       'C'],
+                                                                   VAR_TYPE[
+                                                                       'I']):
+
+            sampleset = sampler.sample(parsed_model,
+                                       num_reads=self.num_reads,
+                                       label=model.name)
+
+        # Hybrid solver requested or QPU requested but model is not
+        # immediately compatible with the QUBO form.
+        else:
+            sampling_methods = {
+                VAR_TYPE['C']: lambda: sampler.sample_cqm(
+                    parsed_model, time_limit=self.time_limit, label=model.name
+                ).filter(lambda row: row.is_feasible),
+                VAR_TYPE['I']: lambda: sampler.sample_dqm(
+                    parsed_model, time_limit=self.time_limit, label=model.name
+                ),
+            }
+
+            # Use the appropriate sampling method or fall back to the default
+            sampleset = (
+                sampling_methods[model_type]()
+                if model_type in sampling_methods
+                else sampler.sample(parsed_model, time_limit=self.time_limit,
+                                    label=model.name)
+            )
+
+        # Extract the best solution and format the response
         best = sampleset.first
-        response = self.parse_response(best)
-        return response
+        return self.parse_response(best)
 
     def parse_response(self, response: Any) -> Dict[str, Any]:
         """
-        Parses the response from the D-Wave solver.
+        Parse the response from the D-Wave solver to extract solution.
 
         Parameters
         ----------
@@ -73,8 +115,7 @@ class DWaveSolver(Solver):
 
     def parse_input(self, model) -> (Any, str):
         """
-        Converts the input model into a D-Wave compatible model and
-        determines the model type.
+        Convert the input model into a D-Wave compatible model.
 
         Parameters
         ----------
@@ -112,8 +153,7 @@ class DWaveSolver(Solver):
 
     def parse_objective(self, model, parsed_model) -> Any:
         """
-        Converts the objective function of the model into the format
-        required by D-Wave.
+        Convert the objective function into the format required by D-Wave.
 
         Parameters
         ----------
@@ -151,7 +191,7 @@ class DWaveSolver(Solver):
 
     def parse_constraint(self, constraint) -> QuadraticModel:
         """
-        Converts a constraint into a D-Wave compatible QuadraticModel.
+        Convert a constraint into a D-Wave compatible QuadraticModel.
 
         Parameters
         ----------
@@ -179,8 +219,40 @@ class DWaveSolver(Solver):
 
         return const_qm
 
-    def select_backend(self, model) -> str:
+    def select_backend(self, parsed_model, model_type) -> Any:
         """
-        This method is not implemented in this class.
+        Select the appropriate backend for the given model type.
         """
-        pass
+        hybrid_samplers = {
+            VAR_TYPE['C']: LeapHybridCQMSampler,
+            VAR_TYPE['I']: LeapHybridDQMSampler,
+            VAR_TYPE['B']: LeapHybridBQMSampler,
+        }
+
+        if self._backend == 'hybrid_solver':
+            sampler_class = hybrid_samplers.get(model_type)
+            return sampler_class(token=self.token)
+
+        elif self._backend == 'd-wave_sampler':
+            # User requested a DWaveSampler, but model is not QUBO-compatible.
+            if model_type in (VAR_TYPE['C'], VAR_TYPE['I']):
+                print(
+                    "The selected backend requires a QUBO-compatible model, "
+                    "but the given model contains constraints or discrete "
+                    "variables.\nSwitching to an appropriate Hybrid Solver to "
+                    "handle this model type..."
+                )
+                sampler_class = hybrid_samplers[model_type]
+                return sampler_class(token=self.token)
+
+            qpu = DWaveSampler(solver=dict(topology__type=self.topology),
+                               token=self.token)
+            self._backend = qpu.solver.name
+            print(
+                f"Selected {self._backend} with {len(qpu.nodelist)} qubits.")
+
+            if self.embedding is None:
+                return AutoEmbeddingComposite(qpu)
+            return FixedEmbeddingComposite(qpu, self.embedding)
+
+        raise ValueError(f"Unsupported backend: {self._backend}")

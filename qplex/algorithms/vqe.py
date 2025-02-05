@@ -1,7 +1,7 @@
 import numpy as np
 
 from qplex.algorithms.base_algorithm import Algorithm
-from qplex.solvers.base_solver import Solver
+from qplex.utils.circuit_utils import replace_params
 
 
 class VQE(Algorithm):
@@ -18,12 +18,13 @@ class VQE(Algorithm):
         The number of layers in the VQE ansatz.
     n : int
         The number of qubits in the quantum circuit.
-    ansatz : str
-        The OpenQASM3 representation of the VQE ansatz circuit.
+    circuit : str
+        The OpenQASM3 representation of the VQE circuit.
+    num_params : int
+        The number of parameters for the VQE variational circuit.
     """
 
-    def __init__(self, model, solver: Solver, verbose: bool,
-                 shots: int, layers: int, seed: int, penalty: float,
+    def __init__(self, model, layers: int, seed: int, penalty: float,
                  ansatz: str):
         """
         Initializes the VQE algorithm with the given parameters.
@@ -32,12 +33,6 @@ class VQE(Algorithm):
         ----------
         model : QModel
             The optimization model to be solved.
-        solver : Solver
-            The solver to be used for solving the model.
-        verbose : bool
-            If True, enables verbose output.
-        shots : int
-            The number of shots for quantum execution.
         layers : int
             The number of layers in the VQE ansatz.
         seed : int
@@ -47,10 +42,11 @@ class VQE(Algorithm):
         ansatz : str
             The ansatz type used in the VQE algorithm.
         """
-        super().__init__(model, solver, verbose, shots)
+        super().__init__(model)
         self.layers: int = layers
         self.n: int = 0
-        self.ansatz: str = self.create_circuit(penalty=penalty)
+        self.num_params = self.n + (4 * (self.n - 1) * self.layers)
+        self.circuit: str = self.create_circuit(penalty=penalty)
         np.random.seed(seed)
 
     def create_circuit(self, *args, **kwargs) -> str:
@@ -75,32 +71,38 @@ class VQE(Algorithm):
         """
         self.qubo = self.model.get_qubo(penalty=kwargs['penalty'])
         self.n = self.qubo.get_num_binary_vars()
-        circuit = f"""
-        qreg q[{self.n}];
-        creg c[{self.n}];
-        """
+
+        circuit_lines = [f"input float[64] theta{i};" for i in
+                         range(self.num_params)]
+
+        circuit_lines.extend([f"qreg q[{self.n}];", f"creg c[{self.n}];"])
+
         pc = 0
-        for i in range(self.n):
-            circuit += f"ry(ry_angle_{pc}) q[{i}];\n"
-            pc += 1
+
+        circuit_lines.extend(
+            [f"ry(param{pc + i}) q[{i}];" for i in range(self.n)])
+        pc += self.n
 
         for d in range(self.layers):
             for i in range(self.n - 1):
-                circuit += f"cx q[{i}], q[{i + 1}];\n"
-                circuit += f"ry(ry_angle_{pc}) q[{i}];\n"
+                circuit_lines.append(f"cx q[{i}], q[{i + 1}];")
+
+                circuit_lines.append(f"ry(param{pc}) q[{i}];")
                 pc += 1
-                circuit += f"ry(ry_angle_{pc}) q[{i + 1}];\n"
-                pc += 1
-                circuit += f"cx q[{i}], q[{i + 1}];\n"
-                circuit += f"ry(ry_angle_{pc}) q[{i}];\n"
-                pc += 1
-                circuit += f"ry(ry_angle_{pc}) q[{i + 1}];\n"
+                circuit_lines.append(f"ry(param{pc}) q[{i + 1}];")
                 pc += 1
 
-        for i in range(self.n):
-            circuit += f"measure q[{i}] -> c[{i}];\n"
+                circuit_lines.append(f"cx q[{i}], q[{i + 1}];")
 
-        return circuit
+                circuit_lines.append(f"ry(param{pc}) q[{i}];")
+                pc += 1
+                circuit_lines.append(f"ry(param{pc}) q[{i + 1}];")
+                pc += 1
+
+        circuit_lines.extend(
+            [f"measure q[{i}] -> c[{i}];" for i in range(self.n)])
+
+        return "\n".join(circuit_lines)
 
     def update_params(self, params: np.ndarray) -> str:
         """
@@ -119,11 +121,8 @@ class VQE(Algorithm):
         str
             The updated OpenQASM3 string for the VQE circuit.
         """
-        updated_circuit = self.ansatz
-        for pc, param in enumerate(params):
-            updated_circuit = updated_circuit.replace(f"ry_angle_{pc}",
-                                                      str(param))
-        return updated_circuit
+
+        return replace_params(self.circuit, params)
 
     def get_starting_point(self) -> np.ndarray:
         """

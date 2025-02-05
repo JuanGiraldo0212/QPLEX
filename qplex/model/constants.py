@@ -3,6 +3,7 @@ constants.py
 
 This module defines various constants used throughout QPLEX.
 """
+from enum import Enum
 
 # Variable types used for modeling
 VAR_TYPE = {
@@ -29,3 +30,11 @@ ALLOWED_OPTIMIZERS = {
     'trust-exact',  # Trust Region Exact
     'trust-krylov'  # Trust Region Krylov
 }
+
+
+class ConstraintType(Enum):
+    UNCONSTRAINED = "unconstrained"
+    CARDINALITY = "cardinality"
+    PARTITION = "partition"
+    INEQUALITY = "inequality"
+    MULTIPLE = "multiple"

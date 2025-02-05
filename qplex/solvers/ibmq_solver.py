@@ -1,9 +1,10 @@
-import qiskit.qasm3
-from qiskit import transpile
+from qiskit.qasm3 import loads
+from qiskit import QuantumCircuit
+from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
 from qiskit.providers import BackendV2
 from qplex.solvers.base_solver import Solver
 from qiskit_aer import AerSimulator
-from qiskit_ibm_runtime import QiskitRuntimeService, SamplerV2 as Sampler
+from qiskit_ibm_runtime import (QiskitRuntimeService, SamplerV2 as Sampler, )
 
 
 class IBMQSolver(Solver):
@@ -15,15 +16,18 @@ class IBMQSolver(Solver):
     ----------
     shots : int
         The number of shots for the quantum experiment.
-    backend : str
+    _backend : str
         The name of the backend to be used, which can be an IBMQ
         device or a local simulator.
     service : QiskitRuntimeService
         The Qiskit runtime service instance for interacting with IBMQ's
         backend.
+    optimization_level : int
+        The desired optimization level for the Qiskit circuit.
     """
 
-    def __init__(self, token: str, shots: int, backend: str):
+    def __init__(self, token: str, shots: int, backend: str,
+                 optimization_level: int):
         """
         Initializes the IBMQSolver with the specified token, number of
         shots, and backend.
@@ -37,12 +41,23 @@ class IBMQSolver(Solver):
         backend : str
             The backend to use for solving the problem,
             which can be an IBMQ device or a local simulator.
+        optimization_level : int
+            The desired optimization level for the Qiskit circuit.
         """
         self.shots = shots
-        self.backend = backend
+        if backend is None:
+            print('No backend specified. Using least busy...')
+            self._backend = ''
+        else:
+            self._backend = backend
         QiskitRuntimeService.save_account(channel="ibm_quantum",
                                           token=token, overwrite=True)
         self.service = QiskitRuntimeService()
+        self.optimization_level = optimization_level
+
+    @property
+    def backend(self):
+        return self._backend
 
     def solve(self, model: str) -> dict:
         """
@@ -62,20 +77,28 @@ class IBMQSolver(Solver):
         """
         qc = self.parse_input(model)
         backend = self.select_backend(qc.num_qubits)
-        transpiled_qc = transpile(qc, backend)
-        if self.backend == 'simulator':
-            response = backend.run(transpiled_qc).result().get_counts()
+        pass_manager = generate_preset_pass_manager(backend=backend,
+                                                    optimization_level=
+                                                    self.optimization_level)
+        isa_circuit = pass_manager.run(qc)
+
+        if self._backend == 'simulator':
+            raw_counts = backend.run(isa_circuit).result().get_counts()
         else:
             sampler = Sampler(backend)
-            pub = (transpiled_qc,)
-            result = sampler.run([pub], shots=self.shots).result()
-            data = result[0].data
-            bits = data.c
-            response = bits.get_counts()
-        counts = self.parse_response(response)
+            raw_counts = self.run(isa_circuit, sampler)
+        counts = self.parse_response(raw_counts)
         return counts
 
-    def parse_input(self, circuit: str) -> qiskit.QuantumCircuit:
+    def run(self, qc, sampler):
+        pub = (qc,)
+        result = sampler.run([pub], shots=self.shots).result()
+        data = result[0].data
+        bits = data.c
+        raw_counts = bits.get_counts()
+        return raw_counts
+
+    def parse_input(self, circuit: str) -> QuantumCircuit:
         """
         Converts a circuit string to a Qiskit QuantumCircuit object.
 
@@ -93,7 +116,7 @@ class IBMQSolver(Solver):
         OPENQASM 3.0;
         include "stdgates.inc";
         """ + circuit
-        qc = qiskit.qasm3.loads(circuit)
+        qc = loads(circuit)
         return qc
 
     def parse_response(self, response: dict) -> dict:
@@ -132,6 +155,8 @@ class IBMQSolver(Solver):
             The selected backend, which could be an IBMQ device or a  local
             simulator.
         """
-        if self.backend != "simulator":
-            return self.service.backend(self.backend)
+        if self._backend != "simulator":
+            if self._backend == "":
+                return self.service.least_busy(min_num_qubits=qubits)
+            return self.service.backend(self._backend)
         return AerSimulator()

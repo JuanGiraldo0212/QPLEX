@@ -4,7 +4,5 @@ problem model.
 """
 
 from . import constants
-from . import options
+from . import execution_config
 from . import qmodel
-
-from .options import Options
