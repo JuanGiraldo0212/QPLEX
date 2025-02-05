@@ -1,7 +1,7 @@
 import numpy as np
 
 from qplex.algorithms.base_algorithm import Algorithm
-from qplex.commons.circuit_utils import replace_params
+from qplex.utils.circuit_utils import replace_params
 
 
 class VQE(Algorithm):

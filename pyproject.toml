@@ -39,6 +39,6 @@ dependencies = [
 
 [project.urls]
 Homepage = "https://github.com/JuanGiraldo0212/QPLEX"
-Documentation = "https://readthedocs.org"
+Documentation = "https://juangiraldo0212.github.io/QPLEX/"
 Repository = "https://github.com/JuanGiraldo0212/QPLEX"
 Issues = "https://github.com/JuanGiraldo0212/QPLEX/issues"

@@ -11,7 +11,7 @@ from dwave.system import DWaveSampler
 from dwave.system import FixedEmbeddingComposite
 
 from qplex import QModel
-from qplex.model.options import Options
+from qplex.model.execution_config import ExecutionConfig
 
 
 def model_max_cut_problem() -> tuple[QModel, nx.Graph]:
@@ -60,7 +60,7 @@ def main():
         }
     }
 
-    max_cut_model.solve("quantum", Options(**execution_params))
+    max_cut_model.solve("quantum", ExecutionConfig(**execution_params))
     print(max_cut_model.print_solution())
 
 

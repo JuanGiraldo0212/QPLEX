@@ -2,7 +2,7 @@ import networkx as nx
 import numpy as np
 
 from qplex import QModel
-from qplex.model.options import Options
+from qplex.model.execution_config import ExecutionConfig
 
 
 def model_max_cut_problem() -> QModel:
@@ -38,13 +38,12 @@ def model_max_cut_problem() -> QModel:
 def main():
     max_cut_model = model_max_cut_problem()
 
-    execution_params = {
-        "provider": "d-wave",
-        # Change to the desired backend (i.e., hybrid_solver)
-        "backend": "hybrid_solver",
-    }
+    execution_config = ExecutionConfig(
+        provider='d-wave',
+        backend='hybrid_solver',
+    )
 
-    max_cut_model.solve("quantum", Options(**execution_params))
+    max_cut_model.solve("quantum", execution_config)
     print(max_cut_model.print_solution())
 
 

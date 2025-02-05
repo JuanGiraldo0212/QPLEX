@@ -1,5 +1,17 @@
-from typing import Callable, Optional
+from dataclasses import dataclass, field
+from datetime import datetime
+from typing import Callable, Optional, List, Dict, Any
 import numpy as np
+
+
+@dataclass
+class OptimizationHistory:
+    """Tracks optimization progress"""
+    iterations: List[int] = field(default_factory=list)
+    parameters: List[np.ndarray] = field(default_factory=list)
+    objectives: List[float] = field(default_factory=list)
+    timestamps: List[datetime] = field(default_factory=list)
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
 
 class OptimizationCallback:
@@ -35,7 +47,8 @@ class OptimizationCallback:
     """
 
     def __init__(self,
-                 user_callback: Optional[Callable[[np.ndarray], None]] = None):
+                 user_callback: Optional[Callable[[np.ndarray], None]] =
+                 None, verbose: bool = True):
         """
         Initialize the callback class.
 
@@ -50,6 +63,8 @@ class OptimizationCallback:
         """
         self.iteration = 0
         self.user_callback = user_callback
+        self.verbose = verbose
+        self.history = OptimizationHistory()
 
     def __call__(self, xk: np.ndarray) -> None:
         """
@@ -73,6 +88,15 @@ class OptimizationCallback:
             self.user_callback(xk)
             return
 
-        print(f"Iteration: {self.iteration}")
-        print(f"Current parameters: {xk}")
-        print("-" * 50)  # For readability
+        self.history.iterations.append(self.iteration)
+        self.history.parameters.append(xk.copy())
+
+        if self.verbose:
+            self._log_progress(xk)
+
+    def _log_progress(self, xk: np.ndarray) -> None:
+        """Log optimization progress"""
+
+        print(f"\nIteration {self.iteration}")
+        print("-" * 50)
+        print(f"Parameters: {xk}")
