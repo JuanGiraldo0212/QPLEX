@@ -39,13 +39,3 @@ class CardinalityMixer(QuantumMixer):
                     f"h q[{i}];", f"h q[{j}];"
                 ])
         return lines
-
-    def get_valid_constraints(self) -> List[str]:
-        """Return supported constraint types.
-
-        Returns
-        -------
-        List[str]
-            Valid constraint types: cardinality and fixed_sum
-        """
-        return ["cardinality", "fixed_sum"]

@@ -36,13 +36,3 @@ class PartitionMixer(QuantumMixer):
                 f"rz({theta}) q[{i + 1}];"
             ])
         return lines
-
-    def get_valid_constraints(self) -> List[str]:
-        """Return supported constraint types.
-
-        Returns
-        -------
-        List[str]
-            Valid constraint types: partition and grouping
-        """
-        return ["partition", "grouping"]

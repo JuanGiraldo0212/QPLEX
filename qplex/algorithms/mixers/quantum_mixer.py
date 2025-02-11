@@ -26,14 +26,3 @@ class QuantumMixer(ABC):
             OpenQASM3 instructions implementing the mixer
         """
         pass
-
-    @abstractmethod
-    def get_valid_constraints(self) -> List[str]:
-        """Return constraint types supported by this mixer.
-
-        Returns
-        -------
-        List[str]
-            Names of constraint types this mixer can handle
-        """
-        pass

@@ -36,13 +36,3 @@ class InequalityMixer(QuantumMixer):
                 f"cx q[{i}], q[{i + 1}];"
             ])
         return lines
-
-    def get_valid_constraints(self) -> List[str]:
-        """Return supported constraint types.
-
-        Returns
-        -------
-        List[str]
-            Valid constraint types for inequalities
-        """
-        return ["inequality", "less_than", "greater_than"]

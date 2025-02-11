@@ -23,13 +23,3 @@ class StandardMixer(QuantumMixer):
             OpenQASM3 RX rotation instructions
         """
         return [f"rx(2 * {theta}) q[{i}];" for i in range(n_qubits)]
-
-    def get_valid_constraints(self) -> List[str]:
-        """Return supported constraint types.
-
-        Returns
-        -------
-        List[str]
-            List containing only "unconstrained"
-        """
-        return ["unconstrained"]
