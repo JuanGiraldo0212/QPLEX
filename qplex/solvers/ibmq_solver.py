@@ -9,8 +9,7 @@ from qiskit_ibm_runtime import (QiskitRuntimeService, SamplerV2 as Sampler, )
 
 class IBMQSolver(Solver):
     """
-    A quantum solver for IBMQ that can execute quantum circuits on IBM's
-    backend or a local simulator.
+    Solver for IBMQ. Can execute circuits on IBM backend or local simulators.
 
     Attributes
     ----------
@@ -57,6 +56,14 @@ class IBMQSolver(Solver):
 
     @property
     def backend(self):
+        """
+        Returns the currently selected backend name.
+
+        Returns
+        -------
+        str
+            The name of the backend.
+        """
         return self._backend
 
     def solve(self, model: str) -> dict:
@@ -91,6 +98,21 @@ class IBMQSolver(Solver):
         return counts
 
     def run(self, qc, sampler):
+        """
+        Executes the given quantum circuit using the provided sampler.
+
+        Parameters
+        ----------
+        qc : QuantumCircuit
+            The quantum circuit to run.
+        sampler : Sampler
+            The sampler instance to use for executing the circuit.
+
+        Returns
+        -------
+        dict
+            A dictionary with the raw measurement counts.
+        """
         pub = (qc,)
         result = sampler.run([pub], shots=self.shots).result()
         data = result[0].data
