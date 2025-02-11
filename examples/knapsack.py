@@ -14,7 +14,6 @@ def model_knapsack_problem(values: List, weights: List, const: int) -> QModel:
 
     return knapsack_model
 
-
 def main():
     values = [10, 5, 18, 12, 15, 1, 2, 8]
     weights = [4, 2, 5, 4, 5, 1, 3, 5]
@@ -22,15 +21,17 @@ def main():
 
     knapsack_model = model_knapsack_problem(values, weights, const)
 
+    def callback_function(xk):
+        print(f"Current parameters: {xk}")
+
     execution_config = ExecutionConfig(
         provider="ibmq",
         backend="simulator",
-        verbose=True,
-        penalty=10,
-        algorithm="qao-ansatz",
-        p=2,
+        algorithm="qaoa",
+        p=4,
         shots=1024,
-        max_iter=100
+        max_iter=500,
+        callback=callback_function
     )
 
     knapsack_model.solve("quantum", execution_config)

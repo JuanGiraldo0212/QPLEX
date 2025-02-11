@@ -41,16 +41,3 @@ class CompositeMixer(QuantumMixer):
         for mixer in self.mixers:
             lines.extend(mixer.generate_circuit(n_qubits, theta))
         return lines
-
-    def get_valid_constraints(self) -> List[str]:
-        """Return union of supported constraint types from all mixers.
-
-        Returns
-        -------
-        List[str]
-            Combined list of unique constraint types
-        """
-        constraints = []
-        for mixer in self.mixers:
-            constraints.extend(mixer.get_valid_constraints())
-        return list(set(constraints))

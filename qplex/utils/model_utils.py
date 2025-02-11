@@ -95,5 +95,4 @@ def get_model_constraint_info(model) -> ConstraintInfo:
             parameters=parameters
         )
 
-    print('No constraints detected')
     return ConstraintInfo(type=ConstraintType.UNCONSTRAINED)
