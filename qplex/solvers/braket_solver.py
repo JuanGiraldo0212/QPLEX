@@ -1,8 +1,8 @@
 from typing import Any
-from braket.aws import AwsDevice
 from qplex.solvers.base_solver import Solver
-from braket.ir.openqasm import Program as OpenQASMProgram
-from braket.devices import LocalSimulator
+import braket.ir.openqasm
+import braket.devices
+import braket.aws
 
 
 class BraketSolver(Solver):
@@ -62,7 +62,7 @@ class BraketSolver(Solver):
         counts = self.parse_response(response)
         return counts
 
-    def parse_input(self, circuit: str) -> OpenQASMProgram:
+    def parse_input(self, circuit: str) -> braket.ir.openqasm.Program:
         """
         Converts a circuit string to an OpenQASMProgram, replacing 'cx' with
         'cnot'.
@@ -80,7 +80,7 @@ class BraketSolver(Solver):
         circuit = ("""
         OPENQASM 3.0;
         """ + circuit).replace("cx", "cnot")
-        return OpenQASMProgram(source=circuit)
+        return braket.ir.openqasm.Program(source=circuit)
 
     def parse_response(self, response: Any) -> dict:
         """
@@ -115,5 +115,5 @@ class BraketSolver(Solver):
             simulator.
         """
         if self._backend != "simulator":
-            return AwsDevice(f"arn:aws:braket:::{self._backend}")
-        return LocalSimulator(backend="braket_sv")
+            return braket.aws.AwsDevice(f"arn:aws:braket:::{self._backend}")
+        return braket.devices.LocalSimulator(backend="braket_sv")

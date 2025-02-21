@@ -1,40 +1,45 @@
-from typing import Any, Optional, Dict
-from dataclasses import dataclass
-from enum import Enum
+import typing
+import dataclasses
+import enum
 
-from qplex.solvers import IBMQSolver, DWaveSolver, BraketSolver
-from qplex.solvers.base_solver import Solver
+import qplex.solvers
+import qplex.solvers.base_solver
 
 
-class ProviderType(Enum):
+class ProviderType(enum.Enum):
     DWAVE = "d-wave"
     IBMQ = "ibmq"
     BRAKET = "braket"
 
 
-@dataclass
+@dataclasses.dataclass
 class ProviderConfig:
     backend: str
-    shots: Optional[int]
-    provider_options: Optional[Dict[str, Any]] = None
+    shots: typing.Optional[int]
+    provider_options: typing.Optional[typing.Dict[str, typing.Any]] = None
 
 
-@dataclass
-class DWaveConfig(ProviderConfig):
-    time_limit: Optional[int] = None
+@dataclasses.dataclass
+class DWaveConfig:
+    backend: str
+    time_limit: typing.Optional[int] = None
     num_reads: int = 100
     topology: str = "pegasus"
-    embedding: Optional[Any] = None
+    embedding: typing.Optional[typing.Any] = None
 
 
-@dataclass
-class IMBQConfig(ProviderConfig):
+@dataclasses.dataclass
+class IMBQConfig:
+    backend: str
+    shots: typing.Optional[int]
     optimization_level: int = 1
 
 
-@dataclass
-class BraketConfig(ProviderConfig):
-    device_parameters: Dict[str, Any] = None
+@dataclasses.dataclass
+class BraketConfig:
+    backend: str
+    shots: typing.Optional[int]
+    device_parameters: typing.Dict[str, typing.Any] = None
 
 
 class SolverFactory:
@@ -51,7 +56,7 @@ class SolverFactory:
 
     @classmethod
     def get_solver(cls, provider: ProviderType, quantum_api_tokens: dict,
-                   config: ProviderConfig) -> Solver:
+                   config: ProviderConfig) -> qplex.solvers.base_solver.Solver:
         """
         Return a solver based on the specified provider and available tokens.
 
@@ -93,13 +98,13 @@ class SolverFactory:
                 backend=config.backend,
                 **config.provider_options
             )
-            return DWaveSolver(token=token,
-                               time_limit=d_wave_config.time_limit,
-                               num_reads=d_wave_config.num_reads,
-                               topology=d_wave_config.topology,
-                               embedding=d_wave_config.embedding,
-                               backend=d_wave_config.backend
-                               )
+            return qplex.solvers.DWaveSolver(token=token,
+                                             time_limit=d_wave_config.time_limit,
+                                             num_reads=d_wave_config.num_reads,
+                                             topology=d_wave_config.topology,
+                                             embedding=d_wave_config.embedding,
+                                             backend=d_wave_config.backend
+                                             )
 
         elif provider == ProviderType.IBMQ:
             ibmq_config = IMBQConfig(
@@ -107,20 +112,20 @@ class SolverFactory:
                 shots=config.shots,
                 **config.provider_options
             )
-            return IBMQSolver(
+            return qplex.solvers.IBMQSolver(
                 token=token,
                 shots=ibmq_config.shots,
                 backend=ibmq_config.backend,
                 optimization_level=ibmq_config.optimization_level
             )
 
-        elif provider == 'braket':
+        elif provider == ProviderType.BRAKET:
             braket_config = BraketConfig(
                 backend=config.backend,
                 shots=config.shots,
                 **config.provider_options
             )
-            return BraketSolver(
+            return qplex.solvers.BraketSolver(
                 shots=braket_config.shots,
                 backend=braket_config.backend,
                 device_parameters=braket_config.device_parameters or {}

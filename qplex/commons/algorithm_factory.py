@@ -1,16 +1,14 @@
-from typing import Any
-from enum import Enum
-from dataclasses import dataclass
+import typing
+import enum
+import dataclasses
 
-from qplex.algorithms import VQE
-from qplex.algorithms import QAOA
-from qplex.algorithms import Algorithm
-from qplex.algorithms.mixers import StandardMixer
-from qplex.algorithms.mixers.mixer_factory import MixerFactory
-from qplex.utils.model_utils import get_model_constraint_info
+import qplex.algorithms
+import qplex.algorithms.mixers
+import qplex.algorithms.mixers.mixer_factory
+import qplex.utils.model_utils
 
 
-class AlgorithmType(Enum):
+class AlgorithmType(enum.Enum):
     """Supported gate-based quantum algorithms.
 
     This enum defines the gate-based quantum algorithms that can be used to
@@ -23,7 +21,7 @@ class AlgorithmType(Enum):
     VQE = "vqe"
 
 
-@dataclass
+@dataclasses.dataclass
 class AlgorithmConfig:
     """Configuration dataclass for gate-based quantum algorithms.
 
@@ -47,10 +45,10 @@ class AlgorithmConfig:
     algorithm: AlgorithmType
     penalty: float
     seed: int
-    p: int | None = None  # for the QAOA framework
-    mixer: Any | None = None  # for the QAOA framework
-    layers: int | None = None  # for VQE
-    ansatz: Any | None = None  # for VQE
+    p: typing.Optional[int] = None  # for the QAOA framework
+    mixer: typing.Optional[typing.Any] = None  # for the QAOA framework
+    layers: typing.Optional[int] = None  # for VQE
+    ansatz: typing.Optional[typing.Any] = None  # for VQE
 
 
 class AlgorithmFactory:
@@ -67,7 +65,8 @@ class AlgorithmFactory:
     """
 
     @classmethod
-    def get_algorithm(cls, model, config: AlgorithmConfig) -> Algorithm:
+    def get_algorithm(cls, model,
+                      config: AlgorithmConfig) -> qplex.algorithms.Algorithm:
         """Creates and returns a quantum algorithm instance based on configuration.
 
         Parameters:
@@ -86,21 +85,24 @@ class AlgorithmFactory:
         -------
         ValueError: If the specified algorithm type is not supported.
         """
-        model_constraint_info = get_model_constraint_info(model)
+        model_constraint_info = qplex.utils.model_utils.get_model_constraint_info(
+            model)
 
         if config.algorithm == AlgorithmType.QAOA:
-            mixer = StandardMixer()
-            return QAOA(model, p=config.p, seed=config.seed,
-                        penalty=config.penalty, mixer=mixer)
+            mixer = qplex.algorithms.mixers.StandardMixer()
+            return qplex.algorithms.QAOA(model, p=config.p, seed=config.seed,
+                                         penalty=config.penalty, mixer=mixer)
 
         elif config.algorithm == AlgorithmType.QAO_ANSATZ:
             mixer = config.mixer if config.mixer else (
-                MixerFactory.get_mixer(model_constraint_info))
-            return QAOA(model, p=config.p, seed=config.seed,
-                        penalty=config.penalty, mixer=mixer)
+                qplex.algorithms.mixers.mixer_factory.MixerFactory.get_mixer(
+                    model_constraint_info))
+            return qplex.algorithms.QAOA(model, p=config.p, seed=config.seed,
+                                         penalty=config.penalty, mixer=mixer)
 
         elif config.algorithm == AlgorithmType.VQE:
-            return VQE(model, layers=config.layers, penalty=config.penalty,
-                       seed=config.seed, ansatz=config.ansatz)
+            return qplex.algorithms.VQE(model, layers=config.layers,
+                                        penalty=config.penalty,
+                                        seed=config.seed, ansatz=config.ansatz)
 
         raise ValueError(f"Algorithm not supported: {config.algorithm}")

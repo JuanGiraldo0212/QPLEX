@@ -1,12 +1,12 @@
 from enum import Enum
 from typing import List
 
-from qplex.algorithms.mixers.cardinality_mixer import CardinalityMixer
 from qplex.algorithms.mixers.standard_mixer import StandardMixer
-from qplex.algorithms.mixers.quantum_mixer import QuantumMixer
+from qplex.algorithms.mixers.cardinality_mixer import CardinalityMixer
 from qplex.algorithms.mixers.partition_mixer import PartitionMixer
-from qplex.algorithms.mixers.composite_mixer import CompositeMixer
 from qplex.algorithms.mixers.inequality_mixer import InequalityMixer
+from qplex.algorithms.mixers.quantum_mixer import QuantumMixer
+from qplex.algorithms.mixers.composite_mixer import CompositeMixer
 from qplex.utils.model_utils import ConstraintInfo
 
 
@@ -25,12 +25,17 @@ class MixerFactory:
     constraint types and composite mixers for multiple constraints.
     """
 
-    _MIXER_MAP = {
-        ConstraintType.CARDINALITY: CardinalityMixer,
-        ConstraintType.PARTITION: PartitionMixer,
-        ConstraintType.INEQUALITY: InequalityMixer,
-        ConstraintType.UNCONSTRAINED: StandardMixer
-    }
+    @classmethod
+    def _get_mixer_for_type(cls, constraint_type):
+        """Look up the appropriate mixer class for the constraint type."""
+        if constraint_type == ConstraintType.CARDINALITY:
+            return CardinalityMixer
+        elif constraint_type == ConstraintType.PARTITION:
+            return PartitionMixer
+        elif constraint_type == ConstraintType.INEQUALITY:
+            return InequalityMixer
+        else:
+            return StandardMixer
 
     @classmethod
     def get_mixer(cls, constraint_info: ConstraintInfo) -> QuantumMixer:
@@ -53,7 +58,7 @@ class MixerFactory:
         if len(constraints) > 1:
             return cls._create_composite_mixer(constraints)
 
-        mixer_class = cls._MIXER_MAP.get(constraint_info.type, StandardMixer)
+        mixer_class = cls._get_mixer_for_type(constraint_info.type)
         return mixer_class()
 
     @classmethod
@@ -96,9 +101,9 @@ class MixerFactory:
         QuantumMixer
             CompositeMixer instance combining appropriate mixers
         """
-        mixers = []
+        mixers_arr = []
         for constraint in constraints:
-            mixer_class = cls._MIXER_MAP.get(constraint)
+            mixer_class = cls._get_mixer_for_type(constraint)
             if mixer_class:
-                mixers.append(mixer_class())
-        return CompositeMixer(mixers)
+                mixers_arr.append(mixer_class())
+        return CompositeMixer(mixers_arr)

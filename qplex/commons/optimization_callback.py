@@ -66,7 +66,7 @@ class OptimizationCallback:
         self.verbose = verbose
         self.history = OptimizationHistory()
 
-    def __call__(self, xk: np.ndarray) -> None:
+    def __call__(self, xk: np.ndarray) -> None: # pragma: no cover
         """
         The method called at each iteration of the optimization process.
 
@@ -94,7 +94,7 @@ class OptimizationCallback:
         if self.verbose:
             self._log_progress(xk)
 
-    def _log_progress(self, xk: np.ndarray) -> None:
+    def _log_progress(self, xk: np.ndarray) -> None: # pragma: no cover
         """Log optimization progress"""
 
         print(f"\nIteration {self.iteration}")

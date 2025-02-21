@@ -3,22 +3,17 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Dict, Any, Optional
 
-from docplex.mp.model import Model
-from docplex.mp.solution import SolveSolution
-from qiskit_optimization import QuadraticProgram
-from qiskit_optimization.translators import from_docplex_mp
-from qiskit_optimization.converters import QuadraticProgramToQubo
-from qplex.commons import SolverFactory
-from qplex.commons.solver_factory import ProviderConfig, ProviderType
-from qplex.utils.workflow_utils import get_solution_from_counts
-from qplex.workflows import ibm_session_workflow, ggae_workflow
-from qplex.model.execution_config import ExecutionConfig
+import docplex.mp.model as dpmodel
+import docplex.mp.solution as dpsolution
+import qiskit_optimization
+import qiskit_optimization.translators
+import qiskit_optimization.converters
+import qplex.commons
+import qplex.commons.solver_factory
+import qplex.utils.workflow_utils
+import qplex.workflows
+import qplex.model.execution_config as ec
 import os
-
-
-class SolveMethod(Enum):
-    CLASSICAL = "classical"
-    QUANTUM = "quantum"
 
 
 @dataclass
@@ -26,13 +21,13 @@ class ModelSolution:
     solution: Dict[str, Any]
     objective: float
     execution_time: float
-    method: SolveMethod
+    method: str
     provider: Optional[str] = None
     backend: Optional[str] = None
     algorithm: str = "N/A"
 
 
-class QModel(Model):
+class QModel(dpmodel.Model):
     """
     Creates an instance of a QModel.
 
@@ -55,7 +50,8 @@ class QModel(Model):
 
         self._qmodel_solution: Optional[ModelSolution] = None
 
-    def get_qubo(self, penalty: float | None = None) -> QuadraticProgram:
+    def get_qubo(self, penalty: float | None = None) -> (
+            qiskit_optimization.QuadraticProgram):
         """
         Returns the QUBO encoding of this problem.
 
@@ -69,12 +65,13 @@ class QModel(Model):
         QuadraticProgram
             The QUBO encoding of this problem.
         """
-        mod = from_docplex_mp(self)
-        converter = QuadraticProgramToQubo(penalty=penalty)
+        mod = qiskit_optimization.translators.from_docplex_mp(self)
+        converter = qiskit_optimization.converters.QuadraticProgramToQubo(
+            penalty=penalty)
         return converter.convert(mod)
 
     def solve(self, method: str = 'classical',
-              config: ExecutionConfig = ExecutionConfig()):
+              config=ec.ExecutionConfig()):
         """
         Solves the model using the specified method and Options.
 
@@ -92,46 +89,51 @@ class QModel(Model):
             If the method argument is not 'classical' or 'quantum'.
         """
 
-        solve_method = SolveMethod(method)
         start_time = time.time()
 
-        if solve_method == SolveMethod.CLASSICAL:
+        if method == 'classical':
             super().solve()
             solution = self._create_solution(
                 execution_time=time.time() - start_time,
-                method=solve_method
+                method=method
             )
-        elif solve_method == SolveMethod.QUANTUM:
-            provider_config = ProviderConfig(
+        elif method == 'quantum':
+            provider_config = qplex.commons.solver_factory.ProviderConfig(
                 shots=config.shots,
                 backend=config.backend,
                 provider_options=config.provider_options
             )
-            solver = SolverFactory.get_solver(
-                provider=ProviderType(config.provider),
+            solver = qplex.commons.SolverFactory.get_solver(
+                provider=qplex.commons.solver_factory.ProviderType(
+                    config.provider),
                 quantum_api_tokens=
                 self.quantum_api_tokens,
                 config=provider_config)
             if config.provider == 'd-wave':
                 result = solver.solve(self)
-            elif config.provider == "ibmq" and config.workflow == "ibm_session":
-                optimal_counts = ibm_session_workflow(model=self,
-                                                      ibmq_solver=
-                                                      solver,
-                                                      options=config)
-                result = get_solution_from_counts(model=self,
-                                                  optimal_counts=optimal_counts)
+            elif (config.provider == "ibmq"
+                  and config.workflow == 'ibm_session'):
+                optimal_counts = qplex.workflows.run_ibm_session_workflow(
+                    model=self,
+                    ibmq_solver=
+                    solver,
+                    options=config)
+                result = (
+                    qplex.utils.workflow_utils.get_solution_from_counts(
+                        model=self,
+                        optimal_counts=optimal_counts))
             else:
-                optimal_counts = ggae_workflow(model=self,
-                                               solver=solver,
-                                               options=config)
-                result = get_solution_from_counts(model=self,
-                                                  optimal_counts=
-                                                  optimal_counts)
+                optimal_counts = qplex.workflows.ggae_workflow(model=self,
+                                                               solver=solver,
+                                                               options=config)
+                result = qplex.utils.workflow_utils.get_solution_from_counts(
+                    model=self,
+                    optimal_counts=
+                    optimal_counts)
 
             solution = self._create_solution(
                 execution_time=time.time() - start_time,
-                method=solve_method,
+                method=method,
                 provider=config.provider,
                 backend=config.backend,
                 algorithm=config.algorithm,
@@ -147,14 +149,14 @@ class QModel(Model):
     def _create_solution(
             self,
             execution_time: float,
-            method: SolveMethod,
+            method: str,
             provider: Optional[str] = None,
             backend: Optional[str] = None,
             algorithm: str = "N/A",
             result: Optional[Dict] = None
     ) -> ModelSolution:
         """Creates a ModelSolution object from the solve results."""
-        if method == SolveMethod.CLASSICAL:
+        if method == 'classical':
             solution = {var.name: var.solution_value for var in
                         self.iter_variables()}
             objective = self.objective_value
@@ -184,10 +186,10 @@ class QModel(Model):
             'objective'.
         """
         self._qmodel_solution = solution
-        solve_solution = SolveSolution(model=self,
-                                       var_value_map=solution.solution,
-                                       obj=solution.objective,
-                                       name=self.name)
+        solve_solution = dpsolution.SolveSolution(model=self,
+                                                  var_value_map=solution.solution,
+                                                  obj=solution.objective,
+                                                  name=self.name)
         super()._set_solution(new_solution=solve_solution)
 
     def print_solution(self, print_zeros: bool = False,

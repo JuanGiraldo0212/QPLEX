@@ -1,4 +1,8 @@
-def get_solution_from_counts(model, optimal_counts):
+import docplex.mp.model
+
+
+def get_solution_from_counts(model: docplex.mp.model.Model, optimal_counts:
+dict):
     """
     Extracts the best solution from the optimal parameter counts obtained
     from a quantum algorithm's execution.
@@ -49,7 +53,7 @@ def get_solution_from_counts(model, optimal_counts):
     return solution
 
 
-def calculate_energy(counts, shots, algorithm_instance):
+def calculate_energy(counts: dict, shots: int, algorithm_instance):
     """
     Calculates the energy (or cost function value) of a quantum solution.
 

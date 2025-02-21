@@ -13,7 +13,7 @@ class Solver(ABC):
 
     @property
     @abstractmethod
-    def backend(self) -> str:
+    def backend(self) -> str:  # pragma: no cover
         """
         Abstract property for the backend.
 
@@ -23,7 +23,7 @@ class Solver(ABC):
         pass
 
     @abstractmethod
-    def solve(self, formulation) -> Dict:
+    def solve(self, formulation) -> Dict:  # pragma: no cover
         """
         Solves the given problem formulation and returns the solution.
 
@@ -40,7 +40,7 @@ class Solver(ABC):
         ...
 
     @abstractmethod
-    def parse_input(self, input_form) -> Any:
+    def parse_input(self, input_form) -> Any:  # pragma: no cover
         """
         Parses the input model or problem formulation into a format suitable
         for solving.
@@ -56,7 +56,7 @@ class Solver(ABC):
         ...
 
     @abstractmethod
-    def parse_response(self, response: Any) -> Dict:
+    def parse_response(self, response: Any) -> Dict:  # pragma: no cover
         """
         Parses the response received from the backend solver.
 
@@ -71,7 +71,7 @@ class Solver(ABC):
         ...
 
     @abstractmethod
-    def select_backend(self, qubits: int) -> Any:
+    def select_backend(self, qubits: int) -> Any:  # pragma: no cover
         """
         Selects and configures the appropriate backend based on the number
         of qubits required.
