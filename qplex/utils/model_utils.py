@@ -1,8 +1,9 @@
 from dataclasses import dataclass
 from typing import Dict, Optional, List, Set
 
-from docplex.mp.constr import LinearConstraint
-from docplex.mp.constants import ComparisonType
+import docplex.mp.constr
+import docplex.mp.constants
+import docplex.mp.model
 
 from qplex.model.constants import ConstraintType
 
@@ -15,7 +16,7 @@ class ConstraintInfo:
     additional_constraints: Optional[List[ConstraintType]] = None
 
 
-def get_model_constraint_info(model) -> ConstraintInfo:
+def get_model_constraint_info(model: docplex.mp.model.Model) -> ConstraintInfo:
     """
     Analyzes a DOcplex model to determine constraint types.
 
@@ -29,24 +30,26 @@ def get_model_constraint_info(model) -> ConstraintInfo:
     ConstraintInfo
         Information about detected constraints
     """
-    constraints: List[LinearConstraint] = list(model.iter_constraints())
+    constraints: List[docplex.mp.constr.LinearConstraint] = list(
+        model.iter_constraints())
     detected_constraints: Set[ConstraintType] = set()
     parameters = {}
 
     # Helper functions for coefficient analysis
-    def get_coefficients(const: LinearConstraint) -> Dict:
+    def get_coefficients(const: docplex.mp.constr.LinearConstraint) -> Dict:
         return {var.name: coef for var, coef in
                 const.get_left_expr().iter_terms()}
 
-    def get_unique_coefs(const: LinearConstraint) -> Set:
+    def get_unique_coefs(const: docplex.mp.constr.LinearConstraint) -> Set:
         return set(coef for _, coef in const.get_left_expr().iter_terms())
 
     # Check for cardinality constraints (sum x_i = k)
     cardinality_constraints = [
         const for const in constraints
-        if const.sense == ComparisonType.EQ and all(coef == 1 for coef
-                                                    in get_coefficients(const)
-                                                    .values()) and isinstance(
+        if const.sense == docplex.mp.constants.ComparisonType.EQ and all(
+            coef == 1 for coef
+            in get_coefficients(const)
+            .values()) and isinstance(
             const.get_right_expr(), (int, float))
     ]
 
@@ -58,7 +61,7 @@ def get_model_constraint_info(model) -> ConstraintInfo:
     # Check for partition constraints (sum x_i - sum y_i = 0)
     partition_constraints = [
         const for const in constraints
-        if const.sense == ComparisonType.EQ
+        if const.sense == docplex.mp.constants.ComparisonType.EQ
            and const.get_right_expr() == 0
            and get_unique_coefs(const) == {1, -1}
     ]
@@ -68,8 +71,9 @@ def get_model_constraint_info(model) -> ConstraintInfo:
 
     # Check for inequality constraints
     inequality_constraints = [const for const in constraints
-                              if (const.sense == ComparisonType.LE or
-                                  const.sense == ComparisonType.GE)
+                              if (
+                                          const.sense == docplex.mp.constants.ComparisonType.LE or
+                                          const.sense == docplex.mp.constants.ComparisonType.GE)
                               and not all(coef == 1 for coef in
                                           get_coefficients(const).values())
                               ]

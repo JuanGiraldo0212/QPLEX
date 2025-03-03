@@ -10,7 +10,8 @@ class QuantumMixer(ABC):
     """
 
     @abstractmethod
-    def generate_circuit(self, n_qubits: int, theta: str) -> List[str]:
+    def generate_circuit(self, n_qubits: int, theta: str) -> List[
+        str]:  # pragma: no cover
         """Generate OpenQASM3 circuit instructions for the mixing operation.
 
         Parameters

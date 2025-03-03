@@ -1,7 +1,7 @@
 import numpy as np
 
 from qplex.algorithms.base_algorithm import Algorithm
-from qplex.utils.circuit_utils import replace_params
+import qplex
 
 
 class VQE(Algorithm):
@@ -45,7 +45,7 @@ class VQE(Algorithm):
         super().__init__(model)
         self.layers: int = layers
         self.n: int = 0
-        self.num_params = self.n + (4 * (self.n - 1) * self.layers)
+        self.num_params = None
         self.circuit: str = self.create_circuit(penalty=penalty)
         np.random.seed(seed)
 
@@ -71,6 +71,7 @@ class VQE(Algorithm):
         """
         self.qubo = self.model.get_qubo(penalty=kwargs['penalty'])
         self.n = self.qubo.get_num_binary_vars()
+        self.num_params = self.n + (4 * (self.n - 1) * self.layers)
 
         circuit_lines = [f"input float[64] theta{i};" for i in
                          range(self.num_params)]
@@ -122,7 +123,7 @@ class VQE(Algorithm):
             The updated OpenQASM3 string for the VQE circuit.
         """
 
-        return replace_params(self.circuit, params)
+        return qplex.utils.circuit_utils.replace_params(self.circuit, params)
 
     def get_starting_point(self) -> np.ndarray:
         """

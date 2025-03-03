@@ -26,7 +26,8 @@ def main():
 
     execution_config = ExecutionConfig(
         provider="ibmq",
-        backend="simulator",
+        backend="ibm_sherbrooke",
+        workflow='ibm_session',
         algorithm="qaoa",
         p=4,
         shots=1024,

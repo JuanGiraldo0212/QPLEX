@@ -55,7 +55,7 @@ class ExecutionConfig:
                 f"{ALLOWED_OPTIMIZERS} or a callable."
             )
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:  # pragma: no cover
         """Convert configuration to dictionary."""
         return {k: v for k, v in self.__dict__.items() if
                 not k.startswith('_')}
