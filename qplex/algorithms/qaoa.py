@@ -2,7 +2,7 @@ import numpy as np
 
 from qplex.algorithms.base_algorithm import Algorithm
 from qplex.algorithms.mixers import QuantumMixer
-from qplex.utils.circuit_utils import replace_params
+import qplex
 
 
 class QAOA(Algorithm):
@@ -145,7 +145,7 @@ class QAOA(Algorithm):
         if len(params) != self.num_params:
             raise ValueError(
                 f"Expected {self.num_params} parameters, got {len(params)}")
-        return replace_params(self.circuit, params)
+        return qplex.utils.circuit_utils.replace_params(self.circuit, params)
 
     def get_starting_point(self) -> np.ndarray:
         """

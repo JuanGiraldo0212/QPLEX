@@ -1,14 +1,15 @@
-from qiskit_ibm_runtime import (SamplerV2 as Sampler, Session)
-from scipy.optimize import minimize
-from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
+import qiskit_ibm_runtime
+import scipy.optimize
+import qiskit.transpiler.preset_passmanagers
+import docplex.mp.model
 
-from qplex.commons.algorithm_factory import AlgorithmFactory, AlgorithmConfig, \
-    AlgorithmType
+import qplex.commons.algorithm_factory
 from qplex.model.execution_config import ExecutionConfig
-from qplex.utils.workflow_utils import calculate_energy
+import qplex.utils.workflow_utils
 
 
-def ibm_session_workflow(model, ibmq_solver, options: ExecutionConfig):
+def run_ibm_session_workflow(model: docplex.mp.model.Model, ibmq_solver,
+                             options: ExecutionConfig):
     """
     Executes a quantum optimization workflow using IBM Quantum Runtime.
 
@@ -37,8 +38,9 @@ def ibm_session_workflow(model, ibmq_solver, options: ExecutionConfig):
     max_iter = options.max_iter
     tolerance = options.tolerance
 
-    algorithm_config = AlgorithmConfig(
-        algorithm=AlgorithmType(options.algorithm),
+    algorithm_config = qplex.commons.algorithm_factory.AlgorithmConfig(
+        algorithm=qplex.commons.algorithm_factory.AlgorithmType(
+            options.algorithm),
         penalty=options.penalty,
         seed=options.seed,
         p=options.p,
@@ -47,20 +49,22 @@ def ibm_session_workflow(model, ibmq_solver, options: ExecutionConfig):
         ansatz=options.ansatz
     )
 
-    algorithm_instance = AlgorithmFactory.get_algorithm(model,
-                                                        algorithm_config)
+    algorithm_instance = qplex.commons.algorithm_factory.AlgorithmFactory.get_algorithm(
+        model,
+        algorithm_config)
 
     vqc = ibmq_solver.parse_input(algorithm_instance.circuit)
     backend = ibmq_solver.select_backend(vqc.num_qubits)
-    pass_manager = generate_preset_pass_manager(backend=backend,
-                                                optimization_level=
-                                                ibmq_solver.optimization_level)
+    pass_manager = qiskit.transpiler.preset_passmanagers.generate_preset_pass_manager(
+        backend=backend,
+        optimization_level=
+        ibmq_solver.optimization_level)
 
     starting_point = algorithm_instance.get_starting_point()
 
     isa_circuit = pass_manager.run(vqc)
 
-    def cost_function(params) -> float:
+    def cost_function(params) -> float:  # pragma: no cover
         """
         Computes the cost (objective function value) for a given set
         of parameters.
@@ -76,20 +80,24 @@ def ibm_session_workflow(model, ibmq_solver, options: ExecutionConfig):
             The computed cost (energy) for the given parameters.
         """
         counts = compute_counts(params, ibmq_solver, isa_circuit, sampler)
-        cost = calculate_energy(counts, ibmq_solver.shots, algorithm_instance)
+        cost = qplex.utils.workflow_utils.calculate_energy(counts,
+                                                           ibmq_solver.shots,
+                                                           algorithm_instance)
         if verbose:
             print(f'\nCost = {cost}')
         return cost
 
-    with Session(service=service, backend=backend) as session:
-        sampler = Sampler(mode=session)
+    with qiskit_ibm_runtime.Session(service=service,
+                                    backend=backend) as session:
+        sampler = qiskit_ibm_runtime.SamplerV2(mode=session)
 
-        optimization_result = minimize(fun=cost_function,
-                                       x0=starting_point,
-                                       method=optimizer,
-                                       tol=tolerance,
-                                       callback=callback,
-                                       options={'maxiter': max_iter})
+        optimization_result = scipy.optimize.minimize(fun=cost_function,
+                                                      x0=starting_point,
+                                                      method=optimizer,
+                                                      tol=tolerance,
+                                                      callback=callback,
+                                                      options={
+                                                          'maxiter': max_iter})
 
         optimal_params = optimization_result.x
 

@@ -48,7 +48,7 @@ class Algorithm(ABC):
         self.circuit = None  # Quantum circuit string, initialized as None
 
     @abstractmethod
-    def create_circuit(self) -> str:
+    def create_circuit(self) -> str: # pragma: no cover
         """
         Creates a quantum circuit in the form of an OpenQASM3 string from
         an optimization model.
@@ -65,7 +65,7 @@ class Algorithm(ABC):
         ...
 
     @abstractmethod
-    def update_params(self, params: np.ndarray) -> str:
+    def update_params(self, params: np.ndarray) -> str: # pragma: no cover
         """
         Updates the parameters of the quantum circuit.
 
@@ -87,7 +87,7 @@ class Algorithm(ABC):
         ...
 
     @abstractmethod
-    def get_starting_point(self) -> np.ndarray:
+    def get_starting_point(self) -> np.ndarray: # pragma: no cover
         """
         Defines the starting point for the optimization process.
 

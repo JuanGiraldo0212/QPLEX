@@ -2,9 +2,7 @@ from typing import Dict, Any
 
 from qplex.model.constants import VAR_TYPE
 
-from dwave.system import (LeapHybridCQMSampler, LeapHybridBQMSampler,
-                          LeapHybridDQMSampler, DWaveSampler,
-                          AutoEmbeddingComposite, FixedEmbeddingComposite)
+import dwave.system as dwave
 from dimod import (ConstrainedQuadraticModel, QuadraticModel,
                    DiscreteQuadraticModel, BinaryQuadraticModel, )
 from qplex.solvers.base_solver import Solver
@@ -19,6 +17,28 @@ class DWaveSolver(Solver):
 
     def __init__(self, token, time_limit, num_reads, topology,
                  embedding, backend):
+        """
+        Initialize the DWaveSolver with the specified configuration.
+        Parameters
+        ----------
+        token : str
+            The API token for authenticating with the D-Wave platform.
+        time_limit : int
+            The maximum time limit (in seconds) for solving a problem.
+        num_reads : int
+            The number of reads (samples) to perform when executing
+            the solver.
+        topology : str
+            The topology of the quantum processing unit (e.g.,
+            "pegasus").
+        embedding : Any
+            The embedding to be used for the problem. If `None`,
+            an automatic
+            embedding will be generated.
+        backend : str or None
+            The backend to use for solving the problem. If `None`,
+            a hybrid solver is used by default.
+        """
         super().__init__()
         self.token = token
         self.time_limit = time_limit
@@ -222,11 +242,39 @@ class DWaveSolver(Solver):
     def select_backend(self, parsed_model, model_type) -> Any:
         """
         Select the appropriate backend for the given model type.
+        This method chooses the correct D-Wave sampler or hybrid solver
+        based on the specified backend and the model type. It handles
+        scenarios where the provided backend is incompatible with the model
+        type by switching to a compatible hybrid solver.
+
+        Parameters
+        ----------
+        parsed_model : Any
+            The parsed model to be solved. This is used to determine backend
+            compatibility.
+        model_type : str
+            The type of the model, represented as a value from `VAR_TYPE`. It
+            determines whether the model is a constrained quadratic model
+            (CQM), discrete quadratic model (DQM), or binary quadratic model
+            (BQM).
+
+        Returns
+        -------
+        Any
+            An instance of the selected sampler, which could be a hybrid solver
+            (e.g., `LeapHybridCQMSampler`, `LeapHybridDQMSampler`,
+            or `LeapHybridBQMSampler`)
+            or a `DWaveSampler` with an appropriate embedding composite.
+
+        Raises
+        ------
+        ValueError
+            If the specified backend (`self._backend`) is unsupported.
         """
         hybrid_samplers = {
-            VAR_TYPE['C']: LeapHybridCQMSampler,
-            VAR_TYPE['I']: LeapHybridDQMSampler,
-            VAR_TYPE['B']: LeapHybridBQMSampler,
+            VAR_TYPE['C']: dwave.LeapHybridCQMSampler,
+            VAR_TYPE['I']: dwave.LeapHybridDQMSampler,
+            VAR_TYPE['B']: dwave.LeapHybridBQMSampler,
         }
 
         if self._backend == 'hybrid_solver':
@@ -245,14 +293,14 @@ class DWaveSolver(Solver):
                 sampler_class = hybrid_samplers[model_type]
                 return sampler_class(token=self.token)
 
-            qpu = DWaveSampler(solver=dict(topology__type=self.topology),
-                               token=self.token)
+            qpu = dwave.DWaveSampler(solver=dict(topology__type=self.topology),
+                                     token=self.token)
             self._backend = qpu.solver.name
             print(
                 f"Selected {self._backend} with {len(qpu.nodelist)} qubits.")
 
             if self.embedding is None:
-                return AutoEmbeddingComposite(qpu)
-            return FixedEmbeddingComposite(qpu, self.embedding)
+                return dwave.AutoEmbeddingComposite(qpu)
+            return dwave.FixedEmbeddingComposite(qpu, self.embedding)
 
         raise ValueError(f"Unsupported backend: {self._backend}")

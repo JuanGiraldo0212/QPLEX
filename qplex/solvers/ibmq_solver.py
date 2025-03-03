@@ -1,10 +1,13 @@
-from qiskit.qasm3 import loads
+import qiskit
 from qiskit import QuantumCircuit
-from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
+
+import qiskit.qasm3 as qasm3
+import qiskit.transpiler.preset_passmanagers as qiskit_pm
+import qiskit_aer as aer
+import qiskit_ibm_runtime as qir
 from qiskit.providers import BackendV2
+
 from qplex.solvers.base_solver import Solver
-from qiskit_aer import AerSimulator
-from qiskit_ibm_runtime import (QiskitRuntimeService, SamplerV2 as Sampler, )
 
 
 class IBMQSolver(Solver):
@@ -49,9 +52,10 @@ class IBMQSolver(Solver):
             self._backend = ''
         else:
             self._backend = backend
-        QiskitRuntimeService.save_account(channel="ibm_quantum",
-                                          token=token, overwrite=True)
-        self.service = QiskitRuntimeService()
+        qir.QiskitRuntimeService.save_account(
+            channel="ibm_quantum",
+            token=token, overwrite=True)
+        self.service = qir.QiskitRuntimeService()
         self.optimization_level = optimization_level
 
     @property
@@ -84,15 +88,15 @@ class IBMQSolver(Solver):
         """
         qc = self.parse_input(model)
         backend = self.select_backend(qc.num_qubits)
-        pass_manager = generate_preset_pass_manager(backend=backend,
-                                                    optimization_level=
-                                                    self.optimization_level)
+        pass_manager = qiskit_pm.generate_preset_pass_manager(backend=backend,
+                                                              optimization_level=
+                                                              self.optimization_level)
         isa_circuit = pass_manager.run(qc)
 
         if self._backend == 'simulator':
             raw_counts = backend.run(isa_circuit).result().get_counts()
         else:
-            sampler = Sampler(backend)
+            sampler = qir.SamplerV2(backend)
             raw_counts = self.run(isa_circuit, sampler)
         counts = self.parse_response(raw_counts)
         return counts
@@ -138,7 +142,7 @@ class IBMQSolver(Solver):
         OPENQASM 3.0;
         include "stdgates.inc";
         """ + circuit
-        qc = loads(circuit)
+        qc = qasm3.loads(circuit)
         return qc
 
     def parse_response(self, response: dict) -> dict:
@@ -161,7 +165,7 @@ class IBMQSolver(Solver):
             parsed_response["".join(str(n) for n in x)] = count
         return parsed_response
 
-    def select_backend(self, qubits: int) -> AerSimulator | BackendV2:
+    def select_backend(self, qubits: int) -> BackendV2:
         """
         Selects the appropriate backend based on the number of qubits and
         the specified backend name.
@@ -181,4 +185,4 @@ class IBMQSolver(Solver):
             if self._backend == "":
                 return self.service.least_busy(min_num_qubits=qubits)
             return self.service.backend(self._backend)
-        return AerSimulator()
+        return aer.AerSimulator()
