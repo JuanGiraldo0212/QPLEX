@@ -347,7 +347,35 @@ a string.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="qplex.solvers.dwave_solver.DWaveSolver.select_backend">
 <span class="sig-name descname"><span class="pre">select_backend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parsed_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="_modules/qplex/solvers/dwave_solver.html#DWaveSolver.select_backend"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.solvers.dwave_solver.DWaveSolver.select_backend" title="Link to this definition">¶</a></dt>
-<dd><p>Select the appropriate backend for the given model type.</p>
+<dd><p>Select the appropriate backend for the given model type.
+This method chooses the correct D-Wave sampler or hybrid solver
+based on the specified backend and the model type. It handles
+scenarios where the provided backend is incompatible with the model
+type by switching to a compatible hybrid solver.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parsed_model</strong> (<em>Any</em>) – The parsed model to be solved. This is used to determine backend
+compatibility.</p></li>
+<li><p><strong>model_type</strong> (<em>str</em>) – The type of the model, represented as a value from <cite>VAR_TYPE</cite>. It
+determines whether the model is a constrained quadratic model
+(CQM), discrete quadratic model (DQM), or binary quadratic model
+(BQM).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An instance of the selected sampler, which could be a hybrid solver
+(e.g., <cite>LeapHybridCQMSampler</cite>, <cite>LeapHybridDQMSampler</cite>,
+or <cite>LeapHybridBQMSampler</cite>)
+or a <cite>DWaveSampler</cite> with an appropriate embedding composite.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the specified backend (<cite>self._backend</cite>) is unsupported.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -378,8 +406,7 @@ the problem specification.</p>
 <dt class="sig sig-object py" id="qplex.solvers.ibmq_solver.IBMQSolver">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qplex.solvers.ibmq_solver.</span></span><span class="sig-name descname"><span class="pre">IBMQSolver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimization_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qplex/solvers/ibmq_solver.html#IBMQSolver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.solvers.ibmq_solver.IBMQSolver" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#qplex.solvers.base_solver.Solver" title="qplex.solvers.base_solver.Solver"><code class="xref py py-class docutils literal notranslate"><span class="pre">Solver</span></code></a></p>
-<p>A quantum solver for IBMQ that can execute quantum circuits on IBM’s
-backend or a local simulator.</p>
+<p>Solver for IBMQ. Can execute circuits on IBM backend or local simulators.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qplex.solvers.ibmq_solver.IBMQSolver.shots">
 <span class="sig-name descname"><span class="pre">shots</span></span><a class="headerlink" href="#qplex.solvers.ibmq_solver.IBMQSolver.shots" title="Link to this definition">¶</a></dt>
@@ -429,10 +456,13 @@ backend.</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="qplex.solvers.ibmq_solver.IBMQSolver.backend">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">backend</span></span><a class="headerlink" href="#qplex.solvers.ibmq_solver.IBMQSolver.backend" title="Link to this definition">¶</a></dt>
-<dd><p>Abstract property for the backend.</p>
+<dd><p>Returns the currently selected backend name.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The name of the backend being used by the solver.</p>
+<dd class="field-odd"><p>The name of the backend.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
 </dd>
 </dl>
 </dd></dl>
@@ -474,11 +504,26 @@ backend.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="qplex.solvers.ibmq_solver.IBMQSolver.run">
 <span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampler</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qplex/solvers/ibmq_solver.html#IBMQSolver.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.solvers.ibmq_solver.IBMQSolver.run" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Executes the given quantum circuit using the provided sampler.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>qc</strong> (<em>QuantumCircuit</em>) – The quantum circuit to run.</p></li>
+<li><p><strong>sampler</strong> (<em>Sampler</em>) – The sampler instance to use for executing the circuit.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary with the raw measurement counts.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qplex.solvers.ibmq_solver.IBMQSolver.select_backend">
-<span class="sig-name descname"><span class="pre">select_backend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qubits</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">AerSimulator</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">BackendV2</span></span></span><a class="reference internal" href="_modules/qplex/solvers/ibmq_solver.html#IBMQSolver.select_backend"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.solvers.ibmq_solver.IBMQSolver.select_backend" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">select_backend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qubits</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">BackendV2</span></span></span><a class="reference internal" href="_modules/qplex/solvers/ibmq_solver.html#IBMQSolver.select_backend"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.solvers.ibmq_solver.IBMQSolver.select_backend" title="Link to this definition">¶</a></dt>
 <dd><p>Selects the appropriate backend based on the number of qubits and
 the specified backend name.</p>
 <dl class="field-list simple">

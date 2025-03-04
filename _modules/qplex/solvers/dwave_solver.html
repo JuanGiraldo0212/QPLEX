@@ -36,9 +36,7 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">qplex.model.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">VAR_TYPE</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">dwave.system</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">LeapHybridCQMSampler</span><span class="p">,</span> <span class="n">LeapHybridBQMSampler</span><span class="p">,</span>
-                          <span class="n">LeapHybridDQMSampler</span><span class="p">,</span> <span class="n">DWaveSampler</span><span class="p">,</span>
-                          <span class="n">AutoEmbeddingComposite</span><span class="p">,</span> <span class="n">FixedEmbeddingComposite</span><span class="p">)</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dwave.system</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dwave</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dimod</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">ConstrainedQuadraticModel</span><span class="p">,</span> <span class="n">QuadraticModel</span><span class="p">,</span>
                    <span class="n">DiscreteQuadraticModel</span><span class="p">,</span> <span class="n">BinaryQuadraticModel</span><span class="p">,</span> <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">qplex.solvers.base_solver</span><span class="w"> </span><span class="kn">import</span> <span class="n">Solver</span>
@@ -55,6 +53,28 @@
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">time_limit</span><span class="p">,</span> <span class="n">num_reads</span><span class="p">,</span> <span class="n">topology</span><span class="p">,</span>
                  <span class="n">embedding</span><span class="p">,</span> <span class="n">backend</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the DWaveSolver with the specified configuration.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        token : str</span>
+<span class="sd">            The API token for authenticating with the D-Wave platform.</span>
+<span class="sd">        time_limit : int</span>
+<span class="sd">            The maximum time limit (in seconds) for solving a problem.</span>
+<span class="sd">        num_reads : int</span>
+<span class="sd">            The number of reads (samples) to perform when executing</span>
+<span class="sd">            the solver.</span>
+<span class="sd">        topology : str</span>
+<span class="sd">            The topology of the quantum processing unit (e.g.,</span>
+<span class="sd">            &quot;pegasus&quot;).</span>
+<span class="sd">        embedding : Any</span>
+<span class="sd">            The embedding to be used for the problem. If `None`,</span>
+<span class="sd">            an automatic</span>
+<span class="sd">            embedding will be generated.</span>
+<span class="sd">        backend : str or None</span>
+<span class="sd">            The backend to use for solving the problem. If `None`,</span>
+<span class="sd">            a hybrid solver is used by default.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="n">token</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">time_limit</span> <span class="o">=</span> <span class="n">time_limit</span>
@@ -275,11 +295,39 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">select_backend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parsed_model</span><span class="p">,</span> <span class="n">model_type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Select the appropriate backend for the given model type.</span>
+<span class="sd">        This method chooses the correct D-Wave sampler or hybrid solver</span>
+<span class="sd">        based on the specified backend and the model type. It handles</span>
+<span class="sd">        scenarios where the provided backend is incompatible with the model</span>
+<span class="sd">        type by switching to a compatible hybrid solver.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        parsed_model : Any</span>
+<span class="sd">            The parsed model to be solved. This is used to determine backend</span>
+<span class="sd">            compatibility.</span>
+<span class="sd">        model_type : str</span>
+<span class="sd">            The type of the model, represented as a value from `VAR_TYPE`. It</span>
+<span class="sd">            determines whether the model is a constrained quadratic model</span>
+<span class="sd">            (CQM), discrete quadratic model (DQM), or binary quadratic model</span>
+<span class="sd">            (BQM).</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Any</span>
+<span class="sd">            An instance of the selected sampler, which could be a hybrid solver</span>
+<span class="sd">            (e.g., `LeapHybridCQMSampler`, `LeapHybridDQMSampler`,</span>
+<span class="sd">            or `LeapHybridBQMSampler`)</span>
+<span class="sd">            or a `DWaveSampler` with an appropriate embedding composite.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If the specified backend (`self._backend`) is unsupported.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">hybrid_samplers</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="n">VAR_TYPE</span><span class="p">[</span><span class="s1">&#39;C&#39;</span><span class="p">]:</span> <span class="n">LeapHybridCQMSampler</span><span class="p">,</span>
-            <span class="n">VAR_TYPE</span><span class="p">[</span><span class="s1">&#39;I&#39;</span><span class="p">]:</span> <span class="n">LeapHybridDQMSampler</span><span class="p">,</span>
-            <span class="n">VAR_TYPE</span><span class="p">[</span><span class="s1">&#39;B&#39;</span><span class="p">]:</span> <span class="n">LeapHybridBQMSampler</span><span class="p">,</span>
+            <span class="n">VAR_TYPE</span><span class="p">[</span><span class="s1">&#39;C&#39;</span><span class="p">]:</span> <span class="n">dwave</span><span class="o">.</span><span class="n">LeapHybridCQMSampler</span><span class="p">,</span>
+            <span class="n">VAR_TYPE</span><span class="p">[</span><span class="s1">&#39;I&#39;</span><span class="p">]:</span> <span class="n">dwave</span><span class="o">.</span><span class="n">LeapHybridDQMSampler</span><span class="p">,</span>
+            <span class="n">VAR_TYPE</span><span class="p">[</span><span class="s1">&#39;B&#39;</span><span class="p">]:</span> <span class="n">dwave</span><span class="o">.</span><span class="n">LeapHybridBQMSampler</span><span class="p">,</span>
         <span class="p">}</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_backend</span> <span class="o">==</span> <span class="s1">&#39;hybrid_solver&#39;</span><span class="p">:</span>
@@ -298,15 +346,15 @@
                 <span class="n">sampler_class</span> <span class="o">=</span> <span class="n">hybrid_samplers</span><span class="p">[</span><span class="n">model_type</span><span class="p">]</span>
                 <span class="k">return</span> <span class="n">sampler_class</span><span class="p">(</span><span class="n">token</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="p">)</span>
 
-            <span class="n">qpu</span> <span class="o">=</span> <span class="n">DWaveSampler</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">topology__type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="p">),</span>
-                               <span class="n">token</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="p">)</span>
+            <span class="n">qpu</span> <span class="o">=</span> <span class="n">dwave</span><span class="o">.</span><span class="n">DWaveSampler</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">topology__type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="p">),</span>
+                                     <span class="n">token</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_backend</span> <span class="o">=</span> <span class="n">qpu</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">name</span>
             <span class="nb">print</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Selected </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_backend</span><span class="si">}</span><span class="s2"> with </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">qpu</span><span class="o">.</span><span class="n">nodelist</span><span class="p">)</span><span class="si">}</span><span class="s2"> qubits.&quot;</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">AutoEmbeddingComposite</span><span class="p">(</span><span class="n">qpu</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">FixedEmbeddingComposite</span><span class="p">(</span><span class="n">qpu</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">dwave</span><span class="o">.</span><span class="n">AutoEmbeddingComposite</span><span class="p">(</span><span class="n">qpu</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">dwave</span><span class="o">.</span><span class="n">FixedEmbeddingComposite</span><span class="p">(</span><span class="n">qpu</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding</span><span class="p">)</span>
 
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported backend: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_backend</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 </div>

@@ -37,25 +37,17 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">docplex.mp.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">Model</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">docplex.mp.solution</span><span class="w"> </span><span class="kn">import</span> <span class="n">SolveSolution</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_optimization</span><span class="w"> </span><span class="kn">import</span> <span class="n">QuadraticProgram</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_optimization.translators</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_docplex_mp</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_optimization.converters</span><span class="w"> </span><span class="kn">import</span> <span class="n">QuadraticProgramToQubo</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">qplex.commons</span><span class="w"> </span><span class="kn">import</span> <span class="n">SolverFactory</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">qplex.commons.solver_factory</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProviderConfig</span><span class="p">,</span> <span class="n">ProviderType</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">qplex.utils.workflow_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_solution_from_counts</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">qplex.workflows</span><span class="w"> </span><span class="kn">import</span> <span class="n">ibm_session_workflow</span><span class="p">,</span> <span class="n">ggae_workflow</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">qplex.model.execution_config</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExecutionConfig</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">docplex.mp.model</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpmodel</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">docplex.mp.solution</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpsolution</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">qiskit_optimization</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">qiskit_optimization.translators</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">qiskit_optimization.converters</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">qplex.commons</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">qplex.commons.solver_factory</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">qplex.utils.workflow_utils</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">qplex.workflows</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">qplex.model.execution_config</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ec</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-
-
-<div class="viewcode-block" id="SolveMethod">
-<a class="viewcode-back" href="../../../qplex.model.html#qplex.model.qmodel.SolveMethod">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">SolveMethod</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-    <span class="n">CLASSICAL</span> <span class="o">=</span> <span class="s2">&quot;classical&quot;</span>
-    <span class="n">QUANTUM</span> <span class="o">=</span> <span class="s2">&quot;quantum&quot;</span></div>
-
 
 
 <div class="viewcode-block" id="ModelSolution">
@@ -65,7 +57,7 @@
     <span class="n">solution</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
     <span class="n">objective</span><span class="p">:</span> <span class="nb">float</span>
     <span class="n">execution_time</span><span class="p">:</span> <span class="nb">float</span>
-    <span class="n">method</span><span class="p">:</span> <span class="n">SolveMethod</span>
+    <span class="n">method</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">provider</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">backend</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">algorithm</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;N/A&quot;</span></div>
@@ -74,7 +66,7 @@
 
 <div class="viewcode-block" id="QModel">
 <a class="viewcode-back" href="../../../qplex.model.html#qplex.model.qmodel.QModel">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">QModel</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">QModel</span><span class="p">(</span><span class="n">dpmodel</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creates an instance of a QModel.</span>
 
@@ -99,7 +91,8 @@
 
 <div class="viewcode-block" id="QModel.get_qubo">
 <a class="viewcode-back" href="../../../qplex.model.html#qplex.model.qmodel.QModel.get_qubo">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_qubo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">penalty</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QuadraticProgram</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_qubo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">penalty</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span>
+            <span class="n">qiskit_optimization</span><span class="o">.</span><span class="n">QuadraticProgram</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the QUBO encoding of this problem.</span>
 
@@ -113,15 +106,16 @@
 <span class="sd">        QuadraticProgram</span>
 <span class="sd">            The QUBO encoding of this problem.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">mod</span> <span class="o">=</span> <span class="n">from_docplex_mp</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="n">converter</span> <span class="o">=</span> <span class="n">QuadraticProgramToQubo</span><span class="p">(</span><span class="n">penalty</span><span class="o">=</span><span class="n">penalty</span><span class="p">)</span>
+        <span class="n">mod</span> <span class="o">=</span> <span class="n">qiskit_optimization</span><span class="o">.</span><span class="n">translators</span><span class="o">.</span><span class="n">from_docplex_mp</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">converter</span> <span class="o">=</span> <span class="n">qiskit_optimization</span><span class="o">.</span><span class="n">converters</span><span class="o">.</span><span class="n">QuadraticProgramToQubo</span><span class="p">(</span>
+            <span class="n">penalty</span><span class="o">=</span><span class="n">penalty</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">converter</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">mod</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="QModel.solve">
 <a class="viewcode-back" href="../../../qplex.model.html#qplex.model.qmodel.QModel.solve">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;classical&#39;</span><span class="p">,</span>
-              <span class="n">config</span><span class="p">:</span> <span class="n">ExecutionConfig</span> <span class="o">=</span> <span class="n">ExecutionConfig</span><span class="p">()):</span>
+              <span class="n">config</span><span class="o">=</span><span class="n">ec</span><span class="o">.</span><span class="n">ExecutionConfig</span><span class="p">()):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Solves the model using the specified method and Options.</span>
 
@@ -139,46 +133,51 @@
 <span class="sd">            If the method argument is not &#39;classical&#39; or &#39;quantum&#39;.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">solve_method</span> <span class="o">=</span> <span class="n">SolveMethod</span><span class="p">(</span><span class="n">method</span><span class="p">)</span>
         <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 
-        <span class="k">if</span> <span class="n">solve_method</span> <span class="o">==</span> <span class="n">SolveMethod</span><span class="o">.</span><span class="n">CLASSICAL</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;classical&#39;</span><span class="p">:</span>
             <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
             <span class="n">solution</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_solution</span><span class="p">(</span>
                 <span class="n">execution_time</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">,</span>
-                <span class="n">method</span><span class="o">=</span><span class="n">solve_method</span>
+                <span class="n">method</span><span class="o">=</span><span class="n">method</span>
             <span class="p">)</span>
-        <span class="k">elif</span> <span class="n">solve_method</span> <span class="o">==</span> <span class="n">SolveMethod</span><span class="o">.</span><span class="n">QUANTUM</span><span class="p">:</span>
-            <span class="n">provider_config</span> <span class="o">=</span> <span class="n">ProviderConfig</span><span class="p">(</span>
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;quantum&#39;</span><span class="p">:</span>
+            <span class="n">provider_config</span> <span class="o">=</span> <span class="n">qplex</span><span class="o">.</span><span class="n">commons</span><span class="o">.</span><span class="n">solver_factory</span><span class="o">.</span><span class="n">ProviderConfig</span><span class="p">(</span>
                 <span class="n">shots</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">shots</span><span class="p">,</span>
                 <span class="n">backend</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">backend</span><span class="p">,</span>
                 <span class="n">provider_options</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">provider_options</span>
             <span class="p">)</span>
-            <span class="n">solver</span> <span class="o">=</span> <span class="n">SolverFactory</span><span class="o">.</span><span class="n">get_solver</span><span class="p">(</span>
-                <span class="n">provider</span><span class="o">=</span><span class="n">ProviderType</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">provider</span><span class="p">),</span>
+            <span class="n">solver</span> <span class="o">=</span> <span class="n">qplex</span><span class="o">.</span><span class="n">commons</span><span class="o">.</span><span class="n">SolverFactory</span><span class="o">.</span><span class="n">get_solver</span><span class="p">(</span>
+                <span class="n">provider</span><span class="o">=</span><span class="n">qplex</span><span class="o">.</span><span class="n">commons</span><span class="o">.</span><span class="n">solver_factory</span><span class="o">.</span><span class="n">ProviderType</span><span class="p">(</span>
+                    <span class="n">config</span><span class="o">.</span><span class="n">provider</span><span class="p">),</span>
                 <span class="n">quantum_api_tokens</span><span class="o">=</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">quantum_api_tokens</span><span class="p">,</span>
                 <span class="n">config</span><span class="o">=</span><span class="n">provider_config</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">provider</span> <span class="o">==</span> <span class="s1">&#39;d-wave&#39;</span><span class="p">:</span>
                 <span class="n">result</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">provider</span> <span class="o">==</span> <span class="s2">&quot;ibmq&quot;</span> <span class="ow">and</span> <span class="n">config</span><span class="o">.</span><span class="n">workflow</span> <span class="o">==</span> <span class="s2">&quot;ibm_session&quot;</span><span class="p">:</span>
-                <span class="n">optimal_counts</span> <span class="o">=</span> <span class="n">ibm_session_workflow</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
-                                                      <span class="n">ibmq_solver</span><span class="o">=</span>
-                                                      <span class="n">solver</span><span class="p">,</span>
-                                                      <span class="n">options</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
-                <span class="n">result</span> <span class="o">=</span> <span class="n">get_solution_from_counts</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
-                                                  <span class="n">optimal_counts</span><span class="o">=</span><span class="n">optimal_counts</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">provider</span> <span class="o">==</span> <span class="s2">&quot;ibmq&quot;</span>
+                  <span class="ow">and</span> <span class="n">config</span><span class="o">.</span><span class="n">workflow</span> <span class="o">==</span> <span class="s1">&#39;ibm_session&#39;</span><span class="p">):</span>
+                <span class="n">optimal_counts</span> <span class="o">=</span> <span class="n">qplex</span><span class="o">.</span><span class="n">workflows</span><span class="o">.</span><span class="n">run_ibm_session_workflow</span><span class="p">(</span>
+                    <span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
+                    <span class="n">ibmq_solver</span><span class="o">=</span>
+                    <span class="n">solver</span><span class="p">,</span>
+                    <span class="n">options</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">qplex</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">workflow_utils</span><span class="o">.</span><span class="n">get_solution_from_counts</span><span class="p">(</span>
+                        <span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
+                        <span class="n">optimal_counts</span><span class="o">=</span><span class="n">optimal_counts</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">optimal_counts</span> <span class="o">=</span> <span class="n">ggae_workflow</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
-                                               <span class="n">solver</span><span class="o">=</span><span class="n">solver</span><span class="p">,</span>
-                                               <span class="n">options</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
-                <span class="n">result</span> <span class="o">=</span> <span class="n">get_solution_from_counts</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
-                                                  <span class="n">optimal_counts</span><span class="o">=</span>
-                                                  <span class="n">optimal_counts</span><span class="p">)</span>
+                <span class="n">optimal_counts</span> <span class="o">=</span> <span class="n">qplex</span><span class="o">.</span><span class="n">workflows</span><span class="o">.</span><span class="n">ggae_workflow</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
+                                                               <span class="n">solver</span><span class="o">=</span><span class="n">solver</span><span class="p">,</span>
+                                                               <span class="n">options</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">qplex</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">workflow_utils</span><span class="o">.</span><span class="n">get_solution_from_counts</span><span class="p">(</span>
+                    <span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
+                    <span class="n">optimal_counts</span><span class="o">=</span>
+                    <span class="n">optimal_counts</span><span class="p">)</span>
 
             <span class="n">solution</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_solution</span><span class="p">(</span>
                 <span class="n">execution_time</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">,</span>
-                <span class="n">method</span><span class="o">=</span><span class="n">solve_method</span><span class="p">,</span>
+                <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
                 <span class="n">provider</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">provider</span><span class="p">,</span>
                 <span class="n">backend</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">backend</span><span class="p">,</span>
                 <span class="n">algorithm</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">algorithm</span><span class="p">,</span>
@@ -195,14 +194,14 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_create_solution</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">execution_time</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-            <span class="n">method</span><span class="p">:</span> <span class="n">SolveMethod</span><span class="p">,</span>
+            <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
             <span class="n">provider</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">backend</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">algorithm</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;N/A&quot;</span><span class="p">,</span>
             <span class="n">result</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ModelSolution</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a ModelSolution object from the solve results.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="n">SolveMethod</span><span class="o">.</span><span class="n">CLASSICAL</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;classical&#39;</span><span class="p">:</span>
             <span class="n">solution</span> <span class="o">=</span> <span class="p">{</span><span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">var</span><span class="o">.</span><span class="n">solution_value</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">iter_variables</span><span class="p">()}</span>
             <span class="n">objective</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">objective_value</span>
@@ -232,10 +231,10 @@
 <span class="sd">            &#39;objective&#39;.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_qmodel_solution</span> <span class="o">=</span> <span class="n">solution</span>
-        <span class="n">solve_solution</span> <span class="o">=</span> <span class="n">SolveSolution</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
-                                       <span class="n">var_value_map</span><span class="o">=</span><span class="n">solution</span><span class="o">.</span><span class="n">solution</span><span class="p">,</span>
-                                       <span class="n">obj</span><span class="o">=</span><span class="n">solution</span><span class="o">.</span><span class="n">objective</span><span class="p">,</span>
-                                       <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">solve_solution</span> <span class="o">=</span> <span class="n">dpsolution</span><span class="o">.</span><span class="n">SolveSolution</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
+                                                  <span class="n">var_value_map</span><span class="o">=</span><span class="n">solution</span><span class="o">.</span><span class="n">solution</span><span class="p">,</span>
+                                                  <span class="n">obj</span><span class="o">=</span><span class="n">solution</span><span class="o">.</span><span class="n">objective</span><span class="p">,</span>
+                                                  <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_set_solution</span><span class="p">(</span><span class="n">new_solution</span><span class="o">=</span><span class="n">solve_solution</span><span class="p">)</span>
 
 <div class="viewcode-block" id="QModel.print_solution">

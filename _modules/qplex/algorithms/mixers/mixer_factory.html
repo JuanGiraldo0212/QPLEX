@@ -35,12 +35,12 @@
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">qplex.algorithms.mixers.cardinality_mixer</span><span class="w"> </span><span class="kn">import</span> <span class="n">CardinalityMixer</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">qplex.algorithms.mixers.standard_mixer</span><span class="w"> </span><span class="kn">import</span> <span class="n">StandardMixer</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">qplex.algorithms.mixers.quantum_mixer</span><span class="w"> </span><span class="kn">import</span> <span class="n">QuantumMixer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qplex.algorithms.mixers.cardinality_mixer</span><span class="w"> </span><span class="kn">import</span> <span class="n">CardinalityMixer</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">qplex.algorithms.mixers.partition_mixer</span><span class="w"> </span><span class="kn">import</span> <span class="n">PartitionMixer</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">qplex.algorithms.mixers.composite_mixer</span><span class="w"> </span><span class="kn">import</span> <span class="n">CompositeMixer</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">qplex.algorithms.mixers.inequality_mixer</span><span class="w"> </span><span class="kn">import</span> <span class="n">InequalityMixer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qplex.algorithms.mixers.quantum_mixer</span><span class="w"> </span><span class="kn">import</span> <span class="n">QuantumMixer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qplex.algorithms.mixers.composite_mixer</span><span class="w"> </span><span class="kn">import</span> <span class="n">CompositeMixer</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">qplex.utils.model_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConstraintInfo</span>
 
 
@@ -64,12 +64,17 @@
 <span class="sd">    constraint types and composite mixers for multiple constraints.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">_MIXER_MAP</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="n">ConstraintType</span><span class="o">.</span><span class="n">CARDINALITY</span><span class="p">:</span> <span class="n">CardinalityMixer</span><span class="p">,</span>
-        <span class="n">ConstraintType</span><span class="o">.</span><span class="n">PARTITION</span><span class="p">:</span> <span class="n">PartitionMixer</span><span class="p">,</span>
-        <span class="n">ConstraintType</span><span class="o">.</span><span class="n">INEQUALITY</span><span class="p">:</span> <span class="n">InequalityMixer</span><span class="p">,</span>
-        <span class="n">ConstraintType</span><span class="o">.</span><span class="n">UNCONSTRAINED</span><span class="p">:</span> <span class="n">StandardMixer</span>
-    <span class="p">}</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_mixer_for_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">constraint_type</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Look up the appropriate mixer class for the constraint type.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">constraint_type</span> <span class="o">==</span> <span class="n">ConstraintType</span><span class="o">.</span><span class="n">CARDINALITY</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">CardinalityMixer</span>
+        <span class="k">elif</span> <span class="n">constraint_type</span> <span class="o">==</span> <span class="n">ConstraintType</span><span class="o">.</span><span class="n">PARTITION</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">PartitionMixer</span>
+        <span class="k">elif</span> <span class="n">constraint_type</span> <span class="o">==</span> <span class="n">ConstraintType</span><span class="o">.</span><span class="n">INEQUALITY</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">InequalityMixer</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">StandardMixer</span>
 
 <div class="viewcode-block" id="MixerFactory.get_mixer">
 <a class="viewcode-back" href="../../../../qplex.algorithms.mixers.html#qplex.algorithms.mixers.mixer_factory.MixerFactory.get_mixer">[docs]</a>
@@ -94,7 +99,7 @@
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">constraints</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_create_composite_mixer</span><span class="p">(</span><span class="n">constraints</span><span class="p">)</span>
 
-        <span class="n">mixer_class</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_MIXER_MAP</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">constraint_info</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">StandardMixer</span><span class="p">)</span>
+        <span class="n">mixer_class</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_get_mixer_for_type</span><span class="p">(</span><span class="n">constraint_info</span><span class="o">.</span><span class="n">type</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">mixer_class</span><span class="p">()</span></div>
 
 
@@ -138,12 +143,12 @@
 <span class="sd">        QuantumMixer</span>
 <span class="sd">            CompositeMixer instance combining appropriate mixers</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">mixers</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">mixers_arr</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">constraint</span> <span class="ow">in</span> <span class="n">constraints</span><span class="p">:</span>
-            <span class="n">mixer_class</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_MIXER_MAP</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">constraint</span><span class="p">)</span>
+            <span class="n">mixer_class</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_get_mixer_for_type</span><span class="p">(</span><span class="n">constraint</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">mixer_class</span><span class="p">:</span>
-                <span class="n">mixers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mixer_class</span><span class="p">())</span>
-        <span class="k">return</span> <span class="n">CompositeMixer</span><span class="p">(</span><span class="n">mixers</span><span class="p">)</span></div>
+                <span class="n">mixers_arr</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mixer_class</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">CompositeMixer</span><span class="p">(</span><span class="n">mixers_arr</span><span class="p">)</span></div>
 
 </pre></div>
 

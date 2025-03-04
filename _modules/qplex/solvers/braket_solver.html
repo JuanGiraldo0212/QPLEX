@@ -33,10 +33,10 @@
             
   <h1>Source code for qplex.solvers.braket_solver</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">braket.aws</span><span class="w"> </span><span class="kn">import</span> <span class="n">AwsDevice</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">qplex.solvers.base_solver</span><span class="w"> </span><span class="kn">import</span> <span class="n">Solver</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">braket.ir.openqasm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Program</span> <span class="k">as</span> <span class="n">OpenQASMProgram</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">braket.devices</span><span class="w"> </span><span class="kn">import</span> <span class="n">LocalSimulator</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">braket.ir.openqasm</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">braket.devices</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">braket.aws</span>
 
 
 <div class="viewcode-block" id="BraketSolver">
@@ -103,7 +103,7 @@
 
 <div class="viewcode-block" id="BraketSolver.parse_input">
 <a class="viewcode-back" href="../../../qplex.solvers.html#qplex.solvers.braket_solver.BraketSolver.parse_input">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">parse_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">circuit</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OpenQASMProgram</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parse_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">circuit</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">braket</span><span class="o">.</span><span class="n">ir</span><span class="o">.</span><span class="n">openqasm</span><span class="o">.</span><span class="n">Program</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Converts a circuit string to an OpenQASMProgram, replacing &#39;cx&#39; with</span>
 <span class="sd">        &#39;cnot&#39;.</span>
@@ -121,7 +121,7 @@
         <span class="n">circuit</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        OPENQASM 3.0;</span>
 <span class="s2">        &quot;&quot;&quot;</span> <span class="o">+</span> <span class="n">circuit</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;cx&quot;</span><span class="p">,</span> <span class="s2">&quot;cnot&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">OpenQASMProgram</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">circuit</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">braket</span><span class="o">.</span><span class="n">ir</span><span class="o">.</span><span class="n">openqasm</span><span class="o">.</span><span class="n">Program</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">circuit</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="BraketSolver.parse_response">
@@ -162,8 +162,8 @@
 <span class="sd">            simulator.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_backend</span> <span class="o">!=</span> <span class="s2">&quot;simulator&quot;</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">AwsDevice</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;arn:aws:braket:::</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_backend</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">LocalSimulator</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">&quot;braket_sv&quot;</span><span class="p">)</span></div>
+            <span class="k">return</span> <span class="n">braket</span><span class="o">.</span><span class="n">aws</span><span class="o">.</span><span class="n">AwsDevice</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;arn:aws:braket:::</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_backend</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">braket</span><span class="o">.</span><span class="n">devices</span><span class="o">.</span><span class="n">LocalSimulator</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">&quot;braket_sv&quot;</span><span class="p">)</span></div>
 </div>
 
 </pre></div>

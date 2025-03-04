@@ -32,17 +32,17 @@
           <div class="body" role="main">
             
   <h1>Source code for qplex.commons.solver_factory</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">typing</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dataclasses</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">enum</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">qplex.solvers</span><span class="w"> </span><span class="kn">import</span> <span class="n">IBMQSolver</span><span class="p">,</span> <span class="n">DWaveSolver</span><span class="p">,</span> <span class="n">BraketSolver</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">qplex.solvers.base_solver</span><span class="w"> </span><span class="kn">import</span> <span class="n">Solver</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">qplex.solvers</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">qplex.solvers.base_solver</span>
 
 
 <div class="viewcode-block" id="ProviderType">
 <a class="viewcode-back" href="../../../qplex.commons.html#qplex.commons.solver_factory.ProviderType">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">ProviderType</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ProviderType</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
     <span class="n">DWAVE</span> <span class="o">=</span> <span class="s2">&quot;d-wave&quot;</span>
     <span class="n">IBMQ</span> <span class="o">=</span> <span class="s2">&quot;ibmq&quot;</span>
     <span class="n">BRAKET</span> <span class="o">=</span> <span class="s2">&quot;braket&quot;</span></div>
@@ -51,38 +51,43 @@
 
 <div class="viewcode-block" id="ProviderConfig">
 <a class="viewcode-back" href="../../../qplex.commons.html#qplex.commons.solver_factory.ProviderConfig">[docs]</a>
-<span class="nd">@dataclass</span>
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ProviderConfig</span><span class="p">:</span>
     <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">shots</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
-    <span class="n">provider_options</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span></div>
+    <span class="n">shots</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+    <span class="n">provider_options</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span></div>
 
 
 
 <div class="viewcode-block" id="DWaveConfig">
 <a class="viewcode-back" href="../../../qplex.commons.html#qplex.commons.solver_factory.DWaveConfig">[docs]</a>
-<span class="nd">@dataclass</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">DWaveConfig</span><span class="p">(</span><span class="n">ProviderConfig</span><span class="p">):</span>
-    <span class="n">time_limit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DWaveConfig</span><span class="p">:</span>
+    <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">time_limit</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">num_reads</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span>
     <span class="n">topology</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;pegasus&quot;</span>
-    <span class="n">embedding</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div>
+    <span class="n">embedding</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div>
 
 
 
 <div class="viewcode-block" id="IMBQConfig">
 <a class="viewcode-back" href="../../../qplex.commons.html#qplex.commons.solver_factory.IMBQConfig">[docs]</a>
-<span class="nd">@dataclass</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">IMBQConfig</span><span class="p">(</span><span class="n">ProviderConfig</span><span class="p">):</span>
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">IMBQConfig</span><span class="p">:</span>
+    <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">shots</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
     <span class="n">optimization_level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span></div>
 
 
 
 <div class="viewcode-block" id="BraketConfig">
 <a class="viewcode-back" href="../../../qplex.commons.html#qplex.commons.solver_factory.BraketConfig">[docs]</a>
-<span class="nd">@dataclass</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">BraketConfig</span><span class="p">(</span><span class="n">ProviderConfig</span><span class="p">):</span>
-    <span class="n">device_parameters</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div>
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">BraketConfig</span><span class="p">:</span>
+    <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">shots</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+    <span class="n">device_parameters</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div>
 
 
 
@@ -104,7 +109,7 @@
 <a class="viewcode-back" href="../../../qplex.commons.html#qplex.commons.solver_factory.SolverFactory.get_solver">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_solver</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">provider</span><span class="p">:</span> <span class="n">ProviderType</span><span class="p">,</span> <span class="n">quantum_api_tokens</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
-                   <span class="n">config</span><span class="p">:</span> <span class="n">ProviderConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Solver</span><span class="p">:</span>
+                   <span class="n">config</span><span class="p">:</span> <span class="n">ProviderConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">qplex</span><span class="o">.</span><span class="n">solvers</span><span class="o">.</span><span class="n">base_solver</span><span class="o">.</span><span class="n">Solver</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a solver based on the specified provider and available tokens.</span>
 
@@ -146,13 +151,13 @@
                 <span class="n">backend</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">backend</span><span class="p">,</span>
                 <span class="o">**</span><span class="n">config</span><span class="o">.</span><span class="n">provider_options</span>
             <span class="p">)</span>
-            <span class="k">return</span> <span class="n">DWaveSolver</span><span class="p">(</span><span class="n">token</span><span class="o">=</span><span class="n">token</span><span class="p">,</span>
-                               <span class="n">time_limit</span><span class="o">=</span><span class="n">d_wave_config</span><span class="o">.</span><span class="n">time_limit</span><span class="p">,</span>
-                               <span class="n">num_reads</span><span class="o">=</span><span class="n">d_wave_config</span><span class="o">.</span><span class="n">num_reads</span><span class="p">,</span>
-                               <span class="n">topology</span><span class="o">=</span><span class="n">d_wave_config</span><span class="o">.</span><span class="n">topology</span><span class="p">,</span>
-                               <span class="n">embedding</span><span class="o">=</span><span class="n">d_wave_config</span><span class="o">.</span><span class="n">embedding</span><span class="p">,</span>
-                               <span class="n">backend</span><span class="o">=</span><span class="n">d_wave_config</span><span class="o">.</span><span class="n">backend</span>
-                               <span class="p">)</span>
+            <span class="k">return</span> <span class="n">qplex</span><span class="o">.</span><span class="n">solvers</span><span class="o">.</span><span class="n">DWaveSolver</span><span class="p">(</span><span class="n">token</span><span class="o">=</span><span class="n">token</span><span class="p">,</span>
+                                             <span class="n">time_limit</span><span class="o">=</span><span class="n">d_wave_config</span><span class="o">.</span><span class="n">time_limit</span><span class="p">,</span>
+                                             <span class="n">num_reads</span><span class="o">=</span><span class="n">d_wave_config</span><span class="o">.</span><span class="n">num_reads</span><span class="p">,</span>
+                                             <span class="n">topology</span><span class="o">=</span><span class="n">d_wave_config</span><span class="o">.</span><span class="n">topology</span><span class="p">,</span>
+                                             <span class="n">embedding</span><span class="o">=</span><span class="n">d_wave_config</span><span class="o">.</span><span class="n">embedding</span><span class="p">,</span>
+                                             <span class="n">backend</span><span class="o">=</span><span class="n">d_wave_config</span><span class="o">.</span><span class="n">backend</span>
+                                             <span class="p">)</span>
 
         <span class="k">elif</span> <span class="n">provider</span> <span class="o">==</span> <span class="n">ProviderType</span><span class="o">.</span><span class="n">IBMQ</span><span class="p">:</span>
             <span class="n">ibmq_config</span> <span class="o">=</span> <span class="n">IMBQConfig</span><span class="p">(</span>
@@ -160,20 +165,20 @@
                 <span class="n">shots</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">shots</span><span class="p">,</span>
                 <span class="o">**</span><span class="n">config</span><span class="o">.</span><span class="n">provider_options</span>
             <span class="p">)</span>
-            <span class="k">return</span> <span class="n">IBMQSolver</span><span class="p">(</span>
+            <span class="k">return</span> <span class="n">qplex</span><span class="o">.</span><span class="n">solvers</span><span class="o">.</span><span class="n">IBMQSolver</span><span class="p">(</span>
                 <span class="n">token</span><span class="o">=</span><span class="n">token</span><span class="p">,</span>
                 <span class="n">shots</span><span class="o">=</span><span class="n">ibmq_config</span><span class="o">.</span><span class="n">shots</span><span class="p">,</span>
                 <span class="n">backend</span><span class="o">=</span><span class="n">ibmq_config</span><span class="o">.</span><span class="n">backend</span><span class="p">,</span>
                 <span class="n">optimization_level</span><span class="o">=</span><span class="n">ibmq_config</span><span class="o">.</span><span class="n">optimization_level</span>
             <span class="p">)</span>
 
-        <span class="k">elif</span> <span class="n">provider</span> <span class="o">==</span> <span class="s1">&#39;braket&#39;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">provider</span> <span class="o">==</span> <span class="n">ProviderType</span><span class="o">.</span><span class="n">BRAKET</span><span class="p">:</span>
             <span class="n">braket_config</span> <span class="o">=</span> <span class="n">BraketConfig</span><span class="p">(</span>
                 <span class="n">backend</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">backend</span><span class="p">,</span>
                 <span class="n">shots</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">shots</span><span class="p">,</span>
                 <span class="o">**</span><span class="n">config</span><span class="o">.</span><span class="n">provider_options</span>
             <span class="p">)</span>
-            <span class="k">return</span> <span class="n">BraketSolver</span><span class="p">(</span>
+            <span class="k">return</span> <span class="n">qplex</span><span class="o">.</span><span class="n">solvers</span><span class="o">.</span><span class="n">BraketSolver</span><span class="p">(</span>
                 <span class="n">shots</span><span class="o">=</span><span class="n">braket_config</span><span class="o">.</span><span class="n">shots</span><span class="p">,</span>
                 <span class="n">backend</span><span class="o">=</span><span class="n">braket_config</span><span class="o">.</span><span class="n">backend</span><span class="p">,</span>
                 <span class="n">device_parameters</span><span class="o">=</span><span class="n">braket_config</span><span class="o">.</span><span class="n">device_parameters</span> <span class="ow">or</span> <span class="p">{}</span>

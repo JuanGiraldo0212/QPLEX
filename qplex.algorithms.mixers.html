@@ -70,20 +70,6 @@ the XY-mixer while preserving total number of 1s in the state.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="qplex.algorithms.mixers.cardinality_mixer.CardinalityMixer.get_valid_constraints">
-<span class="sig-name descname"><span class="pre">get_valid_constraints</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/qplex/algorithms/mixers/cardinality_mixer.html#CardinalityMixer.get_valid_constraints"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.algorithms.mixers.cardinality_mixer.CardinalityMixer.get_valid_constraints" title="Link to this definition">¶</a></dt>
-<dd><p>Return supported constraint types.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Valid constraint types: cardinality and fixed_sum</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>List[str]</p>
-</dd>
-</dl>
-</dd></dl>
-
 </dd></dl>
 
 </section>
@@ -113,20 +99,6 @@ multiple types of constraints simultaneously.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>List[str]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="qplex.algorithms.mixers.composite_mixer.CompositeMixer.get_valid_constraints">
-<span class="sig-name descname"><span class="pre">get_valid_constraints</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/qplex/algorithms/mixers/composite_mixer.html#CompositeMixer.get_valid_constraints"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.algorithms.mixers.composite_mixer.CompositeMixer.get_valid_constraints" title="Link to this definition">¶</a></dt>
-<dd><p>Return union of supported constraint types from all mixers.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Combined list of unique constraint types</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>List[str]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -161,20 +133,6 @@ constraints during state mixing.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>List[str]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="qplex.algorithms.mixers.inequality_mixer.InequalityMixer.get_valid_constraints">
-<span class="sig-name descname"><span class="pre">get_valid_constraints</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/qplex/algorithms/mixers/inequality_mixer.html#InequalityMixer.get_valid_constraints"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.algorithms.mixers.inequality_mixer.InequalityMixer.get_valid_constraints" title="Link to this definition">¶</a></dt>
-<dd><p>Return supported constraint types.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Valid constraint types for inequalities</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>List[str]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -274,20 +232,6 @@ to mix states while maintaining partition structure.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="qplex.algorithms.mixers.partition_mixer.PartitionMixer.get_valid_constraints">
-<span class="sig-name descname"><span class="pre">get_valid_constraints</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/qplex/algorithms/mixers/partition_mixer.html#PartitionMixer.get_valid_constraints"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.algorithms.mixers.partition_mixer.PartitionMixer.get_valid_constraints" title="Link to this definition">¶</a></dt>
-<dd><p>Return supported constraint types.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Valid constraint types: partition and grouping</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>List[str]</p>
-</dd>
-</dl>
-</dd></dl>
-
 </dd></dl>
 
 </section>
@@ -320,20 +264,6 @@ problem constraints while exploring the solution space.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="qplex.algorithms.mixers.quantum_mixer.QuantumMixer.get_valid_constraints">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_valid_constraints</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/qplex/algorithms/mixers/quantum_mixer.html#QuantumMixer.get_valid_constraints"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.algorithms.mixers.quantum_mixer.QuantumMixer.get_valid_constraints" title="Link to this definition">¶</a></dt>
-<dd><p>Return constraint types supported by this mixer.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Names of constraint types this mixer can handle</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>List[str]</p>
-</dd>
-</dl>
-</dd></dl>
-
 </dd></dl>
 
 </section>
@@ -360,20 +290,6 @@ problem constraints while exploring the solution space.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>List[str]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="qplex.algorithms.mixers.standard_mixer.StandardMixer.get_valid_constraints">
-<span class="sig-name descname"><span class="pre">get_valid_constraints</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/qplex/algorithms/mixers/standard_mixer.html#StandardMixer.get_valid_constraints"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qplex.algorithms.mixers.standard_mixer.StandardMixer.get_valid_constraints" title="Link to this definition">¶</a></dt>
-<dd><p>Return supported constraint types.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>List containing only “unconstrained”</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>List[str]</p>
 </dd>
 </dl>
 </dd></dl>

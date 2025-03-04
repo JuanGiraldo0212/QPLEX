@@ -36,7 +36,7 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">qplex.algorithms.base_algorithm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Algorithm</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">qplex.algorithms.mixers</span><span class="w"> </span><span class="kn">import</span> <span class="n">QuantumMixer</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">qplex.utils.circuit_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">replace_params</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">qplex</span>
 
 
 <div class="viewcode-block" id="QAOA">
@@ -186,7 +186,7 @@
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">params</span><span class="p">)</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_params</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Expected </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_params</span><span class="si">}</span><span class="s2"> parameters, got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">params</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">replace_params</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">qplex</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">circuit_utils</span><span class="o">.</span><span class="n">replace_params</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="QAOA.get_starting_point">

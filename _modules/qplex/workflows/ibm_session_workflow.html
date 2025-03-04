@@ -32,19 +32,20 @@
           <div class="body" role="main">
             
   <h1>Source code for qplex.workflows.ibm_session_workflow</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_ibm_runtime</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">SamplerV2</span> <span class="k">as</span> <span class="n">Sampler</span><span class="p">,</span> <span class="n">Session</span><span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">minimize</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit.transpiler.preset_passmanagers</span><span class="w"> </span><span class="kn">import</span> <span class="n">generate_preset_pass_manager</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">qiskit_ibm_runtime</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipy.optimize</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">qiskit.transpiler.preset_passmanagers</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">docplex.mp.model</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">qplex.commons.algorithm_factory</span><span class="w"> </span><span class="kn">import</span> <span class="n">AlgorithmFactory</span><span class="p">,</span> <span class="n">AlgorithmConfig</span><span class="p">,</span> \
-    <span class="n">AlgorithmType</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">qplex.commons.algorithm_factory</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">qplex.model.execution_config</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExecutionConfig</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">qplex.utils.workflow_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">calculate_energy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">qplex.utils.workflow_utils</span>
 
 
-<div class="viewcode-block" id="ibm_session_workflow">
-<a class="viewcode-back" href="../../../qplex.workflows.html#qplex.workflows.ibm_session_workflow.ibm_session_workflow">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">ibm_session_workflow</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">ibmq_solver</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="n">ExecutionConfig</span><span class="p">):</span>
+<div class="viewcode-block" id="run_ibm_session_workflow">
+<a class="viewcode-back" href="../../../qplex.workflows.html#qplex.workflows.ibm_session_workflow.run_ibm_session_workflow">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">run_ibm_session_workflow</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">docplex</span><span class="o">.</span><span class="n">mp</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">Model</span><span class="p">,</span> <span class="n">ibmq_solver</span><span class="p">,</span>
+                             <span class="n">options</span><span class="p">:</span> <span class="n">ExecutionConfig</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Executes a quantum optimization workflow using IBM Quantum Runtime.</span>
 
@@ -73,8 +74,9 @@
     <span class="n">max_iter</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">max_iter</span>
     <span class="n">tolerance</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">tolerance</span>
 
-    <span class="n">algorithm_config</span> <span class="o">=</span> <span class="n">AlgorithmConfig</span><span class="p">(</span>
-        <span class="n">algorithm</span><span class="o">=</span><span class="n">AlgorithmType</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">algorithm</span><span class="p">),</span>
+    <span class="n">algorithm_config</span> <span class="o">=</span> <span class="n">qplex</span><span class="o">.</span><span class="n">commons</span><span class="o">.</span><span class="n">algorithm_factory</span><span class="o">.</span><span class="n">AlgorithmConfig</span><span class="p">(</span>
+        <span class="n">algorithm</span><span class="o">=</span><span class="n">qplex</span><span class="o">.</span><span class="n">commons</span><span class="o">.</span><span class="n">algorithm_factory</span><span class="o">.</span><span class="n">AlgorithmType</span><span class="p">(</span>
+            <span class="n">options</span><span class="o">.</span><span class="n">algorithm</span><span class="p">),</span>
         <span class="n">penalty</span><span class="o">=</span><span class="n">options</span><span class="o">.</span><span class="n">penalty</span><span class="p">,</span>
         <span class="n">seed</span><span class="o">=</span><span class="n">options</span><span class="o">.</span><span class="n">seed</span><span class="p">,</span>
         <span class="n">p</span><span class="o">=</span><span class="n">options</span><span class="o">.</span><span class="n">p</span><span class="p">,</span>
@@ -83,20 +85,22 @@
         <span class="n">ansatz</span><span class="o">=</span><span class="n">options</span><span class="o">.</span><span class="n">ansatz</span>
     <span class="p">)</span>
 
-    <span class="n">algorithm_instance</span> <span class="o">=</span> <span class="n">AlgorithmFactory</span><span class="o">.</span><span class="n">get_algorithm</span><span class="p">(</span><span class="n">model</span><span class="p">,</span>
-                                                        <span class="n">algorithm_config</span><span class="p">)</span>
+    <span class="n">algorithm_instance</span> <span class="o">=</span> <span class="n">qplex</span><span class="o">.</span><span class="n">commons</span><span class="o">.</span><span class="n">algorithm_factory</span><span class="o">.</span><span class="n">AlgorithmFactory</span><span class="o">.</span><span class="n">get_algorithm</span><span class="p">(</span>
+        <span class="n">model</span><span class="p">,</span>
+        <span class="n">algorithm_config</span><span class="p">)</span>
 
     <span class="n">vqc</span> <span class="o">=</span> <span class="n">ibmq_solver</span><span class="o">.</span><span class="n">parse_input</span><span class="p">(</span><span class="n">algorithm_instance</span><span class="o">.</span><span class="n">circuit</span><span class="p">)</span>
     <span class="n">backend</span> <span class="o">=</span> <span class="n">ibmq_solver</span><span class="o">.</span><span class="n">select_backend</span><span class="p">(</span><span class="n">vqc</span><span class="o">.</span><span class="n">num_qubits</span><span class="p">)</span>
-    <span class="n">pass_manager</span> <span class="o">=</span> <span class="n">generate_preset_pass_manager</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span>
-                                                <span class="n">optimization_level</span><span class="o">=</span>
-                                                <span class="n">ibmq_solver</span><span class="o">.</span><span class="n">optimization_level</span><span class="p">)</span>
+    <span class="n">pass_manager</span> <span class="o">=</span> <span class="n">qiskit</span><span class="o">.</span><span class="n">transpiler</span><span class="o">.</span><span class="n">preset_passmanagers</span><span class="o">.</span><span class="n">generate_preset_pass_manager</span><span class="p">(</span>
+        <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span>
+        <span class="n">optimization_level</span><span class="o">=</span>
+        <span class="n">ibmq_solver</span><span class="o">.</span><span class="n">optimization_level</span><span class="p">)</span>
 
     <span class="n">starting_point</span> <span class="o">=</span> <span class="n">algorithm_instance</span><span class="o">.</span><span class="n">get_starting_point</span><span class="p">()</span>
 
     <span class="n">isa_circuit</span> <span class="o">=</span> <span class="n">pass_manager</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">vqc</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">cost_function</span><span class="p">(</span><span class="n">params</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cost_function</span><span class="p">(</span><span class="n">params</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Computes the cost (objective function value) for a given set</span>
 <span class="sd">        of parameters.</span>
@@ -112,20 +116,24 @@
 <span class="sd">            The computed cost (energy) for the given parameters.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">counts</span> <span class="o">=</span> <span class="n">compute_counts</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">ibmq_solver</span><span class="p">,</span> <span class="n">isa_circuit</span><span class="p">,</span> <span class="n">sampler</span><span class="p">)</span>
-        <span class="n">cost</span> <span class="o">=</span> <span class="n">calculate_energy</span><span class="p">(</span><span class="n">counts</span><span class="p">,</span> <span class="n">ibmq_solver</span><span class="o">.</span><span class="n">shots</span><span class="p">,</span> <span class="n">algorithm_instance</span><span class="p">)</span>
+        <span class="n">cost</span> <span class="o">=</span> <span class="n">qplex</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">workflow_utils</span><span class="o">.</span><span class="n">calculate_energy</span><span class="p">(</span><span class="n">counts</span><span class="p">,</span>
+                                                           <span class="n">ibmq_solver</span><span class="o">.</span><span class="n">shots</span><span class="p">,</span>
+                                                           <span class="n">algorithm_instance</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Cost = </span><span class="si">{</span><span class="n">cost</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">cost</span>
 
-    <span class="k">with</span> <span class="n">Session</span><span class="p">(</span><span class="n">service</span><span class="o">=</span><span class="n">service</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">)</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
-        <span class="n">sampler</span> <span class="o">=</span> <span class="n">Sampler</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="n">session</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">qiskit_ibm_runtime</span><span class="o">.</span><span class="n">Session</span><span class="p">(</span><span class="n">service</span><span class="o">=</span><span class="n">service</span><span class="p">,</span>
+                                    <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">)</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+        <span class="n">sampler</span> <span class="o">=</span> <span class="n">qiskit_ibm_runtime</span><span class="o">.</span><span class="n">SamplerV2</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="n">session</span><span class="p">)</span>
 
-        <span class="n">optimization_result</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">fun</span><span class="o">=</span><span class="n">cost_function</span><span class="p">,</span>
-                                       <span class="n">x0</span><span class="o">=</span><span class="n">starting_point</span><span class="p">,</span>
-                                       <span class="n">method</span><span class="o">=</span><span class="n">optimizer</span><span class="p">,</span>
-                                       <span class="n">tol</span><span class="o">=</span><span class="n">tolerance</span><span class="p">,</span>
-                                       <span class="n">callback</span><span class="o">=</span><span class="n">callback</span><span class="p">,</span>
-                                       <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;maxiter&#39;</span><span class="p">:</span> <span class="n">max_iter</span><span class="p">})</span>
+        <span class="n">optimization_result</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">optimize</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span><span class="n">fun</span><span class="o">=</span><span class="n">cost_function</span><span class="p">,</span>
+                                                      <span class="n">x0</span><span class="o">=</span><span class="n">starting_point</span><span class="p">,</span>
+                                                      <span class="n">method</span><span class="o">=</span><span class="n">optimizer</span><span class="p">,</span>
+                                                      <span class="n">tol</span><span class="o">=</span><span class="n">tolerance</span><span class="p">,</span>
+                                                      <span class="n">callback</span><span class="o">=</span><span class="n">callback</span><span class="p">,</span>
+                                                      <span class="n">options</span><span class="o">=</span><span class="p">{</span>
+                                                          <span class="s1">&#39;maxiter&#39;</span><span class="p">:</span> <span class="n">max_iter</span><span class="p">})</span>
 
         <span class="n">optimal_params</span> <span class="o">=</span> <span class="n">optimization_result</span><span class="o">.</span><span class="n">x</span>
 

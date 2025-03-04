@@ -32,21 +32,19 @@
           <div class="body" role="main">
             
   <h1>Source code for qplex.commons.algorithm_factory</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">typing</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">enum</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dataclasses</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">qplex.algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">VQE</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">qplex.algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">QAOA</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">qplex.algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">Algorithm</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">qplex.algorithms.mixers</span><span class="w"> </span><span class="kn">import</span> <span class="n">StandardMixer</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">qplex.algorithms.mixers.mixer_factory</span><span class="w"> </span><span class="kn">import</span> <span class="n">MixerFactory</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">qplex.utils.model_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_model_constraint_info</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">qplex.algorithms</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">qplex.algorithms.mixers</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">qplex.algorithms.mixers.mixer_factory</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">qplex.utils.model_utils</span>
 
 
 <div class="viewcode-block" id="AlgorithmType">
 <a class="viewcode-back" href="../../../qplex.commons.html#qplex.commons.algorithm_factory.AlgorithmType">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">AlgorithmType</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AlgorithmType</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Supported gate-based quantum algorithms.</span>
 
 <span class="sd">    This enum defines the gate-based quantum algorithms that can be used to</span>
@@ -62,7 +60,7 @@
 
 <div class="viewcode-block" id="AlgorithmConfig">
 <a class="viewcode-back" href="../../../qplex.commons.html#qplex.commons.algorithm_factory.AlgorithmConfig">[docs]</a>
-<span class="nd">@dataclass</span>
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">AlgorithmConfig</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Configuration dataclass for gate-based quantum algorithms.</span>
 
@@ -86,10 +84,10 @@
     <span class="n">algorithm</span><span class="p">:</span> <span class="n">AlgorithmType</span>
     <span class="n">penalty</span><span class="p">:</span> <span class="nb">float</span>
     <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span>
-    <span class="n">p</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># for the QAOA framework</span>
-    <span class="n">mixer</span><span class="p">:</span> <span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># for the QAOA framework</span>
-    <span class="n">layers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># for VQE</span>
-    <span class="n">ansatz</span><span class="p">:</span> <span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># for VQE</span></div>
+    <span class="n">p</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># for the QAOA framework</span>
+    <span class="n">mixer</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># for the QAOA framework</span>
+    <span class="n">layers</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># for VQE</span>
+    <span class="n">ansatz</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># for VQE</span></div>
 
 
 
@@ -111,7 +109,8 @@
 <div class="viewcode-block" id="AlgorithmFactory.get_algorithm">
 <a class="viewcode-back" href="../../../qplex.commons.html#qplex.commons.algorithm_factory.AlgorithmFactory.get_algorithm">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_algorithm</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">AlgorithmConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Algorithm</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_algorithm</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span>
+                      <span class="n">config</span><span class="p">:</span> <span class="n">AlgorithmConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">qplex</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">Algorithm</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates and returns a quantum algorithm instance based on configuration.</span>
 
 <span class="sd">        Parameters:</span>
@@ -130,22 +129,25 @@
 <span class="sd">        -------</span>
 <span class="sd">        ValueError: If the specified algorithm type is not supported.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">model_constraint_info</span> <span class="o">=</span> <span class="n">get_model_constraint_info</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+        <span class="n">model_constraint_info</span> <span class="o">=</span> <span class="n">qplex</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">model_utils</span><span class="o">.</span><span class="n">get_model_constraint_info</span><span class="p">(</span>
+            <span class="n">model</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">==</span> <span class="n">AlgorithmType</span><span class="o">.</span><span class="n">QAOA</span><span class="p">:</span>
-            <span class="n">mixer</span> <span class="o">=</span> <span class="n">StandardMixer</span><span class="p">()</span>
-            <span class="k">return</span> <span class="n">QAOA</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">p</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">seed</span><span class="p">,</span>
-                        <span class="n">penalty</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">penalty</span><span class="p">,</span> <span class="n">mixer</span><span class="o">=</span><span class="n">mixer</span><span class="p">)</span>
+            <span class="n">mixer</span> <span class="o">=</span> <span class="n">qplex</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">mixers</span><span class="o">.</span><span class="n">StandardMixer</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">qplex</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">QAOA</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">p</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">seed</span><span class="p">,</span>
+                                         <span class="n">penalty</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">penalty</span><span class="p">,</span> <span class="n">mixer</span><span class="o">=</span><span class="n">mixer</span><span class="p">)</span>
 
         <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">==</span> <span class="n">AlgorithmType</span><span class="o">.</span><span class="n">QAO_ANSATZ</span><span class="p">:</span>
             <span class="n">mixer</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">mixer</span> <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">mixer</span> <span class="k">else</span> <span class="p">(</span>
-                <span class="n">MixerFactory</span><span class="o">.</span><span class="n">get_mixer</span><span class="p">(</span><span class="n">model_constraint_info</span><span class="p">))</span>
-            <span class="k">return</span> <span class="n">QAOA</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">p</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">seed</span><span class="p">,</span>
-                        <span class="n">penalty</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">penalty</span><span class="p">,</span> <span class="n">mixer</span><span class="o">=</span><span class="n">mixer</span><span class="p">)</span>
+                <span class="n">qplex</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">mixers</span><span class="o">.</span><span class="n">mixer_factory</span><span class="o">.</span><span class="n">MixerFactory</span><span class="o">.</span><span class="n">get_mixer</span><span class="p">(</span>
+                    <span class="n">model_constraint_info</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">qplex</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">QAOA</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">p</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">seed</span><span class="p">,</span>
+                                         <span class="n">penalty</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">penalty</span><span class="p">,</span> <span class="n">mixer</span><span class="o">=</span><span class="n">mixer</span><span class="p">)</span>
 
         <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">==</span> <span class="n">AlgorithmType</span><span class="o">.</span><span class="n">VQE</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">VQE</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">layers</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">layers</span><span class="p">,</span> <span class="n">penalty</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">penalty</span><span class="p">,</span>
-                       <span class="n">seed</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">seed</span><span class="p">,</span> <span class="n">ansatz</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">ansatz</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">qplex</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">VQE</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">layers</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">layers</span><span class="p">,</span>
+                                        <span class="n">penalty</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">penalty</span><span class="p">,</span>
+                                        <span class="n">seed</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">seed</span><span class="p">,</span> <span class="n">ansatz</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">ansatz</span><span class="p">)</span>
 
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Algorithm not supported: </span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">algorithm</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 </div>

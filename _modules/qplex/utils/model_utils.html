@@ -35,8 +35,9 @@
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Set</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">docplex.mp.constr</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearConstraint</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">docplex.mp.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">ComparisonType</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">docplex.mp.constr</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">docplex.mp.constants</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">docplex.mp.model</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">qplex.model.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConstraintType</span>
 
@@ -54,7 +55,7 @@
 
 <div class="viewcode-block" id="get_model_constraint_info">
 <a class="viewcode-back" href="../../../qplex.utils.html#qplex.utils.model_utils.get_model_constraint_info">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">get_model_constraint_info</span><span class="p">(</span><span class="n">model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ConstraintInfo</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_model_constraint_info</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">docplex</span><span class="o">.</span><span class="n">mp</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ConstraintInfo</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Analyzes a DOcplex model to determine constraint types.</span>
 
@@ -68,24 +69,26 @@
 <span class="sd">    ConstraintInfo</span>
 <span class="sd">        Information about detected constraints</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">constraints</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">LinearConstraint</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">iter_constraints</span><span class="p">())</span>
+    <span class="n">constraints</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">docplex</span><span class="o">.</span><span class="n">mp</span><span class="o">.</span><span class="n">constr</span><span class="o">.</span><span class="n">LinearConstraint</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">iter_constraints</span><span class="p">())</span>
     <span class="n">detected_constraints</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="n">ConstraintType</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
     <span class="n">parameters</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="c1"># Helper functions for coefficient analysis</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_coefficients</span><span class="p">(</span><span class="n">const</span><span class="p">:</span> <span class="n">LinearConstraint</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_coefficients</span><span class="p">(</span><span class="n">const</span><span class="p">:</span> <span class="n">docplex</span><span class="o">.</span><span class="n">mp</span><span class="o">.</span><span class="n">constr</span><span class="o">.</span><span class="n">LinearConstraint</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">{</span><span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">coef</span> <span class="k">for</span> <span class="n">var</span><span class="p">,</span> <span class="n">coef</span> <span class="ow">in</span>
                 <span class="n">const</span><span class="o">.</span><span class="n">get_left_expr</span><span class="p">()</span><span class="o">.</span><span class="n">iter_terms</span><span class="p">()}</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_unique_coefs</span><span class="p">(</span><span class="n">const</span><span class="p">:</span> <span class="n">LinearConstraint</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_unique_coefs</span><span class="p">(</span><span class="n">const</span><span class="p">:</span> <span class="n">docplex</span><span class="o">.</span><span class="n">mp</span><span class="o">.</span><span class="n">constr</span><span class="o">.</span><span class="n">LinearConstraint</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="n">coef</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">coef</span> <span class="ow">in</span> <span class="n">const</span><span class="o">.</span><span class="n">get_left_expr</span><span class="p">()</span><span class="o">.</span><span class="n">iter_terms</span><span class="p">())</span>
 
     <span class="c1"># Check for cardinality constraints (sum x_i = k)</span>
     <span class="n">cardinality_constraints</span> <span class="o">=</span> <span class="p">[</span>
         <span class="n">const</span> <span class="k">for</span> <span class="n">const</span> <span class="ow">in</span> <span class="n">constraints</span>
-        <span class="k">if</span> <span class="n">const</span><span class="o">.</span><span class="n">sense</span> <span class="o">==</span> <span class="n">ComparisonType</span><span class="o">.</span><span class="n">EQ</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span><span class="n">coef</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">coef</span>
-                                                    <span class="ow">in</span> <span class="n">get_coefficients</span><span class="p">(</span><span class="n">const</span><span class="p">)</span>
-                                                    <span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span>
+        <span class="k">if</span> <span class="n">const</span><span class="o">.</span><span class="n">sense</span> <span class="o">==</span> <span class="n">docplex</span><span class="o">.</span><span class="n">mp</span><span class="o">.</span><span class="n">constants</span><span class="o">.</span><span class="n">ComparisonType</span><span class="o">.</span><span class="n">EQ</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span>
+            <span class="n">coef</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">coef</span>
+            <span class="ow">in</span> <span class="n">get_coefficients</span><span class="p">(</span><span class="n">const</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span>
             <span class="n">const</span><span class="o">.</span><span class="n">get_right_expr</span><span class="p">(),</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span>
     <span class="p">]</span>
 
@@ -97,7 +100,7 @@
     <span class="c1"># Check for partition constraints (sum x_i - sum y_i = 0)</span>
     <span class="n">partition_constraints</span> <span class="o">=</span> <span class="p">[</span>
         <span class="n">const</span> <span class="k">for</span> <span class="n">const</span> <span class="ow">in</span> <span class="n">constraints</span>
-        <span class="k">if</span> <span class="n">const</span><span class="o">.</span><span class="n">sense</span> <span class="o">==</span> <span class="n">ComparisonType</span><span class="o">.</span><span class="n">EQ</span>
+        <span class="k">if</span> <span class="n">const</span><span class="o">.</span><span class="n">sense</span> <span class="o">==</span> <span class="n">docplex</span><span class="o">.</span><span class="n">mp</span><span class="o">.</span><span class="n">constants</span><span class="o">.</span><span class="n">ComparisonType</span><span class="o">.</span><span class="n">EQ</span>
            <span class="ow">and</span> <span class="n">const</span><span class="o">.</span><span class="n">get_right_expr</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span>
            <span class="ow">and</span> <span class="n">get_unique_coefs</span><span class="p">(</span><span class="n">const</span><span class="p">)</span> <span class="o">==</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">}</span>
     <span class="p">]</span>
@@ -107,8 +110,9 @@
 
     <span class="c1"># Check for inequality constraints</span>
     <span class="n">inequality_constraints</span> <span class="o">=</span> <span class="p">[</span><span class="n">const</span> <span class="k">for</span> <span class="n">const</span> <span class="ow">in</span> <span class="n">constraints</span>
-                              <span class="k">if</span> <span class="p">(</span><span class="n">const</span><span class="o">.</span><span class="n">sense</span> <span class="o">==</span> <span class="n">ComparisonType</span><span class="o">.</span><span class="n">LE</span> <span class="ow">or</span>
-                                  <span class="n">const</span><span class="o">.</span><span class="n">sense</span> <span class="o">==</span> <span class="n">ComparisonType</span><span class="o">.</span><span class="n">GE</span><span class="p">)</span>
+                              <span class="k">if</span> <span class="p">(</span>
+                                          <span class="n">const</span><span class="o">.</span><span class="n">sense</span> <span class="o">==</span> <span class="n">docplex</span><span class="o">.</span><span class="n">mp</span><span class="o">.</span><span class="n">constants</span><span class="o">.</span><span class="n">ComparisonType</span><span class="o">.</span><span class="n">LE</span> <span class="ow">or</span>
+                                          <span class="n">const</span><span class="o">.</span><span class="n">sense</span> <span class="o">==</span> <span class="n">docplex</span><span class="o">.</span><span class="n">mp</span><span class="o">.</span><span class="n">constants</span><span class="o">.</span><span class="n">ComparisonType</span><span class="o">.</span><span class="n">GE</span><span class="p">)</span>
                               <span class="ow">and</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">coef</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">coef</span> <span class="ow">in</span>
                                           <span class="n">get_coefficients</span><span class="p">(</span><span class="n">const</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
                               <span class="p">]</span>
@@ -134,7 +138,6 @@
             <span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span>
         <span class="p">)</span>
 
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;No constraints detected&#39;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">ConstraintInfo</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">ConstraintType</span><span class="o">.</span><span class="n">UNCONSTRAINED</span><span class="p">)</span></div>
 
 </pre></div>

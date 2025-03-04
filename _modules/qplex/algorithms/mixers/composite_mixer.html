@@ -79,22 +79,6 @@
         <span class="k">for</span> <span class="n">mixer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mixers</span><span class="p">:</span>
             <span class="n">lines</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">mixer</span><span class="o">.</span><span class="n">generate_circuit</span><span class="p">(</span><span class="n">n_qubits</span><span class="p">,</span> <span class="n">theta</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">lines</span></div>
-
-
-<div class="viewcode-block" id="CompositeMixer.get_valid_constraints">
-<a class="viewcode-back" href="../../../../qplex.algorithms.mixers.html#qplex.algorithms.mixers.composite_mixer.CompositeMixer.get_valid_constraints">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_valid_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return union of supported constraint types from all mixers.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        List[str]</span>
-<span class="sd">            Combined list of unique constraint types</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">constraints</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">mixer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mixers</span><span class="p">:</span>
-            <span class="n">constraints</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">mixer</span><span class="o">.</span><span class="n">get_valid_constraints</span><span class="p">())</span>
-        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">constraints</span><span class="p">))</span></div>
 </div>
 
 </pre></div>
