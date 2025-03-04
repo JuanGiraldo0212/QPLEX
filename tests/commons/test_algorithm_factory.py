@@ -18,7 +18,10 @@ class TestAlgorithmFactory:
     def test_get_algorithm_qaoa(self, mock_standard_mixer_class,
                                 mock_qaoa_class,
                                 _, mock_model):
-        """Test that get_algorithm returns a QAOA instance with StandardMixer for QAOA algorithm type"""
+        """
+        Test that get_algorithm returns a QAOA instance with StandardMixer
+        for QAOA algorithm type
+        """
         mock_standard_mixer = Mock()
         mock_standard_mixer_class.return_value = mock_standard_mixer
 
@@ -48,7 +51,10 @@ class TestAlgorithmFactory:
     def test_get_algorithm_qao_ansatz(self, mock_get_mixer, mock_qaoa_class,
                                       mock_get_model_constraint_info,
                                       mock_model):
-        """Test that get_algorithm returns a QAOA instance with custom mixer for QAO_ANSATZ algorithm type"""
+        """
+        Test that get_algorithm returns a QAOA instance with custom mixer for
+        QAO_ANSATZ algorithm type
+        """
         mock_constraint_info = Mock(spec=ConstraintInfo)
         mock_get_model_constraint_info.return_value = mock_constraint_info
 
@@ -82,7 +88,10 @@ class TestAlgorithmFactory:
     def test_get_algorithm_qao_ansatz_with_custom_mixer(self,
                                                         mock_qaoa_class, _,
                                                         mock_model):
-        """Test that get_algorithm uses provided mixer for QAO_ANSATZ when supplied"""
+        """
+        Test that get_algorithm uses provided mixer for QAO_ANSATZ when
+        supplied
+        """
         mock_qaoa = Mock()
         mock_qaoa_class.return_value = mock_qaoa
 
@@ -108,7 +117,10 @@ class TestAlgorithmFactory:
     @patch('qplex.utils.model_utils.get_model_constraint_info')
     def test_get_algorithm_vqe(self, mock_get_model_constraint_info,
                                mock_vqe_class, mock_model):
-        """Test that get_algorithm returns a VQE instance for VQE algorithm type"""
+        """
+        Test that get_algorithm returns a VQE instance for VQE algorithm
+        type
+        """
         mock_vqe = Mock()
         mock_vqe_class.return_value = mock_vqe
 
@@ -134,7 +146,10 @@ class TestAlgorithmFactory:
 
     @patch('qplex.utils.model_utils.get_model_constraint_info')
     def test_get_algorithm_unsupported(self, _, mock_model):
-        """Test that get_algorithm raises ValueError for unsupported algorithm types"""
+        """
+        Test that get_algorithm raises ValueError for unsupported algorithm
+        types
+        """
         mock_algorithm_type = Mock()
         mock_algorithm_type.__str__ = lambda x: "unsupported_algorithm"
 
