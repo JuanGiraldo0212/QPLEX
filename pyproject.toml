@@ -6,22 +6,21 @@ build-backend = "setuptools.build_meta"
 include = ["qplex"]
 
 [project]
-name = "qplex"
-version = "0.2.0"
+name = "uvic-qplex"
+version = "0.1.1"
 description = "an open-source Python library that enables developers to implement combinatorial optimization models and execute them seamlessly on multiple classical and quantum devices using different quantum algorithms."
-long_description_content_type = "text/markdown"
 readme = "README.md"
 authors = [
     { name = "Juan Giraldo", email = "juanfer021299@gmail.com" },
     { name = "Jose Ossorio", email = "joseossorio99@hotmail.com" }
 ]
-license = {text = "GPL-3.0"}
+license = { text = "GPL-3.0" }
 classifiers = [
     "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: GNU General Public License v3 (GPL-3.0)",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     "Operating System :: OS Independent",
 ]
-requires-python = ">=3.9.0"
+requires-python = ">=3.10.0"
 dependencies = [
     "docplex~=2.25",
     "qiskit~=1.0",
