@@ -216,7 +216,7 @@ class QModel(dpmodel.Model):
 
         print("\nResults")
         print("----------")
-        print(f"Method: {self._qmodel_solution.method.value}")
+        print(f"Method: {self._qmodel_solution.method}")
         print(f"Algorithm: {self._qmodel_solution.algorithm}")
         print(f"Provider: {self._qmodel_solution.provider or 'N/A'}")
         print(f"Backend: {self._qmodel_solution.backend or 'N/A'}")

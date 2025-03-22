@@ -44,7 +44,7 @@ def main():
     )
 
     max_cut_model.solve("quantum", execution_config)
-    print(max_cut_model.print_solution())
+    max_cut_model.print_solution()
 
 
 if __name__ == '__main__':

@@ -35,7 +35,7 @@ def main():
     )
 
     knapsack_model.solve("quantum", execution_config)
-    print(knapsack_model.print_solution())
+    knapsack_model.print_solution()
 
 
 if __name__ == '__main__':
