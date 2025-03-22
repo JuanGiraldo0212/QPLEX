@@ -7,7 +7,7 @@ include = ["qplex"]
 
 [project]
 name = "uvic-qplex"
-version = "0.1.1"
+version = "0.1.2"
 description = "an open-source Python library that enables developers to implement combinatorial optimization models and execute them seamlessly on multiple classical and quantum devices using different quantum algorithms."
 readme = "README.md"
 authors = [
