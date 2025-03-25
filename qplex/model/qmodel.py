@@ -144,16 +144,16 @@ class QModel(dpmodel.Model):
             raise ValueError("Invalid value for argument 'method'. Must be "
                              "'classical' or 'quantum'")
 
-        self._set_solution(solution)
+        self._set_qmodel_solution(solution)
 
     def _create_solution(
-            self,
-            execution_time: float,
-            method: str,
-            provider: Optional[str] = None,
-            backend: Optional[str] = None,
-            algorithm: str = "N/A",
-            result: Optional[Dict] = None
+        self,
+        execution_time: float,
+        method: str,
+        provider: Optional[str] = None,
+        backend: Optional[str] = None,
+        algorithm: str = "N/A",
+        result: Optional[Dict] = None
     ) -> ModelSolution:
         """Creates a ModelSolution object from the solve results."""
         if method == 'classical':
@@ -163,7 +163,6 @@ class QModel(dpmodel.Model):
         else:
             solution = result['solution']
             objective = result['objective']
-
         return ModelSolution(
             solution=solution,
             objective=objective,
@@ -174,7 +173,7 @@ class QModel(dpmodel.Model):
             algorithm=algorithm
         )
 
-    def _set_solution(self, solution: ModelSolution):
+    def _set_qmodel_solution(self, solution: ModelSolution):
         """
         Sets the solution for the model. Used internally by the QModel's
         solve method.
@@ -221,7 +220,8 @@ class QModel(dpmodel.Model):
         print(f"Provider: {self._qmodel_solution.provider or 'N/A'}")
         print(f"Backend: {self._qmodel_solution.backend or 'N/A'}")
         print(
-            f"Execution time: {round(self._qmodel_solution.execution_time, 2)} "
+            f"Execution time: "
+            f"{round(self._qmodel_solution.execution_time, 2)} "
             f"seconds")
 
         super().print_solution(
