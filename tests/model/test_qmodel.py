@@ -19,7 +19,7 @@ class TestQModel:
             model = QModel("test_model")
 
             model._create_solution = Mock()
-            model._set_solution = Mock()
+            model._set_qmodel_solution = Mock()
 
             return model
 
@@ -60,7 +60,7 @@ class TestQModel:
         call_kwargs = mock_qmodel._create_solution.call_args[1]
         assert call_kwargs['method'] == 'classical'
 
-        mock_qmodel._set_solution.assert_called_once_with(
+        mock_qmodel._set_qmodel_solution.assert_called_once_with(
             mock_qmodel._create_solution.return_value
         )
 
@@ -102,7 +102,7 @@ class TestQModel:
         assert call_kwargs['result'] == {'objective': 42.0,
                                          'solution': {'var1': 1}}
 
-        mock_qmodel._set_solution.assert_called_once_with(
+        mock_qmodel._set_qmodel_solution.assert_called_once_with(
             mock_qmodel._create_solution.return_value
         )
 
@@ -223,9 +223,9 @@ class TestQModel:
         assert result.backend == "test_backend"
         assert result.algorithm == "qaoa"
 
-    def test_set_solution(self, mock_qmodel):
-        """Test _set_solution correctly sets the solution on the model"""
-        mock_qmodel._set_solution = QModel._set_solution.__get__(mock_qmodel)
+    def test_set_qmodel_solution(self, mock_qmodel):
+        """Test _set_qmodel_solution correctly sets the solution on the model"""
+        mock_qmodel._set_qmodel_solution = QModel._set_qmodel_solution.__get__(mock_qmodel)
 
         solution = ModelSolution(
             solution={"var1": 1, "var2": 0},
@@ -243,7 +243,7 @@ class TestQModel:
                 'docplex.mp.model.Model._set_solution') as mock_parent_set_solution:
             with patch('docplex.mp.solution.SolveSolution',
                        return_value=mock_solve_solution):
-                mock_qmodel._set_solution(solution)
+                mock_qmodel._set_qmodel_solution(solution)
 
                 assert mock_qmodel._qmodel_solution is solution
 
