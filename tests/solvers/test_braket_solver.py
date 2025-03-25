@@ -84,3 +84,31 @@ class TestBraketSolver:
                 backend="braket_sv")
 
             assert result == mock_local_simulator
+
+    def test_initialization_with_device_parameters(self):
+        """Test that the solver correctly initializes with provider-specific
+        device parameters"""
+        custom_device_params = {
+            "disableQubitRewiring": True,
+            "ionq": {
+                "noiseMitigation": {
+                    "zne": {
+                        "noiseScalingFactors": [1.0, 3.0, 5.0]
+                    }
+                }
+            }
+        }
+
+        with patch('braket.aws.AwsDevice'), \
+                patch('braket.devices.LocalSimulator'), \
+                patch('braket.ir.openqasm.Program'):
+            solver = BraketSolver(
+                shots=1000,
+                backend="test_backend",
+                device_parameters=custom_device_params
+            )
+
+            assert solver.device_parameters == custom_device_params
+            assert solver.device_parameters["disableQubitRewiring"] is True
+            assert "ionq" in solver.device_parameters
+            assert "noiseMitigation" in solver.device_parameters["ionq"]

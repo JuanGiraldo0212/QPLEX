@@ -28,11 +28,11 @@ class MixerFactory:
     @classmethod
     def _get_mixer_for_type(cls, constraint_type):
         """Look up the appropriate mixer class for the constraint type."""
-        if constraint_type == ConstraintType.CARDINALITY:
+        if constraint_type.value == ConstraintType.CARDINALITY.value:
             return CardinalityMixer
-        elif constraint_type == ConstraintType.PARTITION:
+        elif constraint_type.value == ConstraintType.PARTITION.value:
             return PartitionMixer
-        elif constraint_type == ConstraintType.INEQUALITY:
+        elif constraint_type.value == ConstraintType.INEQUALITY.value:
             return InequalityMixer
         else:
             return StandardMixer
@@ -77,7 +77,7 @@ class MixerFactory:
             List of unique constraint types
         """
         constraints = []
-        if constraint_info.type != ConstraintType.UNCONSTRAINED:
+        if constraint_info.type.value != ConstraintType.UNCONSTRAINED.value:
             constraints.append(constraint_info.type)
 
         if constraint_info.parameters:
