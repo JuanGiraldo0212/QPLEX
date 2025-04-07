@@ -43,26 +43,24 @@ def get_model_constraint_info(model: docplex.mp.model.Model) -> ConstraintInfo:
     def get_unique_coefs(const: docplex.mp.constr.LinearConstraint) -> Set:
         return set(coef for _, coef in const.get_left_expr().iter_terms())
 
-    # Check for cardinality constraints (sum x_i = k)
     cardinality_constraints = [
         const for const in constraints
-        if const.sense == docplex.mp.constants.ComparisonType.EQ and all(
-            coef == 1 for coef
-            in get_coefficients(const)
-            .values()) and isinstance(
-            const.get_right_expr(), (int, float))
+        if const.sense == docplex.mp.constants.ComparisonType.EQ
+           and all(coef == 1 for coef in get_coefficients(const).values())
+           and const.get_right_expr().is_constant()
+           and isinstance(const.get_right_expr().get_constant(), (int, float))
     ]
 
     if cardinality_constraints:
         detected_constraints.add(ConstraintType.CARDINALITY)
         parameters["cardinality_k"] = cardinality_constraints[
-            0].get_right_expr()
+            0].get_right_expr().get_constant()
 
     # Check for partition constraints (sum x_i - sum y_i = 0)
     partition_constraints = [
         const for const in constraints
         if const.sense == docplex.mp.constants.ComparisonType.EQ
-           and const.get_right_expr() == 0
+           and const.get_right_expr().equals(0)
            and get_unique_coefs(const) == {1, -1}
     ]
 
@@ -72,8 +70,10 @@ def get_model_constraint_info(model: docplex.mp.model.Model) -> ConstraintInfo:
     # Check for inequality constraints
     inequality_constraints = [const for const in constraints
                               if (
-                                          const.sense == docplex.mp.constants.ComparisonType.LE or
-                                          const.sense == docplex.mp.constants.ComparisonType.GE)
+                                      const.sense ==
+                                      docplex.mp.constants.ComparisonType.LE or
+                                      const.sense ==
+                                      docplex.mp.constants.ComparisonType.GE)
                               and not all(coef == 1 for coef in
                                           get_coefficients(const).values())
                               ]

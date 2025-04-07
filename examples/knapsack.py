@@ -27,7 +27,7 @@ def main():
     execution_config = ExecutionConfig(
         provider="ibmq",
         backend="simulator",
-        algorithm="qaoa",
+        algorithm="qao-ansatz",
         p=4,
         shots=1024,
         max_iter=500,
