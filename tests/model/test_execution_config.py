@@ -114,3 +114,13 @@ class TestExecutionConfig:
         """Test that default callback is created when None is provided."""
         config = ExecutionConfig(callback=None)
         assert isinstance(config.callback, OptimizationCallback)
+
+    def test_default_feasibility_tolerance(self):
+        """Test default feasibility_tolerance value."""
+        config = ExecutionConfig()
+        assert config.feasibility_tolerance == 1e-6
+
+    def test_custom_feasibility_tolerance(self):
+        """Test setting a custom feasibility_tolerance."""
+        config = ExecutionConfig(feasibility_tolerance=1e-9)
+        assert config.feasibility_tolerance == 1e-9

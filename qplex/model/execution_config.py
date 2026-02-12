@@ -38,6 +38,9 @@ class ExecutionConfig:
     shots: int = 1024
     seed: int = 1
 
+    # Feasibility checking
+    feasibility_tolerance: float = 1e-6
+
     def __post_init__(self):
         self._validate_optimizer()
 
